@@ -3,38 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Qayrawan App</title>
+  <title>Qayrawan</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="app">
 
-    <!-- TOP BAR -->
-    <header class="topbar">
-      <div class="title">Qayrawan</div>
-      <div class="status">Beta</div>
-    </header>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="logo">≡ Qayrawan</div>
 
-    <!-- MAIN DASHBOARD -->
-    <section class="dashboard">
+      <button onclick="openPage('announcements')">📢 Announcements</button>
+      <button onclick="openPage('classes')">📚 Classes</button>
+      <button onclick="openPage('homework')">📝 Homework</button>
+      <button onclick="openPage('profile')">👤 Profile</button>
+    </aside>
 
-      <div class="tile" onclick="openPage('announcements')">
-        <div class="icon">📢</div>
-        <div class="label">Announcements</div>
-      </div>
+    <!-- MAIN AREA -->
+    <main class="main">
+      <h1 id="title">Dashboard</h1>
+      <p id="content">Select a section from the menu.</p>
+    </main>
 
-      <div class="tile" onclick="openPage('classes')">
-        <div class="icon">📚</div>
-        <div class="label">Classes</div>
-      </div>
+  </div>
 
-      <div class="tile" onclick="openPage('homework')">
-        <div class="icon">📝</div>
-        <div class="label">Homework</div>
-      </div>
+  <script>
+    function openPage(page){
+      document.getElementById("title").innerText = page.toUpperCase();
+      document.getElementById("content").innerText = "You opened " + page + " section.";
+    }
+  </script>
 
-      <div class="tile" onclick="openPage('profile')">
+</body>
+</html>      <div class="tile" onclick="openPage('profile')">
         <div class="icon">👤</div>
         <div class="label">Profile</div>
       </div>
