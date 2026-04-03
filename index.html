@@ -1,60 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Qayrawan</title>
-  <link rel="stylesheet" href="style.css">
-</head>
 <body>
+  <section class="screen" id="loginScreen">
+    <!-- login card -->
+  </section>
 
-  <div class="app">
+  <div class="app hidden" id="appScreen">
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button">≡</button>
+      <div class="brand">Qayrawan</div>
+      <button class="icon-btn" id="settingsBtn" type="button">⚙</button>
+    </header>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="logo">≡ Qayrawan</div>
-
-      <button onclick="openPage('announcements')">📢 Announcements</button>
-      <button onclick="openPage('classes')">📚 Classes</button>
-      <button onclick="openPage('homework')">📝 Homework</button>
-      <button onclick="openPage('profile')">👤 Profile</button>
+    <aside class="drawer" id="drawer">
+      <button class="menu-link active" data-page="home" type="button">Home</button>
+      <button class="menu-link" data-page="announcements" type="button">Announcements</button>
+      <button class="menu-link" data-page="homework" type="button">Homework</button>
+      <button class="menu-link" data-page="about" type="button">About</button>
     </aside>
 
-    <!-- MAIN AREA -->
-    <main class="main">
-      <h1 id="title">Dashboard</h1>
-      <p id="content">Select a section from the menu.</p>
+    <main class="body">
+      <div class="window" id="pageWindow"></div>
     </main>
-
   </div>
-
-  <script>
-    function openPage(page){
-      document.getElementById("title").innerText = page.toUpperCase();
-      document.getElementById("content").innerText = "You opened " + page + " section.";
-    }
-  </script>
-
 </body>
-</html>      <div class="tile" onclick="openPage('profile')">
-        <div class="icon">👤</div>
-        <div class="label">Profile</div>
-      </div>
-
-    </section>
-
-    <!-- FOOTER INFO -->
-    <footer class="footer">
-      Al-Qayrawan High School • Baghdad, Iraq
-    </footer>
-
-  </div>
-
-  <script>
-    function openPage(page){
-      alert("Opening: " + page);
-    }
-  </script>
-
-</body>
-</html>
