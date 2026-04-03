@@ -3,9 +3,25 @@ body {
   background-color: #0f172a;
   color: white;
   text-align: center;
-  padding-top: 100px;
+  margin: 0;
+  padding: 0;
 }
 
-h1 {
-  font-size: 40px;
+header {
+  padding: 40px 20px;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: #1e293b;
+  padding: 30px;
+  width: 150px;
+  border-radius: 12px;
 }
