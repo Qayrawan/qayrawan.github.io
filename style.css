@@ -7,70 +7,55 @@ body {
 
 /* APP WRAPPER */
 .app {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* TOP BAR */
-.topbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 10px;
-  border-bottom: 1px solid #1f2a44;
+  height: 100vh;
 }
 
-.title {
-  font-size: 22px;
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background: #111a2e;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border-right: 1px solid #1f2a44;
+}
+
+.logo {
+  font-size: 18px;
   font-weight: bold;
+  margin-bottom: 20px;
+  color: #60a5fa;
 }
 
-.status {
-  font-size: 12px;
-  padding: 4px 10px;
-  background: #1d4ed8;
-  border-radius: 999px;
-}
-
-/* DASHBOARD GRID */
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-top: 25px;
-}
-
-/* TILES */
-.tile {
-  background: #121a2b;
-  border: 1px solid #1f2a44;
-  border-radius: 16px;
-  padding: 22px;
-  text-align: center;
+/* BUTTONS */
+.sidebar button {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  text-align: left;
+  padding: 12px;
   cursor: pointer;
+  border-radius: 10px;
   transition: 0.2s;
 }
 
-.tile:hover {
-  transform: translateY(-3px);
-  background: #16213a;
+.sidebar button:hover {
+  background: #1b2a4a;
+  color: white;
 }
 
-.icon {
+/* MAIN AREA */
+.main {
+  flex: 1;
+  padding: 30px;
+}
+
+.main h1 {
+  margin-top: 0;
   font-size: 28px;
-  margin-bottom: 8px;
 }
 
-.label {
-  font-size: 14px;
-  color: #cbd5e1;
-}
-
-/* FOOTER */
-.footer {
-  margin-top: 30px;
-  text-align: center;
-  font-size: 12px;
-  color: #64748b;
+.main p {
+  color: #94a3b8;
 }
