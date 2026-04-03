@@ -2,56 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Qayrawan</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qayrawan App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="page">
-    <header class="hero">
-      <div class="badge">Beta</div>
-      <h1>Qayrawan</h1>
-      <p class="subtitle">School Platform for Al-Qayrawan High School</p>
-      <p class="description">
-        A structured digital environment for announcements, class organization, and academic interaction.
-      </p>
+
+  <div class="app">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="title">Qayrawan</div>
+      <div class="status">Beta</div>
     </header>
 
-    <main class="grid">
-      <div class="card" onclick="go('Announcements')">
-        <h2>Announcements</h2>
-        <p>Official updates from teachers and admins.</p>
+    <!-- MAIN DASHBOARD -->
+    <section class="dashboard">
+
+      <div class="tile" onclick="openPage('announcements')">
+        <div class="icon">📢</div>
+        <div class="label">Announcements</div>
       </div>
 
-      <div class="card" onclick="go('Classes')">
-        <h2>Classes</h2>
-        <p>Organized class spaces and grade-based content.</p>
+      <div class="tile" onclick="openPage('classes')">
+        <div class="icon">📚</div>
+        <div class="label">Classes</div>
       </div>
 
-      <div class="card" onclick="go('Profile')">
-        <h2>Profile</h2>
-        <p>User identity and role-based access.</p>
+      <div class="tile" onclick="openPage('homework')">
+        <div class="icon">📝</div>
+        <div class="label">Homework</div>
       </div>
-    </main>
 
-    <section class="panel">
-      <h2>Current Status</h2>
-      <ul>
-        <li>Beta development stage</li>
-        <li>Closed school platform</li>
-        <li>Simple, structured, and expanding step by step</li>
-      </ul>
+      <div class="tile" onclick="openPage('profile')">
+        <div class="icon">👤</div>
+        <div class="label">Profile</div>
+      </div>
+
     </section>
 
+    <!-- FOOTER INFO -->
     <footer class="footer">
-      <p>Qayrawan Platform • Al-Qayrawan High School • Baghdad, Iraq</p>
+      Al-Qayrawan High School • Baghdad, Iraq
     </footer>
+
   </div>
 
   <script>
-    function go(page) {
-      alert("You clicked: " + page);
+    function openPage(page){
+      alert("Opening: " + page);
     }
   </script>
+
 </body>
 </html>
