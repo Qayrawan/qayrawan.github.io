@@ -38,6 +38,46 @@
   // expose for later use
   window.auth = auth;
   window.db = db;
+  import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+window.login = async function () {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const msg = document.getElementById("msg");
+
+  try {
+    const q = query(
+      collection(db, "users"),
+      where("username", "==", username),
+      where("password", "==", password)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      msg.innerText = "❌ Wrong username or password";
+      return;
+    }
+
+    const userData = snapshot.docs[0].data();
+
+    msg.innerText = "✅ Login success!";
+
+    // redirect based on role
+    if (userData.role === "student") {
+      window.location.href = "student.html";
+    } else if (userData.role === "teacher") {
+      window.location.href = "teacher.html";
+    } else if (userData.role === "admin") {
+      window.location.href = "admin.html";
+    }
+
+  } catch (error) {
+    msg.innerText = "⚠️ Error logging in";
+    console.error(error);
+  }
+};
 </script>
 </body>
 </html>
