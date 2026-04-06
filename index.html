@@ -17,67 +17,74 @@
   <button onclick="login()">Login</button>
 
   <p id="msg"></p>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
-    authDomain: "qayrawan-school-system.firebaseapp.com",
-    projectId: "qayrawan-school-system",
-    storageBucket: "qayrawan-school-system.firebasestorage.app",
-    messagingSenderId: "785321248181",
-    appId: "1:785321248181:web:643e6d29cdca556218c5fc"
-  };
+  <!-- FIREBASE + LOGIN LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } 
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    // 🔥 Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+      authDomain: "qayrawan-school-system.firebaseapp.com",
+      projectId: "qayrawan-school-system",
+      storageBucket: "qayrawan-school-system.firebasestorage.app",
+      messagingSenderId: "785321248181",
+      appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+    };
 
-  // expose for later use
-  window.auth = auth;
-  window.db = db;
-  import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-window.login = async function () {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+    // 🌐 LOGIN FUNCTION (Option 1: Firestore username system)
+    window.login = async function () {
 
-  const msg = document.getElementById("msg");
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const msg = document.getElementById("msg");
 
-  try {
-    const q = query(
-      collection(db, "users"),
-      where("username", "==", username),
-      where("password", "==", password)
-    );
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("username", "==", username)
+        );
 
-    const snapshot = await getDocs(q);
+        const snapshot = await getDocs(q);
 
-    if (snapshot.empty) {
-      msg.innerText = "❌ Wrong username or password";
-      return;
-    }
+        if (snapshot.empty) {
+          msg.innerText = "❌ User not found";
+          return;
+        }
 
-    const userData = snapshot.docs[0].data();
+        const userData = snapshot.docs[0].data();
 
-    msg.innerText = "✅ Login success!";
+        if (userData.password !== password) {
+          msg.innerText = "❌ Wrong password";
+          return;
+        }
 
-    // redirect based on role
-    if (userData.role === "student") {
-      window.location.href = "student.html";
-    } else if (userData.role === "teacher") {
-      window.location.href = "teacher.html";
-    } else if (userData.role === "admin") {
-      window.location.href = "admin.html";
-    }
+        msg.innerText = "✅ Login successful!";
 
-  } catch (error) {
-    msg.innerText = "⚠️ Error logging in";
-    console.error(error);
-  }
-};
-</script>
+        // 🚪 Redirect based on role
+        if (userData.role === "student") {
+          window.location.href = "student.html";
+        } 
+        else if (userData.role === "teacher") {
+          window.location.href = "teacher.html";
+        } 
+        else if (userData.role === "admin") {
+          window.location.href = "admin.html";
+        }
+
+      } catch (error) {
+        console.error(error);
+        msg.innerText = "⚠️ Something went wrong";
+      }
+    };
+
+  </script>
+
 </body>
 </html>
