@@ -17,6 +17,27 @@
   <button onclick="login()">Login</button>
 
   <p id="msg"></p>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+    authDomain: "qayrawan-school-system.firebaseapp.com",
+    projectId: "qayrawan-school-system",
+    storageBucket: "qayrawan-school-system.firebasestorage.app",
+    messagingSenderId: "785321248181",
+    appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // expose for later use
+  window.auth = auth;
+  window.db = db;
+</script>
 </body>
 </html>
