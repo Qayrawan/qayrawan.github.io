@@ -5,26 +5,48 @@
 
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
       padding: 20px;
     }
 
+    h2, h3 {
+      color: #333;
+    }
+
     input, select {
+      padding: 8px;
       margin: 5px;
-      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #4CAF50;
     }
 
     button {
+      padding: 8px 14px;
       margin: 5px;
-      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #4CAF50;
+      color: white;
       cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #45a049;
     }
 
     .user {
-      border: 1px solid #ccc;
-      padding: 10px;
+      background: white;
+      border-radius: 10px;
+      padding: 12px;
       margin-top: 10px;
-      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
   </style>
 </head>
@@ -55,8 +77,9 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { 
+      getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
@@ -72,9 +95,8 @@
 
     // 🛡️ PROTECTION
     const user = JSON.parse(localStorage.getItem("user"));
-
     if (!user || user.role !== "admin") {
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     }
 
     // ➕ CREATE USER
@@ -85,14 +107,14 @@
       const userClass = document.getElementById("class").value;
 
       if (!username || !password) {
-        alert("Fill all required fields");
+        alert("Fill required fields");
         return;
       }
 
       await addDoc(collection(db, "users"), {
-        username: username,
-        password: password,
-        role: role,
+        username,
+        password,
+        role,
         class: userClass
       });
 
@@ -116,12 +138,32 @@
         div.innerHTML = `
           <b>${data.username}</b> (${data.role}) - Class: ${data.class || "-"}
           <br>
+          <button onclick="editUser('${docSnap.id}', '${data.username}', '${data.password}', '${data.class || ""}', '${data.role}')">Edit</button>
           <button onclick="deleteUser('${docSnap.id}')">Delete</button>
         `;
 
         usersList.appendChild(div);
       });
     }
+
+    // ✏️ EDIT USER
+    window.editUser = async function (id, username, password, userClass, role) {
+      const newUsername = prompt("New username:", username);
+      const newPassword = prompt("New password:", password);
+      const newClass = prompt("New class:", userClass);
+      const newRole = prompt("New role (student/teacher/admin):", role);
+
+      if (!newUsername || !newPassword) return;
+
+      await updateDoc(doc(db, "users", id), {
+        username: newUsername,
+        password: newPassword,
+        class: newClass,
+        role: newRole
+      });
+
+      loadUsers();
+    };
 
     // 🗑️ DELETE USER
     window.deleteUser = async function (id) {
@@ -135,7 +177,7 @@
       window.location.href = "index.html";
     };
 
-    // 🚀 INITIAL LOAD
+    // 🚀 INIT
     loadUsers();
   </script>
 
