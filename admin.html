@@ -1,49 +1,188 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Admin Panel</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+/* 🌌 GLOBAL */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  overflow-x: hidden;
+}
 
-    body {
-      font-family: monospace;
-      background: #0f172a;
-      color: #e2e8f0;
-      margin: 0;
-      padding: 15px;
-    }
+/* 🎬 HEADER */
+header {
+  padding: 20px;
+  background: linear-gradient(90deg, #1e293b, #0f172a);
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  animation: slideDown 0.6s ease;
+}
 
-    h2 {
-      text-align: center;
-      color: #38bdf8;
-    }
+/* 📦 CONTAINER */
+.container {
+  padding: 20px;
+}
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
+/* 🔍 SEARCH BAR */
+.search-box {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 15px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s;
+}
 
-    .card {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-      border: 1px solid #334155;
-    }
+.search-box:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #38bdf8;
+}
 
-    /* 🔥 CLEAN GRID */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
+/* 📚 CLASS DROPDOWN */
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  background: #1e293b;
+  color: white;
+  border: none;
+  transition: 0.3s;
+}
 
-    input, select {
-      width: 100%;
+select:hover {
+  transform: scale(1.01);
+}
+
+/* 👥 USER CARDS */
+.card {
+  background: #1e293b;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.3s;
+  animation: fadeIn 0.4s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  background: #273449;
+}
+
+/* 🟢 STATUS */
+.status {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.active {
+  background: #22c55e;
+}
+
+.inactive {
+  background: #ef4444;
+}
+
+/* 🎞️ ANIMATIONS */
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes slideDown {
+  from {transform: translateY(-40px); opacity: 0;}
+  to {transform: translateY(0); opacity: 1;}
+}
+
+/* 📱 RESPONSIVE */
+@media(max-width:600px){
+  header {font-size:18px;}
+}
+</style>
+
+</head>
+<body>
+
+<header>⚡ Admin Control Center</header>
+
+<div class="container">
+
+<!-- 🔍 SEARCH -->
+<input class="search-box" id="search" placeholder="Search students, users, IDs..." onkeyup="render()">
+
+<!-- 📚 CLASS FILTER -->
+<select id="classFilter" onchange="render()">
+  <option value="all">All Classes</option>
+  <option value="1A">Class 1A</option>
+  <option value="1B">Class 1B</option>
+  <option value="2A">Class 2A</option>
+  <option value="2B">Class 2B</option>
+</select>
+
+<!-- 👥 USERS -->
+<div id="userList"></div>
+
+</div>
+
+<script>
+// 🧠 MOCK DATA (replace later with real backend)
+let users = [
+  {name:"Ali", class:"1A", status:"active"},
+  {name:"Sara", class:"1A", status:"inactive"},
+  {name:"Omar", class:"1B", status:"active"},
+  {name:"Hana", class:"2A", status:"active"},
+  {name:"Yusuf", class:"2B", status:"inactive"},
+];
+
+// 🎨 RENDER FUNCTION
+function render(){
+  let list = document.getElementById("userList");
+  let search = document.getElementById("search").value.toLowerCase();
+  let filter = document.getElementById("classFilter").value;
+
+  list.innerHTML = "";
+
+  users
+    .filter(u => (filter==="all" || u.class===filter))
+    .filter(u => u.name.toLowerCase().includes(search))
+    .forEach(u => {
+
+      let card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <div>
+          <strong>${u.name}</strong><br>
+          <small>Class: ${u.class}</small>
+        </div>
+        <div class="status ${u.status}">
+          ${u.status}
+        </div>
+      `;
+
+      list.appendChild(card);
+    });
+}
+
+// 🚀 FIRST LOAD
+render();
+</script>
+
+</body>
+</html>      width: 100%;
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #334155;
