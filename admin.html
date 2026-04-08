@@ -2,11 +2,13 @@
 <html>
 <head>
   <title>Admin Panel</title>
-
-  <!-- 📱 Mobile scaling fix -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: monospace;
       background: #0f172a;
@@ -33,10 +35,16 @@
       border: 1px solid #334155;
     }
 
+    /* 🔥 CLEAN GRID */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
       border-radius: 6px;
       border: 1px solid #334155;
       background: #0f172a;
@@ -45,7 +53,6 @@
 
     button {
       padding: 10px;
-      margin-top: 10px;
       border: none;
       border-radius: 6px;
       background: #38bdf8;
@@ -109,28 +116,30 @@
 <div class="card">
   <h3>Create User</h3>
 
-  <input id="displayName" placeholder="Display Name">
-  <input id="username" placeholder="Username">
-  <input id="password" placeholder="Password">
-  <input id="pfp" placeholder="Profile Picture URL">
+  <div class="form-grid">
+    <input id="displayName" placeholder="Display Name">
+    <input id="username" placeholder="Username">
+    <input id="password" placeholder="Password">
+    <input id="pfp" placeholder="Profile Picture URL">
 
-  <select id="class">
-    <option value="">Class</option>
-    <option>7A</option><option>7B</option><option>7C</option>
-    <option>8A</option><option>8B</option><option>8C</option>
-    <option>9A</option><option>9B</option><option>9C</option>
-    <option>10A</option><option>10B</option><option>10C</option>
-    <option>11A</option><option>11B</option><option>11C</option>
-    <option>12A</option><option>12B</option><option>12C</option>
-  </select>
+    <select id="class">
+      <option value="">Class</option>
+      <option>7A</option><option>7B</option><option>7C</option>
+      <option>8A</option><option>8B</option><option>8C</option>
+      <option>9A</option><option>9B</option><option>9C</option>
+      <option>10A</option><option>10B</option><option>10C</option>
+      <option>11A</option><option>11B</option><option>11C</option>
+      <option>12A</option><option>12B</option><option>12C</option>
+    </select>
 
-  <select id="role">
-    <option value="student">Student</option>
-    <option value="teacher">Teacher</option>
-    <option value="admin">Admin</option>
-  </select>
+    <select id="role">
+      <option value="student">Student</option>
+      <option value="teacher">Teacher</option>
+      <option value="admin">Admin</option>
+    </select>
 
-  <button onclick="createUser()">Create User</button>
+    <button onclick="createUser()">Create User</button>
+  </div>
 </div>
 
 <div class="card">
@@ -148,7 +157,7 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD3v...",
+  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
   authDomain: "qayrawan-school-system.firebaseapp.com",
   projectId: "qayrawan-school-system",
   storageBucket: "qayrawan-school-system.firebasestorage.app",
@@ -159,20 +168,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🛡️ PROTECT
+// 🛡️ PROTECTION
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user || user.role !== "admin") {
   window.location.href = "index.html";
 }
 
-// ➕ CREATE
+// ➕ CREATE USER
 window.createUser = async () => {
   const data = {
     displayName: displayName.value,
     username: username.value,
     password: password.value,
     role: role.value,
-    class: class.value,
+    class: document.getElementById("class").value,
     pfp: pfp.value
   };
 
@@ -181,14 +190,26 @@ window.createUser = async () => {
     return;
   }
 
+  console.log("Creating user:", data);
+
   await addDoc(collection(db, "users"), data);
   loadUsers();
 };
 
-// 📋 LOAD
+// 📋 LOAD USERS
 async function loadUsers() {
+  console.log("Loading users...");
+
   usersList.innerHTML = "";
+
   const snap = await getDocs(collection(db, "users"));
+
+  console.log("Users found:", snap.size);
+
+  if (snap.empty) {
+    usersList.innerHTML = "<p>No users found ⚠️</p>";
+    return;
+  }
 
   snap.forEach(docSnap => {
     const d = docSnap.data();
@@ -214,26 +235,28 @@ async function loadUsers() {
       </div>
 
       <div class="edit-box" id="edit-${docSnap.id}">
-        <input placeholder="Display Name" id="dn-${docSnap.id}" value="${d.displayName}">
-        <input placeholder="Username" id="un-${docSnap.id}" value="${d.username}">
-        <input placeholder="Password" id="pw-${docSnap.id}" value="${d.password}">
-        <input placeholder="PFP URL" id="pf-${docSnap.id}" value="${d.pfp || ''}">
-        
-        <select id="cl-${docSnap.id}">
-          <option>${d.class || "Class"}</option>
-          <option>7A</option><option>7B</option><option>7C</option>
-          <option>8A</option><option>8B</option><option>8C</option>
-          <option>9A</option><option>9B</option><option>9C</option>
-        </select>
+        <div class="form-grid">
+          <input id="dn-${docSnap.id}" value="${d.displayName}">
+          <input id="un-${docSnap.id}" value="${d.username}">
+          <input id="pw-${docSnap.id}" value="${d.password}">
+          <input id="pf-${docSnap.id}" value="${d.pfp || ''}">
 
-        <select id="rl-${docSnap.id}">
-          <option>${d.role}</option>
-          <option>student</option>
-          <option>teacher</option>
-          <option>admin</option>
-        </select>
+          <select id="cl-${docSnap.id}">
+            <option>${d.class || "Class"}</option>
+            <option>7A</option><option>7B</option><option>7C</option>
+            <option>8A</option><option>8B</option><option>8C</option>
+            <option>9A</option><option>9B</option><option>9C</option>
+          </select>
 
-        <button onclick="saveEdit('${docSnap.id}')">Save</button>
+          <select id="rl-${docSnap.id}">
+            <option>${d.role}</option>
+            <option>student</option>
+            <option>teacher</option>
+            <option>admin</option>
+          </select>
+
+          <button onclick="saveEdit('${docSnap.id}')">Save</button>
+        </div>
       </div>
     `;
 
