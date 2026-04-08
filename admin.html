@@ -1,40 +1,349 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Admin Panel</title>
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-/* 🌌 GLOBAL */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
-  overflow-x: hidden;
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: monospace;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 15px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 5px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      border: 1px solid #334155;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #38bdf8;
+      color: black;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+      transform: scale(1.03);
+    }
+
+    .user {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      animation: popIn 0.2s ease;
+    }
+
+    .user-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+    }
+
+    .edit-box {
+      display: none;
+      margin-top: 10px;
+      border-top: 1px solid #334155;
+      padding-top: 10px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .edit-box.active {
+      display: block;
+    }
+
+    .actions button {
+      margin-left: 5px;
+    }
+
+    .top-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .counter {
+      text-align: center;
+      color: #94a3b8;
+      margin-top: 10px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(5px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes popIn {
+      from {transform: scale(0.98); opacity: 0;}
+      to {transform: scale(1); opacity: 1;}
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>⚡ Admin Control Panel</h2>
+
+<!-- 🔍 SEARCH + FILTER BAR -->
+<div class="card top-bar">
+  <input id="search" placeholder="Search users..." oninput="loadUsers()">
+  
+  <select id="classFilter" onchange="loadUsers()">
+    <option value="">All Classes</option>
+    <option>7A</option><option>7B</option><option>7C</option>
+    <option>8A</option><option>8B</option><option>8C</option>
+    <option>9A</option><option>9B</option><option>9C</option>
+    <option>10A</option><option>10B</option><option>10C</option>
+    <option>11A</option><option>11B</option><option>11C</option>
+    <option>12A</option><option>12B</option><option>12C</option>
+  </select>
+</div>
+
+<div class="card">
+  <h3>Create User</h3>
+
+  <div class="form-grid">
+    <input id="displayName" placeholder="Display Name">
+    <input id="username" placeholder="Username">
+    <input id="password" placeholder="Password">
+    <input id="pfp" placeholder="Profile Picture URL">
+
+    <select id="class">
+      <option value="">Class</option>
+      <option>7A</option><option>7B</option><option>7C</option>
+      <option>8A</option><option>8B</option><option>8C</option>
+      <option>9A</option><option>9B</option><option>9C</option>
+      <option>10A</option><option>10B</option><option>10C</option>
+      <option>11A</option><option>11B</option><option>11C</option>
+      <option>12A</option><option>12B</option><option>12C</option>
+    </select>
+
+    <select id="role">
+      <option value="student">Student</option>
+      <option value="teacher">Teacher</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button onclick="createUser()">Create User</button>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Users</h3>
+  <div class="counter" id="counter"></div>
+  <div id="usersList"></div>
+</div>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain: "qayrawan-school-system.firebaseapp.com",
+  projectId: "qayrawan-school-system",
+  storageBucket: "qayrawan-school-system.firebasestorage.app",
+  messagingSenderId: "785321248181",
+  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🛡️ ADMIN CHECK
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user || user.role !== "admin") {
+  window.location.href = "index.html";
 }
 
-/* 🎬 HEADER */
-header {
-  padding: 20px;
-  background: linear-gradient(90deg, #1e293b, #0f172a);
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  animation: slideDown 0.6s ease;
-}
+// ➕ CREATE USER
+window.createUser = async () => {
+  const data = {
+    displayName: displayName.value,
+    username: username.value,
+    password: password.value,
+    role: role.value,
+    class: document.getElementById("class").value,
+    pfp: pfp.value
+  };
 
-/* 📦 CONTAINER */
-.container {
-  padding: 20px;
-}
+  if (!data.username || !data.password || !data.displayName) {
+    alert("Missing fields");
+    return;
+  }
 
-/* 🔍 SEARCH BAR */
-.search-box {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
+  await addDoc(collection(db, "users"), data);
+  loadUsers();
+};
+
+// 📋 LOAD USERS (SEARCH + FILTER)
+window.loadUsers = async () => {
+  usersList.innerHTML = "Loading...";
+
+  const search = document.getElementById("search").value.toLowerCase();
+  const filter = document.getElementById("classFilter").value;
+
+  const snap = await getDocs(collection(db, "users"));
+
+  usersList.innerHTML = "";
+
+  let count = 0;
+
+  snap.forEach(docSnap => {
+    const d = docSnap.data();
+
+    if (filter && d.class !== filter) return;
+    if (search && !d.displayName.toLowerCase().includes(search) &&
+        !d.username.toLowerCase().includes(search)) return;
+
+    count++;
+
+    const div = document.createElement("div");
+    div.className = "user card";
+
+    div.innerHTML = `
+      <div class="user-top">
+        <div class="user-info">
+          <img src="${d.pfp || 'https://via.placeholder.com/45'}">
+          <div>
+            <b>${d.displayName}</b><br>
+            <small>@${d.username}</small><br>
+            <small>${d.role} | ${d.class || "-"}</small>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button onclick="toggleEdit('${docSnap.id}')">Edit</button>
+          <button onclick="deleteUser('${docSnap.id}')">X</button>
+        </div>
+      </div>
+
+      <div class="edit-box" id="edit-${docSnap.id}">
+        <div class="form-grid">
+          <input id="dn-${docSnap.id}" value="${d.displayName}">
+          <input id="un-${docSnap.id}" value="${d.username}">
+          <input id="pw-${docSnap.id}" value="${d.password}">
+          <input id="pf-${docSnap.id}" value="${d.pfp || ''}">
+
+          <select id="cl-${docSnap.id}">
+            <option>${d.class || ""}</option>
+            <option>7A</option><option>7B</option><option>7C</option>
+            <option>8A</option><option>8B</option><option>8C</option>
+            <option>9A</option><option>9B</option><option>9C</option>
+          </select>
+
+          <select id="rl-${docSnap.id}">
+            <option>${d.role}</option>
+            <option>student</option>
+            <option>teacher</option>
+            <option>admin</option>
+          </select>
+
+          <button onclick="saveEdit('${docSnap.id}')">Save</button>
+        </div>
+      </div>
+    `;
+
+    usersList.appendChild(div);
+  });
+
+  counter.innerText = `Total shown: ${count}`;
+};
+
+// ✏️ EDIT
+window.toggleEdit = id => {
+  document.getElementById("edit-" + id).classList.toggle("active");
+};
+
+// 💾 SAVE
+window.saveEdit = async id => {
+  await updateDoc(doc(db, "users", id), {
+    displayName: document.getElementById("dn-" + id).value,
+    username: document.getElementById("un-" + id).value,
+    password: document.getElementById("pw-" + id).value,
+    pfp: document.getElementById("pf-" + id).value,
+    class: document.getElementById("cl-" + id).value,
+    role: document.getElementById("rl-" + id).value
+  });
+
+  loadUsers();
+};
+
+// 🗑️ DELETE
+window.deleteUser = async id => {
+  await deleteDoc(doc(db, "users", id));
+  loadUsers();
+};
+
+// 🚪 LOGOUT
+window.logout = () => {
+  localStorage.removeItem("user");
+  location.href = "index.html";
+};
+
+loadUsers();
+</script>
+
+</body>
+</html>  border: none;
   margin-bottom: 15px;
   font-size: 16px;
   outline: none;
