@@ -3,16 +3,21 @@
 <head>
   <title>Admin Panel</title>
 
+  <!-- 📱 Mobile scaling fix -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #eef2f7;
+      font-family: monospace;
+      background: #0f172a;
+      color: #e2e8f0;
       margin: 0;
-      padding: 20px;
+      padding: 15px;
     }
 
     h2 {
       text-align: center;
+      color: #38bdf8;
     }
 
     .container {
@@ -21,42 +26,49 @@
     }
 
     .card {
-      background: white;
+      background: #1e293b;
       padding: 15px;
-      border-radius: 12px;
+      border-radius: 10px;
       margin-top: 15px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      border: 1px solid #334155;
     }
 
     input, select {
       width: 100%;
       padding: 10px;
       margin-top: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
     }
 
     button {
-      width: 100%;
       padding: 10px;
       margin-top: 10px;
       border: none;
-      border-radius: 8px;
-      background: #4CAF50;
-      color: white;
+      border-radius: 6px;
+      background: #38bdf8;
+      color: black;
       cursor: pointer;
       transition: 0.2s;
     }
 
     button:hover {
-      background: #43a047;
+      background: #0ea5e9;
     }
 
     .user {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .user-top {
+      display: flex;
       justify-content: space-between;
-      flex-wrap: wrap;
+      align-items: center;
     }
 
     .user-info {
@@ -69,20 +81,21 @@
       width: 45px;
       height: 45px;
       border-radius: 50%;
-      object-fit: cover;
+    }
+
+    .edit-box {
+      display: none;
+      margin-top: 10px;
+      border-top: 1px solid #334155;
+      padding-top: 10px;
+    }
+
+    .edit-box.active {
+      display: block;
     }
 
     .actions button {
-      width: auto;
-      margin: 3px;
-      padding: 6px 10px;
-    }
-
-    @media (max-width: 600px) {
-      .user {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+      margin-left: 5px;
     }
   </style>
 </head>
@@ -91,7 +104,7 @@
 
 <div class="container">
 
-<h2>🧑‍💼 Admin Panel</h2>
+<h2>⚡ Admin Control Panel</h2>
 
 <div class="card">
   <h3>Create User</h3>
@@ -102,25 +115,13 @@
   <input id="pfp" placeholder="Profile Picture URL">
 
   <select id="class">
-    <option value="">Select Class</option>
-    <option>7A</option>
-    <option>7B</option>
-    <option>7C</option>
-    <option>8A</option>
-    <option>8B</option>
-    <option>8C</option>
-    <option>9A</option>
-    <option>9B</option>
-    <option>9C</option>
-    <option>10A</option>
-    <option>10B</option>
-    <option>10C</option>
-    <option>11A</option>
-    <option>11B</option>
-    <option>11C</option>
-    <option>12A</option>
-    <option>12B</option>
-    <option>12C</option>
+    <option value="">Class</option>
+    <option>7A</option><option>7B</option><option>7C</option>
+    <option>8A</option><option>8B</option><option>8C</option>
+    <option>9A</option><option>9B</option><option>9C</option>
+    <option>10A</option><option>10B</option><option>10C</option>
+    <option>11A</option><option>11B</option><option>11C</option>
+    <option>12A</option><option>12B</option><option>12C</option>
   </select>
 
   <select id="role">
@@ -133,7 +134,7 @@
 </div>
 
 <div class="card">
-  <h3>All Users</h3>
+  <h3>Users</h3>
   <div id="usersList"></div>
 </div>
 
@@ -143,12 +144,11 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  apiKey: "AIzaSyD3v...",
   authDomain: "qayrawan-school-system.firebaseapp.com",
   projectId: "qayrawan-school-system",
   storageBucket: "qayrawan-school-system.firebasestorage.app",
@@ -159,64 +159,81 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🛡️ PROTECTION
+// 🛡️ PROTECT
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user || user.role !== "admin") {
   window.location.href = "index.html";
 }
 
-// ➕ CREATE USER
-window.createUser = async function () {
-  const displayName = document.getElementById("displayName").value;
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const role = document.getElementById("role").value;
-  const userClass = document.getElementById("class").value;
-  const pfp = document.getElementById("pfp").value;
+// ➕ CREATE
+window.createUser = async () => {
+  const data = {
+    displayName: displayName.value,
+    username: username.value,
+    password: password.value,
+    role: role.value,
+    class: class.value,
+    pfp: pfp.value
+  };
 
-  if (!username || !password || !displayName) {
-    alert("Fill required fields");
+  if (!data.username || !data.password || !data.displayName) {
+    alert("Missing fields");
     return;
   }
 
-  await addDoc(collection(db, "users"), {
-    displayName,
-    username,
-    password,
-    role,
-    class: userClass,
-    pfp
-  });
-
+  await addDoc(collection(db, "users"), data);
   loadUsers();
 };
 
-// 📋 LOAD USERS
+// 📋 LOAD
 async function loadUsers() {
-  const usersList = document.getElementById("usersList");
   usersList.innerHTML = "";
+  const snap = await getDocs(collection(db, "users"));
 
-  const snapshot = await getDocs(collection(db, "users"));
-
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
+  snap.forEach(docSnap => {
+    const d = docSnap.data();
 
     const div = document.createElement("div");
     div.className = "user card";
 
     div.innerHTML = `
-      <div class="user-info">
-        <img src="${data.pfp || 'https://via.placeholder.com/45'}">
-        <div>
-          <b>${data.displayName}</b><br>
-          <small>@${data.username}</small><br>
-          <small>${data.role} | ${data.class || "-"}</small>
+      <div class="user-top">
+        <div class="user-info">
+          <img src="${d.pfp || 'https://via.placeholder.com/45'}">
+          <div>
+            <b>${d.displayName}</b><br>
+            <small>@${d.username}</small><br>
+            <small>${d.role} | ${d.class || "-"}</small>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button onclick="toggleEdit('${docSnap.id}')">Edit</button>
+          <button onclick="deleteUser('${docSnap.id}')">X</button>
         </div>
       </div>
 
-      <div class="actions">
-        <button onclick="editUser('${docSnap.id}')">Edit</button>
-        <button onclick="deleteUser('${docSnap.id}')">Delete</button>
+      <div class="edit-box" id="edit-${docSnap.id}">
+        <input placeholder="Display Name" id="dn-${docSnap.id}" value="${d.displayName}">
+        <input placeholder="Username" id="un-${docSnap.id}" value="${d.username}">
+        <input placeholder="Password" id="pw-${docSnap.id}" value="${d.password}">
+        <input placeholder="PFP URL" id="pf-${docSnap.id}" value="${d.pfp || ''}">
+        
+        <select id="cl-${docSnap.id}">
+          <option>${d.class || "Class"}</option>
+          <option>7A</option><option>7B</option><option>7C</option>
+          <option>8A</option><option>8B</option><option>8C</option>
+          <option>9A</option><option>9B</option><option>9C</option>
+        </select>
+
+        <select id="rl-${docSnap.id}">
+          <option>${d.role}</option>
+          <option>student</option>
+          <option>teacher</option>
+          <option>admin</option>
+        </select>
+
+        <button onclick="saveEdit('${docSnap.id}')">Save</button>
       </div>
     `;
 
@@ -224,40 +241,37 @@ async function loadUsers() {
   });
 }
 
-// ✏️ EDIT USER
-window.editUser = async function (id) {
-  const displayName = prompt("Display Name:");
-  const username = prompt("Username:");
-  const password = prompt("Password:");
-  const userClass = prompt("Class:");
-  const role = prompt("Role:");
-  const pfp = prompt("Profile Picture URL:");
+// ✏️ TOGGLE EDIT
+window.toggleEdit = id => {
+  document.getElementById("edit-" + id).classList.toggle("active");
+};
 
+// 💾 SAVE EDIT
+window.saveEdit = async id => {
   await updateDoc(doc(db, "users", id), {
-    displayName,
-    username,
-    password,
-    class: userClass,
-    role,
-    pfp
+    displayName: document.getElementById("dn-" + id).value,
+    username: document.getElementById("un-" + id).value,
+    password: document.getElementById("pw-" + id).value,
+    pfp: document.getElementById("pf-" + id).value,
+    class: document.getElementById("cl-" + id).value,
+    role: document.getElementById("rl-" + id).value
   });
 
   loadUsers();
 };
 
-// 🗑️ DELETE USER
-window.deleteUser = async function (id) {
+// 🗑️ DELETE
+window.deleteUser = async id => {
   await deleteDoc(doc(db, "users", id));
   loadUsers();
 };
 
 // 🚪 LOGOUT
-window.logout = function () {
+window.logout = () => {
   localStorage.removeItem("user");
-  window.location.href = "index.html";
+  location.href = "index.html";
 };
 
-// INIT
 loadUsers();
 </script>
 
