@@ -18,7 +18,6 @@
     h2 {
       text-align: center;
       color: #38bdf8;
-      margin-bottom: 5px;
     }
 
     .container {
@@ -36,7 +35,6 @@
 
     .form-grid {
       display: grid;
-      grid-template-columns: 1fr;
       gap: 10px;
     }
 
@@ -124,8 +122,8 @@
 
 <!-- 🔍 البحث -->
 <div class="card top-bar">
-  <input id="search" placeholder="بحث عن مستخدم..." oninput="loadUsers()">
-  
+  <input id="search" placeholder="بحث..." oninput="loadUsers()">
+
   <select id="classFilter" onchange="loadUsers()">
     <option value="">كل الصفوف</option>
     <option>7A</option><option>7B</option><option>7C</option>
@@ -137,7 +135,7 @@
   </select>
 </div>
 
-<!-- ➕ انشاء مستخدم -->
+<!-- ➕ انشاء -->
 <div class="card">
   <h3>انشاء مستخدم</h3>
 
@@ -163,7 +161,7 @@
       <option value="admin">ادمن</option>
     </select>
 
-    <button onclick="createUser()">انشاء مستخدم</button>
+    <button onclick="createUser()">انشاء</button>
   </div>
 </div>
 
@@ -179,7 +177,157 @@
 </div>
 
 <script type="module">
-// ⚠️ نفس الكود تبعك بدون تغيير (عشان ما ينكسر)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain: "qayrawan-school-system.firebaseapp.com",
+  projectId: "qayrawan-school-system",
+  storageBucket: "qayrawan-school-system.firebasestorage.app",
+  messagingSenderId: "785321248181",
+  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🛡️ CHECK
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user || user.role !== "admin") {
+  location.href = "index.html";
+}
+
+// ➕ CREATE
+window.createUser = async () => {
+  if (!displayName.value || !username.value || !password.value) {
+    alert("املأ الحقول");
+    return;
+  }
+
+  await addDoc(collection(db, "users"), {
+    displayName: displayName.value,
+    username: username.value,
+    password: password.value,
+    role: role.value,
+    class: document.getElementById("class").value,
+    pfp: pfp.value
+  });
+
+  loadUsers();
+};
+
+// 📋 LOAD
+window.loadUsers = async () => {
+  const list = document.getElementById("usersList");
+  const search = document.getElementById("search").value.toLowerCase();
+  const filter = document.getElementById("classFilter").value;
+
+  list.innerHTML = "جاري التحميل...";
+
+  const snap = await getDocs(collection(db, "users"));
+
+  list.innerHTML = "";
+
+  let count = 0;
+
+  snap.forEach(docSnap => {
+    const d = docSnap.data();
+
+    if (filter && d.class !== filter) return;
+
+    if (search &&
+      !d.displayName?.toLowerCase().includes(search) &&
+      !d.username?.toLowerCase().includes(search)
+    ) return;
+
+    count++;
+
+    const div = document.createElement("div");
+    div.className = "user card";
+
+    div.innerHTML = `
+      <div class="user-top">
+        <div class="user-info">
+          <img src="${d.pfp || 'https://via.placeholder.com/45'}">
+          <div>
+            <b>${d.displayName}</b><br>
+            <small>@${d.username}</small><br>
+            <small>${d.role} | ${d.class || "-"}</small>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button onclick="toggleEdit('${docSnap.id}')">تعديل</button>
+          <button onclick="deleteUser('${docSnap.id}')">حذف</button>
+        </div>
+      </div>
+
+      <div class="edit-box" id="edit-${docSnap.id}">
+        <div class="form-grid">
+          <input id="dn-${docSnap.id}" value="${d.displayName}">
+          <input id="un-${docSnap.id}" value="${d.username}">
+          <input id="pw-${docSnap.id}" value="${d.password}">
+          <input id="pf-${docSnap.id}" value="${d.pfp || ''}">
+
+          <select id="cl-${docSnap.id}">
+            <option>${d.class || ""}</option>
+            <option>7A</option><option>7B</option><option>7C</option>
+            <option>8A</option><option>8B</option><option>8C</option>
+            <option>9A</option><option>9B</option><option>9C</option>
+          </select>
+
+          <select id="rl-${docSnap.id}">
+            <option>${d.role}</option>
+            <option>student</option>
+            <option>teacher</option>
+            <option>admin</option>
+          </select>
+
+          <button onclick="saveEdit('${docSnap.id}')">حفظ</button>
+        </div>
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
+
+  document.getElementById("counter").innerText = `عدد المستخدمين: ${count}`;
+};
+
+// ✏️ EDIT
+window.toggleEdit = id => {
+  document.getElementById("edit-" + id).classList.toggle("active");
+};
+
+// 💾 SAVE
+window.saveEdit = async id => {
+  await updateDoc(doc(db, "users", id), {
+    displayName: document.getElementById("dn-" + id).value,
+    username: document.getElementById("un-" + id).value,
+    password: document.getElementById("pw-" + id).value,
+    pfp: document.getElementById("pf-" + id).value,
+    class: document.getElementById("cl-" + id).value,
+    role: document.getElementById("rl-" + id).value
+  });
+
+  loadUsers();
+};
+
+// 🗑️ DELETE
+window.deleteUser = async id => {
+  await deleteDoc(doc(db, "users", id));
+  loadUsers();
+};
+
+// 🚪 LOGOUT
+window.logout = () => {
+  localStorage.removeItem("user");
+  location.href = "index.html";
+};
+
+loadUsers();
 </script>
 
 </body>
