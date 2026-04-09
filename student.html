@@ -1,64 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-  <title>Student Dashboard</title>
+  <title>لوحة الطالب</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial;
-      padding: 20px;
+      font-family: monospace;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 15px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #38bdf8;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
     }
 
     .card {
+      background: #1e293b;
       padding: 15px;
-      border: 1px solid #ccc;
       border-radius: 10px;
-      max-width: 400px;
+      margin-top: 15px;
+      border: 1px solid #334155;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .user-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
     }
 
     button {
-      margin-top: 15px;
-      padding: 8px 12px;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #38bdf8;
+      color: black;
       cursor: pointer;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+    }
+
+    .empty {
+      text-align: center;
+      color: #94a3b8;
+      margin-top: 10px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
 
 <body>
 
-  <h2>🎓 Student Dashboard</h2>
+<div class="container">
 
-  <div class="card">
-    <p><b>Username:</b> <span id="username"></span></p>
-    <p><b>Class:</b> <span id="class"></span></p>
-    <p><b>Role:</b> <span id="role"></span></p>
+<h2>🎓 لوحة الطالب</h2>
 
-    <button onclick="logout()">Logout</button>
+<!-- 👤 USER INFO -->
+<div class="card">
+  <div class="user-box">
+    <img id="pfp">
+    <div>
+      <b id="name"></b><br>
+      <small id="class"></small>
+    </div>
   </div>
+</div>
 
-  <script>
-    // 🛡️ PROTECTION SYSTEM
-    const user = JSON.parse(localStorage.getItem("user"));
+<!-- 📝 HOMEWORK -->
+<div class="card">
+  <h3>📚 الواجبات</h3>
+  <div id="homeworkList" class="empty">لا يوجد واجبات حالياً</div>
+</div>
 
-    if (!user) {
-      window.location.href = "index.html";
-    }
+<!-- 💬 MESSAGES -->
+<div class="card">
+  <h3>💬 الرسائل</h3>
+  <div id="messages" class="empty">لا توجد رسائل</div>
+</div>
 
-    if (user.role !== "student") {
-      window.location.href = "index.html";
-    }
+<button onclick="logout()">تسجيل خروج</button>
 
-    // 🧠 DISPLAY USER DATA
-    document.getElementById("username").innerText = user.username;
-    document.getElementById("class").innerText = user.class;
-    document.getElementById("role").innerText = user.role;
+</div>
 
-    // 🚪 LOGOUT FUNCTION
-    function logout() {
-      localStorage.removeItem("user");
-      window.location.href = "index.html";
-    }
-  </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain: "qayrawan-school-system.firebaseapp.com",
+  projectId: "qayrawan-school-system",
+  storageBucket: "qayrawan-school-system.firebasestorage.app",
+  messagingSenderId: "785321248181",
+  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🛡️ CHECK LOGIN
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+  location.href = "index.html";
+}
+
+// 👤 LOAD USER INFO
+document.getElementById("name").innerText = user.displayName || "بدون اسم";
+document.getElementById("class").innerText = "الصف: " + (user.class || "-");
+document.getElementById("pfp").src = user.pfp || "https://via.placeholder.com/50";
+
+// 🚪 LOGOUT
+window.logout = () => {
+  localStorage.removeItem("user");
+  location.href = "index.html";
+};
+</script>
 
 </body>
 </html>
