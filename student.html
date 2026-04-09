@@ -1,262 +1,883 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>لوحة الطالب</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الطالب</title>
 
-<style>
-* { box-sizing: border-box; font-family: Arial; }
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#111827;
+      --panel2:#1f2937;
+      --line:#243042;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#38bdf8;
+      --good:#22c55e;
+      --shadow:0 16px 40px rgba(0,0,0,.28);
+      --radius:16px;
+    }
 
-body {
-  margin: 0;
-  background: #0f172a;
-  color: white;
-  overflow: hidden;
-}
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-/* TOP BAR */
-.topbar {
-  height: 60px;
-  background: #111827;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-  border-bottom: 1px solid #1f2937;
-}
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
 
-.menuBtn { font-size: 26px; cursor: pointer; }
-.title { font-weight: bold; }
+    button,input,textarea{
+      font:inherit;
+    }
 
-.pfp {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #374151;
-  overflow: hidden;
-  cursor: pointer;
-}
-.pfp img { width: 100%; height: 100%; object-fit: cover; }
+    .hidden{ display:none !important; }
 
-/* SIDE MENU */
-.menu {
-  position: fixed;
-  top: 0;
-  right: -260px;
-  width: 260px;
-  height: 100%;
-  background: #111827;
-  transition: 0.3s;
-  padding-top: 60px;
-  border-left: 1px solid #1f2937;
-  z-index: 10;
-}
-.menu.open { right: 0; }
+    .topbar{
+      height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 14px;
+      background:rgba(17,24,39,.95);
+      border-bottom:1px solid var(--line);
+      position:sticky;
+      top:0;
+      z-index:40;
+      backdrop-filter:blur(10px);
+    }
 
-.menu div {
-  padding: 15px;
-  border-bottom: 1px solid #1f2937;
-  cursor: pointer;
-}
+    .icon-btn{
+      width:38px;
+      height:38px;
+      display:grid;
+      place-items:center;
+      border:none;
+      border-radius:10px;
+      background:transparent;
+      color:var(--text);
+      cursor:pointer;
+    }
 
-/* MAIN CONTENT */
-.page {
-  display: none;
-  height: calc(100vh - 60px);
-  overflow-y: auto;
-  padding: 12px;
-}
-.page.active { display: block; }
+    .icon-btn:hover{
+      background:rgba(255,255,255,.06);
+    }
 
-/* CARDS */
-.card {
-  background: #1f2937;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 10px;
-}
+    .brand{
+      font-weight:700;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-/* CHAT */
-.chatBox {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  gap: 8px;
-  padding: 10px;
-  background: #111827;
-}
-.chatBox input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #1f2937;
-  color: white;
-}
-.chatBox button {
-  padding: 10px;
-  background: #2563eb;
-  border: none;
-  color: white;
-  border-radius: 8px;
-}
+    .avatar{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      overflow:hidden;
+      background:#374151;
+      cursor:pointer;
+      border:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
 
-/* PROFILE */
-.profile {
-  position: fixed;
-  top: 70px;
-  right: 10px;
-  width: 230px;
-  background: #111827;
-  border: 1px solid #1f2937;
-  border-radius: 10px;
-  padding: 12px;
-  display: none;
-}
-.profile img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-}
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
 
-/* MESSAGES */
-.msg {
-  background: #1f2937;
-  padding: 8px;
-  margin: 5px 0;
-  border-radius: 8px;
-}
-</style>
+    .drawer{
+      position:fixed;
+      top:0;
+      right:-260px;
+      width:240px;
+      height:100%;
+      background:linear-gradient(180deg,#111827,#0f172a);
+      border-left:1px solid var(--line);
+      box-shadow:var(--shadow);
+      z-index:60;
+      transition:right .22s ease;
+      padding:14px;
+      overflow:auto;
+    }
+
+    .drawer.open{
+      right:0;
+    }
+
+    .drawer-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:16px;
+      padding-top:2px;
+    }
+
+    .menu-link{
+      width:100%;
+      text-align:right;
+      margin-top:10px;
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      background:var(--panel2);
+      color:var(--text);
+      cursor:pointer;
+      transition:background .18s ease, transform .18s ease;
+    }
+
+    .menu-link:hover{
+      background:#243244;
+      transform:translateY(-1px);
+    }
+
+    .menu-link.danger{
+      background:rgba(239,68,68,.12);
+      color:#fecaca;
+    }
+
+    .container{
+      padding:14px;
+      max-width:1000px;
+      margin:0 auto;
+    }
+
+    .page{
+      display:none;
+      animation:fadeUp .18s ease;
+    }
+
+    .page.active{
+      display:block;
+    }
+
+    .card{
+      background:linear-gradient(180deg,#111827,#0f172a);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      margin-top:12px;
+    }
+
+    .section-title{
+      font-size:1.18rem;
+      font-weight:700;
+      margin:0 0 6px 0;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.5;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:#1f2937;
+      color:var(--text);
+      font-size:.84rem;
+      margin-top:8px;
+      border:1px solid var(--line);
+    }
+
+    .profile-panel{
+      position:fixed;
+      top:70px;
+      left:12px;
+      right:12px;
+      max-width:420px;
+      margin:0 auto;
+      background:linear-gradient(180deg,#111827,#0f172a);
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      display:none;
+      z-index:70;
+    }
+
+    .profile-panel.show{
+      display:block;
+    }
+
+    .profile-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .big-avatar{
+      width:52px;
+      height:52px;
+      border-radius:50%;
+      background:#1f2937;
+      overflow:hidden;
+      border:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+
+    .big-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .drawer-sep{
+      height:1px;
+      background:var(--line);
+      margin:12px 0;
+    }
+
+    .subject-box{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#0b1322;
+      overflow:hidden;
+    }
+
+    .subject-head{
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      background:rgba(255,255,255,.02);
+    }
+
+    .subject-head:hover{
+      background:rgba(255,255,255,.04);
+    }
+
+    .subject-body{
+      display:none;
+      padding:0 10px 10px;
+    }
+
+    .subject-box.open .subject-body{
+      display:block;
+    }
+
+    .subject-title{
+      font-weight:700;
+    }
+
+    .subject-count{
+      color:var(--muted);
+      font-size:.84rem;
+    }
+
+    .homework-item{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      margin-top:10px;
+    }
+
+    .hw-title{
+      font-weight:700;
+    }
+
+    .hw-meta{
+      color:var(--muted);
+      font-size:.85rem;
+      margin-top:6px;
+      line-height:1.45;
+    }
+
+    .empty{
+      text-align:center;
+      color:var(--muted);
+      padding:18px 10px;
+    }
+
+    .list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .announce-item{
+      border:1px solid var(--line);
+      background:#0b1322;
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .announce-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .announce-title{
+      font-weight:700;
+    }
+
+    .announce-meta{
+      color:var(--muted);
+      font-size:.84rem;
+      margin-top:4px;
+    }
+
+    .chat-wrap{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:calc(100vh - 58px - 28px);
+    }
+
+    .chat-box{
+      flex:1;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding-bottom:12px;
+    }
+
+    .bubble{
+      max-width:78%;
+      width:fit-content;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#111827;
+      border:1px solid var(--line);
+      box-shadow:0 8px 18px rgba(0,0,0,.12);
+    }
+
+    .bubble.mine{
+      margin-right:auto;
+      background:rgba(56,189,248,.10);
+      border-color:rgba(56,189,248,.24);
+    }
+
+    .bubble.other{
+      margin-left:auto;
+    }
+
+    .bubble-name{
+      font-weight:700;
+      font-size:.88rem;
+      margin-bottom:4px;
+    }
+
+    .bubble-text{
+      line-height:1.45;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    .bubble-time{
+      color:var(--muted);
+      font-size:.76rem;
+      margin-top:6px;
+    }
+
+    .composer{
+      display:flex;
+      gap:8px;
+      position:sticky;
+      bottom:0;
+      background:linear-gradient(180deg,rgba(11,18,32,0),rgba(11,18,32,.95) 20%);
+      padding-top:8px;
+    }
+
+    .composer input{
+      flex:1;
+      border:1px solid var(--line);
+      background:#111827;
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 14px;
+      outline:none;
+    }
+
+    .composer input:focus{
+      border-color:#3b82f6;
+      box-shadow:0 0 0 3px rgba(56,189,248,.12);
+    }
+
+    .composer button{
+      border:none;
+      background:linear-gradient(180deg,#4cc3ff,#22a7eb);
+      color:#08111b;
+      border-radius:12px;
+      padding:12px 14px;
+      cursor:pointer;
+      font-weight:700;
+      min-width:86px;
+    }
+
+    .mini-note{
+      color:var(--muted);
+      font-size:.8rem;
+      margin-top:8px;
+    }
+
+    @keyframes fadeUp{
+      from{ opacity:0; transform:translateY(8px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <div class="menuBtn" onclick="toggleMenu()">≡</div>
-  <div class="title">لوحة الطالب</div>
-  <div class="pfp" onclick="toggleProfile()" id="pfpBox"></div>
-</div>
+  <div class="topbar">
+    <button class="icon-btn" type="button" onclick="toggleDrawer()">☰</button>
+    <div class="brand">📚 لوحة الطالب</div>
+    <div class="avatar" id="topAvatar" onclick="toggleProfile()"></div>
+  </div>
 
-<!-- MENU -->
-<div class="menu" id="menu">
-  <div onclick="openPage('home')">🏠 الرئيسية</div>
-  <div onclick="openPage('ann')">📢 الإعلانات</div>
-  <div onclick="openPage('hw')">📚 الواجبات</div>
-  <div onclick="logout()">🚪 تسجيل خروج</div>
-</div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head">
+      <strong>القائمة</strong>
+      <button class="icon-btn" type="button" onclick="toggleDrawer(false)">←</button>
+    </div>
+    <button class="menu-link" type="button" onclick="goPage('homePage')">🏠 الرئيسية</button>
+    <button class="menu-link" type="button" onclick="goPage('announcementsPage')">📢 الإعلانات</button>
+    <button class="menu-link" type="button" onclick="goPage('homeworkPage')">📚 الواجبات</button>
+    <button class="menu-link" type="button" onclick="goPage('chatPage')">💬 محادثة الصف</button>
+    <div class="drawer-sep"></div>
+    <button class="menu-link danger" type="button" onclick="logout()">🚪 تسجيل خروج</button>
+  </aside>
 
-<!-- HOME -->
-<div class="page active" id="home">
-  <div class="card">👋 أهلاً بك في النظام</div>
-</div>
-
-<!-- ANNOUNCEMENTS -->
-<div class="page" id="ann">
-  <div class="card">📢 لا توجد إعلانات حالياً</div>
-</div>
-
-<!-- HOMEWORK -->
-<div class="page" id="hw">
-  <h3>📚 واجباتك</h3>
-  <div id="hwList"></div>
-</div>
-
-<!-- CHAT -->
-<div id="messages" class="page"></div>
-
-<div class="chatBox">
-  <input id="input" placeholder="اكتب رسالة..." />
-  <button onclick="send()">إرسال</button>
-</div>
-
-<!-- PROFILE -->
-<div class="profile" id="profile"></div>
-
-<script>
-let user;
-
-/* 🔐 LOGIN */
-window.onload = () => {
-  user = JSON.parse(localStorage.getItem("user"));
-  if (!user) location.href = "index.html";
-
-  loadProfile();
-  loadHomework();
-};
-
-/* 👤 PROFILE */
-function loadProfile() {
-  document.getElementById("pfpBox").innerHTML =
-    `<img src="${user.pfp || 'placeholder.png'}">`;
-}
-
-function toggleProfile() {
-  const p = document.getElementById("profile");
-  p.innerHTML = `
-    <img src="${user.pfp || 'placeholder.png'}">
-    <h4>${user.name}</h4>
-    <p>@${user.username}</p>
-    <p>الصف: ${user.class}</p>
-  `;
-  p.style.display = p.style.display === "block" ? "none" : "block";
-}
-
-/* 📚 HOMEWORK FILTER (CLASS ONLY 🔥) */
-function loadHomework() {
-  const all = JSON.parse(localStorage.getItem("homework")) || [];
-  const filtered = all.filter(hw => hw.class === user.class);
-
-  const box = document.getElementById("hwList");
-  box.innerHTML = "";
-
-  filtered.forEach(hw => {
-    box.innerHTML += `
-      <div class="card">
-        <b>${hw.subject}</b><br>
-        ${hw.text}
+  <div class="profile-panel" id="profilePanel">
+    <div class="profile-head">
+      <div class="big-avatar" id="bigAvatar"></div>
+      <div>
+        <div style="font-weight:700" id="profileName"></div>
+        <div class="muted">@<span id="profileUsername"></span></div>
       </div>
-    `;
-  });
+    </div>
+    <div class="chip">الصف: <strong id="profileClass"></strong></div>
+    <div class="chip">الحساب: <strong id="profileRole"></strong></div>
+  </div>
 
-  if (filtered.length === 0) {
-    box.innerHTML = `<div class="card">لا يوجد واجبات</div>`;
-  }
-}
+  <main class="container">
 
-/* ☰ MENU */
-function toggleMenu() {
-  document.getElementById("menu").classList.toggle("open");
-}
+    <section class="page active" id="homePage">
+      <div class="card">
+        <div class="section-title">أهلاً بك 👋</div>
+        <div class="muted" id="welcomeText"></div>
+        <div class="chip">مرحباً بك في النظام المدرسي</div>
+      </div>
 
-/* 📄 NAVIGATION */
-function openPage(id) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  toggleMenu();
-}
+      <div class="card">
+        <div class="section-title">ملاحظات سريعة</div>
+        <div class="muted">
+          هذا الحساب يعرض لك الواجبات الخاصة بصفك فقط، والمحادثة فقط مع طلاب صفك.
+        </div>
+      </div>
+    </section>
 
-/* 💬 CHAT */
-function send() {
-  const input = document.getElementById("input");
-  if (!input.value) return;
+    <section class="page" id="announcementsPage">
+      <div class="card">
+        <div class="section-title">📢 الإعلانات</div>
+        <div class="muted">آخر تحديثات المدرسة تظهر هنا.</div>
+        <div class="list" id="announcementsList"></div>
+      </div>
+    </section>
 
-  const div = document.createElement("div");
-  div.className = "msg";
-  div.innerText = input.value;
+    <section class="page" id="homeworkPage">
+      <div class="card">
+        <div class="section-title">📚 واجباتك</div>
+        <div class="muted">مرتبة حسب ترتيب الشهادة، وتظهر فقط مواد صفك.</div>
+        <div class="chip">الصف الحالي: <strong id="currentClassChip"></strong></div>
+        <div id="homeworkList"></div>
+      </div>
+    </section>
 
-  document.getElementById("messages").appendChild(div);
-  input.value = "";
-}
+    <section class="page" id="chatPage">
+      <div class="card chat-wrap">
+        <div>
+          <div class="section-title">💬 محادثة الصف</div>
+          <div class="muted">هذه المحادثة فقط لطلاب نفس الصف.</div>
+        </div>
 
-/* 🚪 LOGOUT */
-function logout() {
-  localStorage.removeItem("user");
-  location.href = "index.html";
-}
-</script>
+        <div class="chat-box" id="chatBox"></div>
+
+        <div class="composer">
+          <input id="chatInput" type="text" placeholder="اكتب رسالة..." maxlength="250" />
+          <button type="button" onclick="sendChat()">إرسال</button>
+        </div>
+
+        <div class="mini-note">
+          كل الرسائل تحفظ في Firestore داخل مجموعة classChats.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      onSnapshot,
+      query,
+      where,
+      orderBy,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "PUT_YOUR_API_KEY_HERE",
+      authDomain: "PUT_YOUR_AUTH_DOMAIN_HERE",
+      projectId: "PUT_YOUR_PROJECT_ID_HERE",
+      storageBucket: "PUT_YOUR_STORAGE_BUCKET_HERE",
+      messagingSenderId: "PUT_YOUR_MESSAGING_SENDER_ID_HERE",
+      appId: "PUT_YOUR_APP_ID_HERE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const SUBJECT_ORDER = [
+      "التربية الاسلامية",
+      "اللغة العربية",
+      "اللغة الانجليزية",
+      "الاحياء",
+      "الفيزياء",
+      "الكيمياء",
+      "الرياضيات",
+      "جرائم حزب البعث",
+      "اللغة الفرنسية",
+      "التربية الفنية",
+      "الحاسوب"
+    ];
+
+    const state = {
+      user: null,
+      announcements: [],
+      homework: [],
+      chat: [],
+      currentPage: "homePage"
+    };
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function formatTime(ts) {
+      if (!ts) return "";
+      if (typeof ts.toDate === "function") {
+        return ts.toDate().toLocaleString("ar-IQ");
+      }
+      if (ts instanceof Date) {
+        return ts.toLocaleString("ar-IQ");
+      }
+      return "";
+    }
+
+    function loadSession() {
+      const raw = localStorage.getItem("user");
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function requireLogin() {
+      state.user = loadSession();
+      if (!state.user) {
+        location.href = "index.html";
+        return false;
+      }
+      return true;
+    }
+
+    function paintProfile() {
+      const pfp = state.user.pfp || "placeholder.png";
+      document.getElementById("topAvatar").innerHTML = `<img src="${escapeHTML(pfp)}" alt="">`;
+      document.getElementById("bigAvatar").innerHTML = `<img src="${escapeHTML(pfp)}" alt="">`;
+
+      document.getElementById("profileName").textContent = state.user.displayName || state.user.name || "بدون اسم";
+      document.getElementById("profileUsername").textContent = state.user.username || "";
+      document.getElementById("profileClass").textContent = state.user.class || "-";
+      document.getElementById("profileRole").textContent = state.user.role === "admin" ? "ادمن" : (state.user.role === "teacher" ? "مدرس" : "طالب");
+
+      document.getElementById("welcomeText").textContent =
+        `أهلاً ${state.user.displayName || state.user.name || "بك"}، هذا هو صفك: ${state.user.class || "-"}.`;
+
+      document.getElementById("currentClassChip").textContent = state.user.class || "-";
+    }
+
+    function toggleDrawer(force) {
+      const drawer = document.getElementById("drawer");
+      if (force === false) {
+        drawer.classList.remove("open");
+        return;
+      }
+      drawer.classList.toggle("open");
+    }
+
+    function toggleProfile() {
+      document.getElementById("profilePanel").classList.toggle("show");
+    }
+
+    function goPage(pageId) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
+      state.currentPage = pageId;
+      toggleDrawer(false);
+      document.getElementById("profilePanel").classList.remove("show");
+    }
+
+    function renderAnnouncements() {
+      const box = document.getElementById("announcementsList");
+      const items = [...state.announcements].sort((a, b) => (b.createdAtMillis || 0) - (a.createdAtMillis || 0));
+
+      if (!items.length) {
+        box.innerHTML = `<div class="empty">لا توجد إعلانات حالياً</div>`;
+        return;
+      }
+
+      box.innerHTML = items.slice(0, 30).map(a => `
+        <div class="announce-item">
+          <div class="announce-top">
+            <div>
+              <div class="announce-title">${escapeHTML(a.title || "إعلان")}</div>
+              <div class="announce-meta">${escapeHTML(a.audience || "المدرسة")} • ${escapeHTML(a.createdAtText || "")}</div>
+            </div>
+            <div class="chip">📢</div>
+          </div>
+          <div class="muted" style="margin-top:8px; white-space:pre-wrap;">${escapeHTML(a.body || "")}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderHomework() {
+      const list = document.getElementById("homeworkList");
+      const myClass = state.user.class;
+
+      const mine = state.homework
+        .filter(hw => (hw.class || "") === myClass)
+        .sort((a, b) => (b.createdAtMillis || 0) - (a.createdAtMillis || 0));
+
+      if (!mine.length) {
+        list.innerHTML = `<div class="empty">لا توجد واجبات لصفك حالياً 🎉</div>`;
+        return;
+      }
+
+      const grouped = {};
+      mine.forEach(hw => {
+        const subject = hw.subject || "أخرى";
+        if (!grouped[subject]) grouped[subject] = [];
+        grouped[subject].push(hw);
+      });
+
+      const orderedSubjects = [
+        ...SUBJECT_ORDER.filter(s => grouped[s] && grouped[s].length),
+        ...Object.keys(grouped).filter(s => !SUBJECT_ORDER.includes(s)).sort((a, b) => a.localeCompare(b, "ar"))
+      ];
+
+      list.innerHTML = orderedSubjects.map(subject => {
+        const items = grouped[subject] || [];
+        const cards = items.map(hw => `
+          <div class="homework-item">
+            <div class="hw-title">${escapeHTML(hw.title || subject)}</div>
+            <div class="hw-meta">${escapeHTML(hw.description || hw.body || "")}</div>
+            <div class="hw-meta">
+              ${hw.dueDate ? `الاستحقاق: ${escapeHTML(hw.dueDate)} • ` : ""}
+              ${hw.teacherName ? `المدرس: ${escapeHTML(hw.teacherName)} • ` : ""}
+              ${hw.createdAtText ? escapeHTML(hw.createdAtText) : ""}
+            </div>
+          </div>
+        `).join("");
+
+        return `
+          <div class="subject-box open">
+            <div class="subject-head" onclick="this.parentElement.classList.toggle('open')">
+              <div class="subject-title">${escapeHTML(subject)}</div>
+              <div class="subject-count">${items.length} واجب</div>
+            </div>
+            <div class="subject-body">
+              ${cards}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderChat() {
+      const box = document.getElementById("chatBox");
+      const myClass = state.user.class || "";
+      const myUsername = state.user.username || "";
+
+      const items = [...state.chat]
+        .filter(m => (m.class || "") === myClass)
+        .sort((a, b) => (a.createdAtMillis || 0) - (b.createdAtMillis || 0));
+
+      if (!items.length) {
+        box.innerHTML = `<div class="empty">لا توجد رسائل بعد. ابدأوا المحادثة ✨</div>`;
+        return;
+      }
+
+      box.innerHTML = items.map(m => {
+        const mine = (m.senderUsername || "") === myUsername;
+        return `
+          <div class="bubble ${mine ? "mine" : "other"}">
+            <div class="bubble-name">${escapeHTML(m.senderName || m.senderUsername || "مستخدم")}</div>
+            <div class="bubble-text">${escapeHTML(m.text || "")}</div>
+            <div class="bubble-time">${escapeHTML(m.createdAtText || "")}</div>
+          </div>
+        `;
+      }).join("");
+
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendChat() {
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const myClass = state.user.class || "";
+      if (!myClass) {
+        alert("الصف غير موجود في بياناتك.");
+        return;
+      }
+
+      await addDoc(collection(db, "classChats"), {
+        class: myClass,
+        senderUsername: state.user.username || "",
+        senderName: state.user.displayName || state.user.name || state.user.username || "مستخدم",
+        pfp: state.user.pfp || "",
+        text,
+        ts: serverTimestamp()
+      });
+
+      input.value = "";
+    }
+
+    function listenAnnouncements() {
+      onSnapshot(collection(db, "announcements"), (snap) => {
+        state.announcements = snap.docs.map(d => {
+          const data = d.data();
+          const millis = data.ts?.toMillis?.() || data.createdAt?.toMillis?.() || 0;
+          return {
+            id: d.id,
+            title: data.title || "",
+            body: data.body || "",
+            audience: data.audience || "",
+            createdAtMillis: millis,
+            createdAtText: data.ts ? formatTime(data.ts) : (data.createdAt ? formatTime(data.createdAt) : "")
+          };
+        });
+        renderAnnouncements();
+      });
+    }
+
+    function listenHomework() {
+      onSnapshot(collection(db, "homework"), (snap) => {
+        state.homework = snap.docs.map(d => {
+          const data = d.data();
+          const millis = data.ts?.toMillis?.() || data.createdAt?.toMillis?.() || 0;
+          return {
+            id: d.id,
+            title: data.title || "",
+            description: data.description || data.body || "",
+            subject: data.subject || "",
+            class: data.class || "",
+            teacherName: data.teacherName || "",
+            dueDate: data.dueDate || "",
+            createdAtMillis: millis,
+            createdAtText: data.ts ? formatTime(data.ts) : (data.createdAt ? formatTime(data.createdAt) : "")
+          };
+        });
+        renderHomework();
+      });
+    }
+
+    function listenChat() {
+      onSnapshot(collection(db, "classChats"), (snap) => {
+        state.chat = snap.docs.map(d => {
+          const data = d.data();
+          const millis = data.ts?.toMillis?.() || data.createdAt?.toMillis?.() || 0;
+          return {
+            id: d.id,
+            class: data.class || "",
+            senderUsername: data.senderUsername || "",
+            senderName: data.senderName || "",
+            pfp: data.pfp || "",
+            text: data.text || "",
+            createdAtMillis: millis,
+            createdAtText: data.ts ? formatTime(data.ts) : (data.createdAt ? formatTime(data.createdAt) : "")
+          };
+        });
+        renderChat();
+      });
+    }
+
+    function bindEvents() {
+      document.getElementById("chatInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") sendChat();
+      });
+
+      document.getElementById("profilePanel").addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+
+      document.addEventListener("click", (e) => {
+        const profile = document.getElementById("profilePanel");
+        const topAvatar = document.getElementById("topAvatar");
+        if (!profile.contains(e.target) && !topAvatar.contains(e.target)) {
+          profile.classList.remove("show");
+        }
+      });
+    }
+
+    window.toggleDrawer = toggleDrawer;
+    window.toggleProfile = toggleProfile;
+    window.goPage = goPage;
+    window.sendChat = sendChat;
+    window.logout = function () {
+      localStorage.removeItem("user");
+      location.href = "index.html";
+    };
+
+    window.addEventListener("load", () => {
+      if (!requireLogin()) return;
+
+      paintProfile();
+      bindEvents();
+      listenAnnouncements();
+      listenHomework();
+      listenChat();
+    });
+  </script>
 
 </body>
 </html>
