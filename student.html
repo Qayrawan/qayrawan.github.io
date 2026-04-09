@@ -2,282 +2,260 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<title>لوحة الطالب</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student App</title>
 
 <style>
-:root{
-  --bg:#0b1220;
-  --panel:#111827;
-  --panel2:#1f2937;
-  --line:#243042;
-  --text:#e5e7eb;
-  --muted:#9ca3af;
-  --accent:#38bdf8;
-  --radius:16px;
+* { box-sizing: border-box; font-family: Arial; }
+
+body {
+  margin: 0;
+  background: #0f172a;
+  color: white;
+  overflow: hidden;
 }
 
-body{
-  margin:0;
-  font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
+/* TOP BAR */
+.topbar {
+  height: 60px;
+  background: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid #1f2937;
 }
 
-/* TOPBAR */
-.topbar{
-  height:58px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 14px;
-  background:rgba(17,24,39,.95);
-  border-bottom:1px solid var(--line);
+.menuBtn { font-size: 26px; cursor: pointer; }
+.title { font-weight: bold; }
+
+.pfp {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #374151;
+  overflow: hidden;
+  cursor: pointer;
+}
+.pfp img { width: 100%; height: 100%; object-fit: cover; }
+
+/* SIDE MENU */
+.menu {
+  position: fixed;
+  top: 0;
+  right: -260px;
+  width: 260px;
+  height: 100%;
+  background: #111827;
+  transition: 0.3s;
+  padding-top: 60px;
+  border-left: 1px solid #1f2937;
+  z-index: 10;
+}
+.menu.open { right: 0; }
+
+.menu div {
+  padding: 15px;
+  border-bottom: 1px solid #1f2937;
+  cursor: pointer;
 }
 
-.icon-btn{
-  width:38px;
-  height:38px;
-  display:grid;
-  place-items:center;
-  border-radius:10px;
-  cursor:pointer;
+/* MAIN CONTENT */
+.page {
+  display: none;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  padding: 12px;
 }
-
-.icon-btn:hover{
-  background:rgba(255,255,255,.05);
-}
-
-/* PROFILE ICON */
-.avatar{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:#1f2937;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:18px;
-}
-
-/* DRAWER */
-.drawer{
-  position:fixed;
-  top:0;
-  right:-260px;
-  width:240px;
-  height:100%;
-  background:linear-gradient(#111827,#0f172a);
-  border-left:1px solid var(--line);
-  padding:16px;
-  transition:.2s;
-}
-
-.drawer.open{
-  right:0;
-}
-
-.menu-btn{
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background:var(--panel2);
-  color:white;
-  cursor:pointer;
-}
-
-/* CONTENT */
-.container{
-  padding:16px;
-}
-
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-}
+.page.active { display: block; }
 
 /* CARDS */
-.card{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:14px;
-  margin-top:10px;
+.card {
+  background: #1f2937;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
 }
 
-.small{
-  color:var(--muted);
-  font-size:.9rem;
+/* CHAT */
+.chatBox {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: #111827;
+}
+.chatBox input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #1f2937;
+  color: white;
+}
+.chatBox button {
+  padding: 10px;
+  background: #2563eb;
+  border: none;
+  color: white;
+  border-radius: 8px;
 }
 
-/* PROFILE PANEL */
-.profile-panel{
-  position:fixed;
-  top:70px;
-  left:12px;
-  right:12px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:16px;
-  display:none;
+/* PROFILE */
+.profile {
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  width: 230px;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 12px;
+  display: none;
+}
+.profile img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
 }
 
-.profile-panel.show{
-  display:block;
-}
-
-.profile-head{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.big-avatar{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  background:var(--panel2);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-}
-
-/* HOMEWORK */
-.hw{
-  margin-top:10px;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#0b1322;
+/* MESSAGES */
+.msg {
+  background: #1f2937;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 8px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOPBAR -->
+<!-- TOP BAR -->
 <div class="topbar">
-  <div class="icon-btn" onclick="toggleDrawer()">☰</div>
-  <div>📚 التطبيق</div>
-  <div class="avatar" onclick="toggleProfile()">👤</div>
+  <div class="menuBtn" onclick="toggleMenu()">≡</div>
+  <div class="title">لوحة الطالب</div>
+  <div class="pfp" onclick="toggleProfile()" id="pfpBox"></div>
 </div>
 
-<!-- DRAWER -->
-<div id="drawer" class="drawer">
-  <button class="menu-btn" onclick="go('home')">🏠 الرئيسية</button>
-  <button class="menu-btn" onclick="go('announcements')">📢 الإعلانات</button>
-  <button class="menu-btn" onclick="go('homework')">📚 الواجبات</button>
+<!-- MENU -->
+<div class="menu" id="menu">
+  <div onclick="openPage('home')">🏠 الرئيسية</div>
+  <div onclick="openPage('ann')">📢 الإعلانات</div>
+  <div onclick="openPage('hw')">📚 الواجبات</div>
+  <div onclick="logout()">🚪 تسجيل خروج</div>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="home">
+  <div class="card">👋 أهلاً بك في النظام</div>
+</div>
+
+<!-- ANNOUNCEMENTS -->
+<div class="page" id="ann">
+  <div class="card">📢 لا توجد إعلانات حالياً</div>
+</div>
+
+<!-- HOMEWORK -->
+<div class="page" id="hw">
+  <h3>📚 واجباتك</h3>
+  <div id="hwList"></div>
+</div>
+
+<!-- CHAT -->
+<div id="messages" class="page"></div>
+
+<div class="chatBox">
+  <input id="input" placeholder="اكتب رسالة..." />
+  <button onclick="send()">إرسال</button>
 </div>
 
 <!-- PROFILE -->
-<div id="profile" class="profile-panel">
-  <div class="profile-head">
-    <div class="big-avatar">👤</div>
-    <div>
-      <div id="pName"></div>
-      <div class="small">@<span id="pUser"></span></div>
-    </div>
-  </div>
-  <div class="small" style="margin-top:10px;">
-    الصف: <span id="pClass"></span>
-  </div>
-</div>
-
-<!-- CONTENT -->
-<div class="container">
-
-  <div id="home" class="page active">
-    <h3>🏠 الرئيسية</h3>
-    <div class="card small">أهلاً بك 👋</div>
-  </div>
-
-  <div id="announcements" class="page">
-    <h3>📢 الإعلانات</h3>
-    <div class="card small">لا توجد إعلانات حالياً</div>
-  </div>
-
-  <div id="homework" class="page">
-    <h3>📚 واجباتك</h3>
-    <div id="hwBox"></div>
-  </div>
-
-</div>
+<div class="profile" id="profile"></div>
 
 <script>
+let user;
 
-/* USER */
-const user = {
-  name:"منتظر",
-  username:"montadar",
-  class:"4A"
+/* 🔐 LOGIN */
+window.onload = () => {
+  user = JSON.parse(localStorage.getItem("user"));
+  if (!user) location.href = "index.html";
+
+  loadProfile();
+  loadHomework();
 };
 
-/* HOMEWORK */
-const hwData = [
-  {title:"رياضيات", desc:"حل صفحة 32", class:"4A"},
-  {title:"فيزياء", desc:"اقرأ الفصل الأول", class:"4A"},
-  {title:"إنشاء", desc:"موضوع تعبير", class:"4B"}
-];
-
-/* INIT */
-function init(){
-  document.getElementById("pName").textContent = user.name;
-  document.getElementById("pUser").textContent = user.username;
-  document.getElementById("pClass").textContent = user.class;
-  renderHW();
+/* 👤 PROFILE */
+function loadProfile() {
+  document.getElementById("pfpBox").innerHTML =
+    `<img src="${user.pfp || 'placeholder.png'}">`;
 }
 
-/* HOMEWORK FILTER */
-function renderHW(){
-  const box = document.getElementById("hwBox");
+function toggleProfile() {
+  const p = document.getElementById("profile");
+  p.innerHTML = `
+    <img src="${user.pfp || 'placeholder.png'}">
+    <h4>${user.name}</h4>
+    <p>@${user.username}</p>
+    <p>الصف: ${user.class}</p>
+  `;
+  p.style.display = p.style.display === "block" ? "none" : "block";
+}
+
+/* 📚 HOMEWORK FILTER (CLASS ONLY 🔥) */
+function loadHomework() {
+  const all = JSON.parse(localStorage.getItem("homework")) || [];
+  const filtered = all.filter(hw => hw.class === user.class);
+
+  const box = document.getElementById("hwList");
   box.innerHTML = "";
 
-  const list = hwData.filter(h => h.class === user.class);
-
-  if(list.length === 0){
-    box.innerHTML = `<div class="card small">لا يوجد واجبات 🎉</div>`;
-    return;
-  }
-
-  list.forEach(h=>{
+  filtered.forEach(hw => {
     box.innerHTML += `
-      <div class="hw">
-        <b>${h.title}</b>
-        <div class="small">${h.desc}</div>
+      <div class="card">
+        <b>${hw.subject}</b><br>
+        ${hw.text}
       </div>
     `;
   });
+
+  if (filtered.length === 0) {
+    box.innerHTML = `<div class="card">لا يوجد واجبات</div>`;
+  }
 }
 
-/* NAV */
-function go(p){
-  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
-  document.getElementById(p).classList.add("active");
-  toggleDrawer(false);
+/* ☰ MENU */
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("open");
 }
 
-/* UI */
-function toggleDrawer(force){
-  const d = document.getElementById("drawer");
-  if(force===false){ d.classList.remove("open"); return; }
-  d.classList.toggle("open");
+/* 📄 NAVIGATION */
+function openPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  toggleMenu();
 }
 
-function toggleProfile(){
-  document.getElementById("profile").classList.toggle("show");
+/* 💬 CHAT */
+function send() {
+  const input = document.getElementById("input");
+  if (!input.value) return;
+
+  const div = document.createElement("div");
+  div.className = "msg";
+  div.innerText = input.value;
+
+  document.getElementById("messages").appendChild(div);
+  input.value = "";
 }
 
-/* START */
-init();
-
+/* 🚪 LOGOUT */
+function logout() {
+  localStorage.removeItem("user");
+  location.href = "index.html";
+}
 </script>
 
 </body>
