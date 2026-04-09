@@ -3,68 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منصة القيروان</title>
+<title>Student App</title>
 
 <style>
+:root{
+  --bg:#0b1220;
+  --panel:#111827;
+  --panel2:#1f2937;
+  --line:#243042;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#38bdf8;
+  --radius:16px;
+}
+
 body{
   margin:0;
   font-family:system-ui;
-  background:#0b1220;
-  color:#e5e7eb;
+  background:var(--bg);
+  color:var(--text);
 }
 
-/* TOP BAR */
+/* TOPBAR */
 .topbar{
-  height:55px;
-  background:#111827;
+  height:58px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:0 12px;
-  border-bottom:1px solid #243042;
+  padding:0 14px;
+  background:rgba(17,24,39,.95);
+  border-bottom:1px solid var(--line);
 }
 
-.icon{
-  font-size:22px;
+.icon-btn{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
   cursor:pointer;
 }
 
-.profile{
-  width:34px;
-  height:34px;
+.icon-btn:hover{
+  background:rgba(255,255,255,.05);
+}
+
+/* PROFILE ICON */
+.avatar{
+  width:36px;
+  height:36px;
   border-radius:50%;
   background:#1f2937;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
+  font-size:18px;
 }
 
-/* SIDEBAR */
-.sidebar{
+/* DRAWER */
+.drawer{
   position:fixed;
   top:0;
-  right:-220px;
-  width:200px;
+  right:-260px;
+  width:240px;
   height:100%;
-  background:#111827;
-  border-left:1px solid #243042;
-  padding:12px;
+  background:linear-gradient(#111827,#0f172a);
+  border-left:1px solid var(--line);
+  padding:16px;
   transition:.2s;
 }
 
-.sidebar.open{
+.drawer.open{
   right:0;
 }
 
-.sidebar button{
+.menu-btn{
   width:100%;
   margin-top:10px;
-  padding:10px;
+  padding:12px;
   border:none;
-  border-radius:10px;
-  background:#1f2937;
-  color:#fff;
+  border-radius:12px;
+  background:var(--panel2);
+  color:white;
   cursor:pointer;
 }
 
@@ -83,152 +104,152 @@ body{
 
 /* CARDS */
 .card{
-  background:#111827;
-  border:1px solid #243042;
-  border-radius:12px;
-  padding:12px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
   margin-top:10px;
 }
 
 .small{
-  color:#9ca3af;
-  font-size:.85rem;
+  color:var(--muted);
+  font-size:.9rem;
 }
 
 /* PROFILE PANEL */
-.profileBox{
+.profile-panel{
   position:fixed;
-  top:60px;
-  left:10px;
-  right:10px;
-  background:#111827;
-  border:1px solid #243042;
-  border-radius:12px;
-  padding:12px;
+  top:70px;
+  left:12px;
+  right:12px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
   display:none;
 }
 
-.profileBox.show{
+.profile-panel.show{
   display:block;
+}
+
+.profile-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.big-avatar{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background:var(--panel2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+/* HOMEWORK */
+.hw{
+  margin-top:10px;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#0b1322;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="icon" onclick="toggleSidebar()">☰</div>
-  <div>📚 تطبيق الطالب</div>
-  <div class="profile" onclick="toggleProfile()">👤</div>
+  <div class="icon-btn" onclick="toggleDrawer()">☰</div>
+  <div>📚 التطبيق</div>
+  <div class="avatar" onclick="toggleProfile()">👤</div>
 </div>
 
-<!-- SIDEBAR -->
-<div id="sidebar" class="sidebar">
-  <button onclick="go('home')">🏠 الرئيسية</button>
-  <button onclick="go('announcements')">📢 الإعلانات</button>
-  <button onclick="go('homework')">📚 الواجبات</button>
+<!-- DRAWER -->
+<div id="drawer" class="drawer">
+  <button class="menu-btn" onclick="go('home')">🏠 الرئيسية</button>
+  <button class="menu-btn" onclick="go('announcements')">📢 الإعلانات</button>
+  <button class="menu-btn" onclick="go('homework')">📚 الواجبات</button>
 </div>
 
 <!-- PROFILE -->
-<div id="profileBox" class="profileBox">
-  <div><b id="pName"></b></div>
-  <div class="small">Username: <span id="pUser"></span></div>
-  <div class="small">Class: <span id="pClass"></span></div>
+<div id="profile" class="profile-panel">
+  <div class="profile-head">
+    <div class="big-avatar">👤</div>
+    <div>
+      <div id="pName"></div>
+      <div class="small">@<span id="pUser"></span></div>
+    </div>
+  </div>
+  <div class="small" style="margin-top:10px;">
+    الصف: <span id="pClass"></span>
+  </div>
 </div>
 
 <!-- CONTENT -->
 <div class="container">
 
-  <!-- HOME -->
   <div id="home" class="page active">
     <h3>🏠 الرئيسية</h3>
-    <p class="small">مرحباً بك 👋</p>
+    <div class="card small">أهلاً بك 👋</div>
   </div>
 
-  <!-- ANNOUNCEMENTS -->
   <div id="announcements" class="page">
     <h3>📢 الإعلانات</h3>
     <div class="card small">لا توجد إعلانات حالياً</div>
   </div>
 
-  <!-- HOMEWORK -->
   <div id="homework" class="page">
     <h3>📚 واجباتك</h3>
-    <div id="homeworkBox"></div>
+    <div id="hwBox"></div>
   </div>
 
 </div>
 
 <script>
 
-/* =========================
-   USERS (LOGIN SYSTEM)
-========================= */
-const users = [
-  {
-    name: "منتظر",
-    username: "montadar",
-    class: "4A"
-  }
+/* USER */
+const user = {
+  name:"منتظر",
+  username:"montadar",
+  class:"4A"
+};
+
+/* HOMEWORK */
+const hwData = [
+  {title:"رياضيات", desc:"حل صفحة 32", class:"4A"},
+  {title:"فيزياء", desc:"اقرأ الفصل الأول", class:"4A"},
+  {title:"إنشاء", desc:"موضوع تعبير", class:"4B"}
 ];
 
-let currentUser = null;
-
-/* =========================
-   HOMEWORK DATA
-========================= */
-const homeworkData = [
-  { title:"رياضيات", desc:"حل صفحة 32", class:"4A" },
-  { title:"فيزياء", desc:"اقرأ الفصل الأول", class:"4A" },
-  { title:"إنشاء", desc:"موضوع تعبير", class:"4B" }
-];
-
-/* =========================
-   LOGIN (AUTO FOR NOW)
-========================= */
-function login(username){
-  const user = users.find(u => u.username === username);
-  if(!user) return;
-
-  currentUser = user;
-  init();
-}
-
-/* =========================
-   INIT APP
-========================= */
+/* INIT */
 function init(){
-  updateProfile();
-  renderHomework();
+  document.getElementById("pName").textContent = user.name;
+  document.getElementById("pUser").textContent = user.username;
+  document.getElementById("pClass").textContent = user.class;
+  renderHW();
 }
 
-/* =========================
-   PROFILE
-========================= */
-function updateProfile(){
-  document.getElementById("pName").textContent = currentUser.name;
-  document.getElementById("pUser").textContent = currentUser.username;
-  document.getElementById("pClass").textContent = currentUser.class;
-}
-
-/* =========================
-   HOMEWORK FILTER
-========================= */
-function renderHomework(){
-  const box = document.getElementById("homeworkBox");
+/* HOMEWORK FILTER */
+function renderHW(){
+  const box = document.getElementById("hwBox");
   box.innerHTML = "";
 
-  const filtered = homeworkData.filter(h => h.class === currentUser.class);
+  const list = hwData.filter(h => h.class === user.class);
 
-  if(filtered.length === 0){
-    box.innerHTML = `<div class="card">لا يوجد واجبات 🎉</div>`;
+  if(list.length === 0){
+    box.innerHTML = `<div class="card small">لا يوجد واجبات 🎉</div>`;
     return;
   }
 
-  filtered.forEach(h=>{
+  list.forEach(h=>{
     box.innerHTML += `
-      <div class="card">
+      <div class="hw">
         <b>${h.title}</b>
         <div class="small">${h.desc}</div>
       </div>
@@ -236,34 +257,26 @@ function renderHomework(){
   });
 }
 
-/* =========================
-   NAVIGATION
-========================= */
-function go(page){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(page).classList.add("active");
-  toggleSidebar(false);
+/* NAV */
+function go(p){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  document.getElementById(p).classList.add("active");
+  toggleDrawer(false);
 }
 
-/* =========================
-   UI TOGGLES
-========================= */
-function toggleSidebar(force){
-  const s = document.getElementById("sidebar");
-  if(force === false) return s.classList.remove("open");
-  s.classList.toggle("open");
+/* UI */
+function toggleDrawer(force){
+  const d = document.getElementById("drawer");
+  if(force===false){ d.classList.remove("open"); return; }
+  d.classList.toggle("open");
 }
 
 function toggleProfile(){
-  document.getElementById("profileBox").classList.toggle("show");
+  document.getElementById("profile").classList.toggle("show");
 }
 
-/* =========================
-   START APP
-========================= */
-window.onload = () => {
-  login("montadar"); // demo auto-login
-};
+/* START */
+init();
 
 </script>
 
