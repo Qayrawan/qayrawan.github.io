@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الطالب</title>
+<title>تطبيق الطالب</title>
 
 <style>
 :root{
@@ -13,7 +13,6 @@
   --text:#e5e7eb;
   --muted:#9ca3af;
   --accent:#38bdf8;
-  --radius:16px;
 }
 
 body{
@@ -21,147 +20,214 @@ body{
   font-family:system-ui;
   background:var(--bg);
   color:var(--text);
-  direction: rtl;
 }
 
-/* Layout */
+/* TOPBAR */
+.topbar{
+  height:55px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 12px;
+  border-bottom:1px solid var(--line);
+  background:#111827;
+}
+
+.icon{
+  font-size:20px;
+  cursor:pointer;
+}
+
+.profile{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:#1f2937;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;
+  top:0;
+  right:-250px;
+  width:220px;
+  height:100%;
+  background:#111827;
+  border-left:1px solid var(--line);
+  transition:.2s;
+  padding:16px;
+}
+
+.sidebar.open{
+  right:0;
+}
+
+.menu-btn{
+  display:block;
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  background:#1f2937;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* CONTENT */
 .container{
   padding:16px;
 }
 
-.card{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  padding:16px;
-  margin-bottom:12px;
+.page{
+  display:none;
 }
 
-/* Header */
-.header{
-  font-size:1.3rem;
-  font-weight:600;
-  margin-bottom:10px;
+.page.active{
+  display:block;
 }
 
-/* Homework */
-.homework{
+/* HOMEWORK */
+.hw{
   background:#0b1322;
   border:1px solid var(--line);
-  border-radius:12px;
   padding:12px;
+  border-radius:12px;
   margin-top:10px;
 }
 
-.title{
-  font-weight:600;
+/* PROFILE PANEL */
+.profile-panel{
+  position:fixed;
+  top:60px;
+  left:10px;
+  right:10px;
+  background:#111827;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  display:none;
 }
 
-.meta{
+.profile-panel.show{
+  display:block;
+}
+
+.small{
   color:var(--muted);
   font-size:.85rem;
-  margin-top:4px;
-}
-
-/* Empty state */
-.empty{
-  text-align:center;
-  color:var(--muted);
-  margin-top:20px;
-}
-
-/* Badge */
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  background:rgba(56,189,248,.12);
-  color:#bae6fd;
-  border-radius:999px;
-  font-size:.75rem;
-  margin-top:6px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="icon" onclick="toggleSidebar()">☰</div>
+  <div>📚 التطبيق</div>
+  <div class="profile" onclick="toggleProfile()">👤</div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <button class="menu-btn" onclick="go('home')">🏠 الرئيسية</button>
+  <button class="menu-btn" onclick="go('announcements')">📢 الإعلانات</button>
+  <button class="menu-btn" onclick="go('homework')">📚 الواجبات</button>
+</div>
+
+<!-- PROFILE PANEL -->
+<div id="profilePanel" class="profile-panel">
+  <div><strong>👤 منتظر</strong></div>
+  <div class="small">Username: montadar</div>
+  <div class="small">الصف: 4A</div>
+</div>
+
+<!-- CONTENT -->
 <div class="container">
 
-  <div class="header">📚 واجباتك</div>
+  <!-- HOME -->
+  <div id="home" class="page active">
+    <h3>🏠 الرئيسية</h3>
+    <p class="small">أهلاً بك 👋</p>
+  </div>
 
-  <div id="homeworkList"></div>
+  <!-- ANNOUNCEMENTS -->
+  <div id="announcements" class="page">
+    <h3>📢 الإعلانات</h3>
+    <p class="small">لا توجد إعلانات حالياً</p>
+  </div>
+
+  <!-- HOMEWORK -->
+  <div id="homework" class="page">
+    <h3>📚 واجباتك</h3>
+    <div id="hwList"></div>
+  </div>
 
 </div>
 
 <script>
 
-/* =========================
-   بيانات الطالب (عدّل هنا فقط)
-========================= */
+/* STUDENT */
 const student = {
   name: "منتظر",
-  class: "4A" // 🔥 غيّر الصف هنا فقط
+  username: "montadar",
+  class: "4A"
 };
 
-/* =========================
-   قاعدة بيانات الواجبات
-========================= */
+/* DATA */
 const homeworkData = [
-  {
-    title: "رياضيات - الجبر",
-    description: "حل تمارين صفحة 32",
-    class: "4A",
-    subject: "رياضيات",
-    date: "اليوم"
-  },
-  {
-    title: "إنشاء عربي",
-    description: "اكتب عن مكانك المفضل",
-    class: "4B",
-    subject: "عربي",
-    date: "غداً"
-  },
-  {
-    title: "فيزياء",
-    description: "دراسة الفصل الأول",
-    class: "4A",
-    subject: "فيزياء",
-    date: "اليوم"
-  }
+  {title:"رياضيات", desc:"حل صفحة 32", class:"4A"},
+  {title:"فيزياء", desc:"اقرأ الفصل الأول", class:"4A"},
+  {title:"إنشاء", desc:"موضوع تعبير", class:"4B"}
 ];
 
-/* =========================
-   عرض الواجبات
-========================= */
-function renderHomework(){
-  const container = document.getElementById("homeworkList");
-  container.innerHTML = "";
+/* NAV */
+function go(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(page).classList.add("active");
+  toggleSidebar(false);
+}
 
-  const filtered = homeworkData.filter(hw => hw.class === student.class);
+/* SIDEBAR */
+function toggleSidebar(force){
+  const s = document.getElementById("sidebar");
+  if(force===false){ s.classList.remove("open"); return; }
+  s.classList.toggle("open");
+}
+
+/* PROFILE */
+function toggleProfile(){
+  document.getElementById("profilePanel").classList.toggle("show");
+}
+
+/* HOMEWORK FILTER */
+function loadHW(){
+  const list = document.getElementById("hwList");
+  list.innerHTML = "";
+
+  const filtered = homeworkData.filter(h => h.class === student.class);
 
   if(filtered.length === 0){
-    container.innerHTML = `<div class="empty">لا يوجد واجبات حالياً 🎉</div>`;
+    list.innerHTML = `<p class="small">لا يوجد واجبات 🎉</p>`;
     return;
   }
 
-  filtered.forEach(hw => {
-    const div = document.createElement("div");
-    div.className = "homework";
-
-    div.innerHTML = `
-      <div class="title">${hw.title}</div>
-      <div class="meta">${hw.description}</div>
-      <div class="badge">${hw.subject} • ${hw.date}</div>
+  filtered.forEach(h=>{
+    list.innerHTML += `
+      <div class="hw">
+        <b>${h.title}</b>
+        <div class="small">${h.desc}</div>
+      </div>
     `;
-
-    container.appendChild(div);
   });
 }
 
-/* =========================
-   تشغيل
-========================= */
-renderHomework();
+loadHW();
 
 </script>
 
