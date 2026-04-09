@@ -1,186 +1,786 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>Student Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الطالب</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#101826;
+      --panel-2:#141f2f;
+      --line:#243246;
+      --text:#e5eefb;
+      --muted:#8ea0b8;
+      --accent:#38bdf8;
+      --accent-2:#60a5fa;
+      --success:#22c55e;
+      --warn:#f59e0b;
+      --radius:22px;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+    }
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f1115;
-  color: white;
-}
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(56,189,248,.14), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(96,165,250,.12), transparent 26%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
 
-/* TOP BAR */
-.topbar {
-  height: 60px;
-  background: #151823;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 15px;
-}
+    .shell{
+      display:grid;
+      grid-template-columns: 280px 1fr 310px;
+      gap:18px;
+      padding:18px;
+      min-height:100vh;
+    }
 
-.menuBtn {
-  font-size: 28px;
-  cursor: pointer;
-}
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), transparent 18%), var(--panel);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
 
-/* PROFILE */
-.profileBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: gray;
-  cursor: pointer;
-}
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      padding:18px;
+      gap:16px;
+    }
 
-/* SIDEBAR */
-.sidebar {
-  position: fixed;
-  top: 60px;
-  left: -220px;
-  width: 220px;
-  height: 100%;
-  background: #1a1f2e;
-  transition: 0.3s;
-  padding: 10px;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 8px 18px;
+      border-bottom:1px solid var(--line);
+    }
 
-.sidebar:hover {
-  left: 0;
-}
+    .brand-badge{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      display:grid;
+      place-items:center;
+      font-size:1.25rem;
+      font-weight:800;
+      color:#06111f;
+      flex:0 0 auto;
+    }
 
-.sidebar a {
-  display: block;
-  padding: 12px;
-  color: white;
-  text-decoration: none;
-}
+    .brand h1{
+      margin:0;
+      font-size:1.05rem;
+      line-height:1.2;
+    }
 
-.sidebar a:hover {
-  background: #2a3145;
-}
+    .brand p{
+      margin:3px 0 0;
+      color:var(--muted);
+      font-size:.88rem;
+    }
 
-/* MAIN */
-.main {
-  padding: 20px;
-}
+    .nav{
+      display:grid;
+      gap:10px;
+    }
 
-/* HOMEWORK PANEL */
-.hwPanel {
-  background: #1a1f2e;
-  padding: 15px;
-  border-radius: 10px;
-}
+    .nav-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 14px;
+      border-radius:16px;
+      background:var(--panel-2);
+      border:1px solid transparent;
+      color:var(--text);
+    }
 
-/* PROFILE MODAL */
-.profileModal {
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  width: 250px;
-  background: #1a1f2e;
-  padding: 15px;
-  border-radius: 10px;
-  display: none;
-}
-</style>
+    .nav-item.active{
+      border-color:rgba(56,189,248,.35);
+      background:linear-gradient(180deg, rgba(56,189,248,.12), rgba(96,165,250,.08)), var(--panel-2);
+    }
+
+    .nav-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .nav-ico{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      background:#0b1524;
+      display:grid;
+      place-items:center;
+      color:var(--accent);
+      border:1px solid rgba(56,189,248,.15);
+      flex:0 0 auto;
+    }
+
+    .nav-text{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    .nav-text strong{
+      font-size:.95rem;
+      font-weight:700;
+    }
+
+    .nav-text span{
+      font-size:.8rem;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:160px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 20px 0;
+    }
+
+    .menu-box{
+      width:52px;
+      height:52px;
+      border-radius:18px;
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.06);
+      display:grid;
+      place-items:center;
+      box-shadow:var(--shadow);
+      font-size:1.5rem;
+      color:var(--text);
+    }
+
+    .profile-mini{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 14px 10px 10px;
+      border-radius:18px;
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow:var(--shadow);
+      min-width:250px;
+    }
+
+    .avatar{
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg, #1f2937, #334155);
+      border:2px solid rgba(56,189,248,.55);
+      flex:0 0 auto;
+    }
+
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .profile-mini .meta{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    .profile-mini .meta strong{
+      font-size:.98rem;
+      line-height:1.15;
+    }
+
+    .profile-mini .meta span{
+      font-size:.82rem;
+      color:var(--muted);
+    }
+
+    .main{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      padding-bottom:18px;
+    }
+
+    .hero{
+      margin:0 18px;
+      padding:22px;
+      border-radius:28px;
+      background:
+        linear-gradient(135deg, rgba(56,189,248,.16), rgba(96,165,250,.08)),
+        var(--panel);
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -40px auto;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(56,189,248,.18), transparent 70%);
+      pointer-events:none;
+    }
+
+    .hero-top{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .hero h2{
+      margin:0;
+      font-size:1.6rem;
+      letter-spacing:.2px;
+    }
+
+    .hero p{
+      margin:10px 0 0;
+      color:var(--muted);
+      max-width:58ch;
+      line-height:1.8;
+    }
+
+    .chips{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .chip{
+      padding:10px 14px;
+      border-radius:999px;
+      background:#0d1624;
+      border:1px solid rgba(255,255,255,.07);
+      color:var(--text);
+      font-size:.85rem;
+    }
+
+    .content-grid{
+      display:grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap:18px;
+      padding:0 18px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .card-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px 18px 14px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+
+    .card-head h3{
+      margin:0;
+      font-size:1.05rem;
+    }
+
+    .card-head span{
+      color:var(--muted);
+      font-size:.84rem;
+    }
+
+    .card-body{
+      padding:18px;
+    }
+
+    .subject{
+      background:var(--panel-2);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:14px;
+      margin-bottom:12px;
+    }
+
+    .subject-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .subject-top strong{
+      font-size:1rem;
+    }
+
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.78rem;
+      background:rgba(56,189,248,.12);
+      color:#8ad8ff;
+      border:1px solid rgba(56,189,248,.18);
+      flex:0 0 auto;
+    }
+
+    .homework-item{
+      padding:12px 14px;
+      border-radius:14px;
+      background:#0b1524;
+      border:1px solid rgba(255,255,255,.06);
+      margin-top:10px;
+    }
+
+    .homework-item b{
+      display:block;
+      margin-bottom:4px;
+    }
+
+    .homework-item small{
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .status-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .status{
+      background:var(--panel-2);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .status .left{
+      min-width:0;
+    }
+
+    .status .left strong{
+      display:block;
+      font-size:.95rem;
+    }
+
+    .status .left span{
+      color:var(--muted);
+      font-size:.82rem;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--success);
+      box-shadow:0 0 0 5px rgba(34,197,94,.12);
+      flex:0 0 auto;
+    }
+
+    .dot.warn{
+      background:var(--warn);
+      box-shadow:0 0 0 5px rgba(245,158,11,.12);
+    }
+
+    .profile-side{
+      display:flex;
+      flex-direction:column;
+    }
+
+    .profile-hero{
+      padding:22px;
+      text-align:center;
+      background:
+        linear-gradient(180deg, rgba(56,189,248,.10), transparent 34%),
+        var(--panel);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+
+    .profile-hero .avatar{
+      width:98px;
+      height:98px;
+      margin:0 auto 14px;
+      border-width:3px;
+    }
+
+    .profile-hero h3{
+      margin:0;
+      font-size:1.25rem;
+    }
+
+    .profile-hero p{
+      margin:6px 0 0;
+      color:var(--muted);
+    }
+
+    .info-list{
+      padding:18px;
+      display:grid;
+      gap:12px;
+    }
+
+    .info-row{
+      background:var(--panel-2);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:16px;
+      padding:14px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+
+    .info-row span{
+      color:var(--muted);
+      font-size:.84rem;
+    }
+
+    .info-row strong{
+      font-size:.92rem;
+    }
+
+    .footer-note{
+      margin-top:auto;
+      padding:0 18px 18px;
+      color:var(--muted);
+      font-size:.82rem;
+      line-height:1.8;
+    }
+
+    @media (max-width: 1120px){
+      .shell{
+        grid-template-columns: 86px 1fr;
+      }
+      .sidebar{
+        padding:12px 10px;
+      }
+      .brand,
+      .nav-text,
+      .footer-note{
+        display:none;
+      }
+      .nav-item{
+        justify-content:center;
+        padding:12px 8px;
+      }
+      .nav-left{
+        justify-content:center;
+      }
+      .content-grid{
+        grid-template-columns:1fr;
+      }
+      .profile-side{
+        grid-column:auto;
+      }
+      .profile-mini{
+        min-width:0;
+      }
+    }
+
+    @media (max-width: 760px){
+      .shell{
+        grid-template-columns:1fr;
+        padding:12px;
+      }
+      .sidebar{
+        order:2;
+      }
+      .main{
+        order:1;
+      }
+      .topbar{
+        padding:12px 12px 0;
+      }
+      .hero,
+      .content-grid{
+        padding:0 12px;
+        margin:0;
+      }
+      .profile-mini{
+        width:100%;
+      }
+      .topbar{
+        flex-direction:column;
+        align-items:stretch;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- TOP -->
-<div class="topbar">
-  <div class="menuBtn">≡</div>
-  <div class="profileBtn" onclick="toggleProfile()"></div>
-</div>
+  <div class="shell">
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <a href="#">🏠 Home</a>
-  <a href="#">📚 Homework</a>
-  <a href="#">📢 Announcements</a>
-  <a href="#">⚙️ Settings</a>
-</div>
+    <aside class="panel sidebar">
+      <div class="brand">
+        <div class="brand-badge">S</div>
+        <div>
+          <h1>لوحة الطالب</h1>
+          <p>واجهة مدرسية نظيفة</p>
+        </div>
+      </div>
 
-<!-- MAIN -->
-<div class="main">
-  <h2>Student Dashboard</h2>
+      <nav class="nav">
+        <div class="nav-item active">
+          <div class="nav-left">
+            <div class="nav-ico">🏠</div>
+            <div class="nav-text">
+              <strong>الرئيسية</strong>
+              <span>نظرة عامة سريعة</span>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
 
-  <div class="hwPanel">
-    <h3>Homework</h3>
-    <div id="hwList"></div>
+        <div class="nav-item">
+          <div class="nav-left">
+            <div class="nav-ico">📚</div>
+            <div class="nav-text">
+              <strong>الواجبات</strong>
+              <span>حسب المادة</span>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
+
+        <div class="nav-item">
+          <div class="nav-left">
+            <div class="nav-ico">📢</div>
+            <div class="nav-text">
+              <strong>الإعلانات</strong>
+              <span>رسائل المدرسة</span>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
+
+        <div class="nav-item">
+          <div class="nav-left">
+            <div class="nav-ico">⚙️</div>
+            <div class="nav-text">
+              <strong>الإعدادات</strong>
+              <span>اللغة والمظهر</span>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
+      </nav>
+
+      <div class="footer-note">
+        هذه نسخة UI فقط. لا تسجيل دخول، لا بيانات حقيقية، لا منطق خلف الستار.
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="menu-box">≡</div>
+
+        <div class="profile-mini">
+          <div class="avatar">
+            <img src="placeholder.png" alt="الصورة الشخصية">
+          </div>
+          <div class="meta">
+            <strong>منتظر</strong>
+            <span>@montadar · الصف 4A</span>
+          </div>
+        </div>
+      </div>
+
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <h2>مرحباً بك في لوحة الطالب</h2>
+            <p>
+              واجهة مدرسية هادئة وموزونة، فيها روح التطبيق بدل شكل الصفحة القديمة.
+              كل شيء هنا بصري فقط، حتى ما يصير زحمة ولا تشويش.
+            </p>
+          </div>
+        </div>
+
+        <div class="chips">
+          <div class="chip">المنهج: الفصل الثاني</div>
+          <div class="chip">الحالة: حاضر</div>
+          <div class="chip">آخر تحديث: اليوم</div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>الواجبات</h3>
+              <span>مرتبة حسب المادة</span>
+            </div>
+            <span>4 عناصر</span>
+          </div>
+
+          <div class="card-body">
+            <div class="subject">
+              <div class="subject-top">
+                <strong>رياضيات</strong>
+                <span class="badge">مهم</span>
+              </div>
+              <div class="homework-item">
+                <b>حل صفحة 32</b>
+                <small>تمارين مركزة على الدروس الأخيرة، مع مراجعة سريعة قبل الحصة.</small>
+              </div>
+              <div class="homework-item">
+                <b>أسئلة إضافية</b>
+                <small>أسئلة قصيرة للتدريب، بدون ضغط، فقط تثبيت للفكرة.</small>
+              </div>
+            </div>
+
+            <div class="subject">
+              <div class="subject-top">
+                <strong>فيزياء</strong>
+                <span class="badge">جديد</span>
+              </div>
+              <div class="homework-item">
+                <b>قراءة الفصل الأول</b>
+                <small>مراجعة هادئة للفصل مع الانتباه للتعريفات الأساسية.</small>
+              </div>
+            </div>
+
+            <div class="subject">
+              <div class="subject-top">
+                <strong>إنشاء</strong>
+                <span class="badge">واجب</span>
+              </div>
+              <div class="homework-item">
+                <b>موضوع تعبير</b>
+                <small>اكتب فقرة منظمة عن المستقبل وأهمية التعلم.</small>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <aside class="card profile-side">
+          <div class="profile-hero">
+            <div class="avatar">
+              <img src="placeholder.png" alt="الصورة الشخصية">
+            </div>
+            <h3>منتظر</h3>
+            <p>@montadar</p>
+          </div>
+
+          <div class="info-list">
+            <div class="info-row">
+              <div>
+                <strong>الصف</strong><br>
+                <span>المستوى الدراسي</span>
+              </div>
+              <strong>4A</strong>
+            </div>
+
+            <div class="info-row">
+              <div>
+                <strong>المدرسة</strong><br>
+                <span>الجهة التعليمية</span>
+              </div>
+              <strong>لوحة الطالب</strong>
+            </div>
+
+            <div class="info-row">
+              <div>
+                <strong>الإشعارات</strong><br>
+                <span>حالة التنبيه</span>
+              </div>
+              <span class="dot"></span>
+            </div>
+
+            <div class="info-row">
+              <div>
+                <strong>النظام</strong><br>
+                <span>الوضع الحالي</span>
+              </div>
+              <span class="dot warn"></span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="content-grid">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>الإعلانات</h3>
+              <span>رسائل المدرسة والصف</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="homework-item">
+              <b>لا توجد إعلانات جديدة</b>
+              <small>الواجهة تعرض هنا مكان الإعلانات فقط بشكل نظيف ومرتب.</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>إعدادات سريعة</h3>
+              <span>واجهة فقط</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="status-list">
+              <div class="status">
+                <div class="left">
+                  <strong>المظهر</strong>
+                  <span>داكن</span>
+                </div>
+                <div class="dot"></div>
+              </div>
+              <div class="status">
+                <div class="left">
+                  <strong>اللغة</strong>
+                  <span>العربية</span>
+                </div>
+                <div class="dot"></div>
+              </div>
+              <div class="status">
+                <div class="left">
+                  <strong>المزامنة</strong>
+                  <span>معطلة في هذا التصميم</span>
+                </div>
+                <div class="dot warn"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
   </div>
-</div>
-
-<!-- PROFILE -->
-<div class="profileModal" id="profile">
-  <h3 id="pName"></h3>
-  <p id="pUser"></p>
-  <p id="pClass"></p>
-</div>
-
-<script>
-/* FIRESTORE STYLE DB */
-const db = {
-  users: {
-    montadar: {
-      name: "منتظر",
-      username: "montadar",
-      class: "4A",
-      pfp: "placeholder.png"
-    }
-  },
-
-  homework: {
-    hw1: {
-      title: "حل صفحة 32",
-      class: "4A"
-    },
-    hw2: {
-      title: "قراءة الفصل الأول",
-      class: "4A"
-    }
-  }
-};
-
-let currentUser = db.users.montadar;
-
-/* LOAD PROFILE */
-function loadProfile(){
-  document.getElementById("pName").innerText = currentUser.name;
-  document.getElementById("pUser").innerText = "@"+currentUser.username;
-  document.getElementById("pClass").innerText = currentUser.class;
-}
-
-/* TOGGLE PROFILE */
-function toggleProfile(){
-  let p = document.getElementById("profile");
-  p.style.display = (p.style.display === "block") ? "none" : "block";
-}
-
-/* LOAD HOMEWORK */
-function loadHomework(){
-  let container = document.getElementById("hwList");
-  container.innerHTML = "";
-
-  Object.values(db.homework).forEach(hw => {
-    let div = document.createElement("div");
-    div.style.padding = "10px";
-    div.style.marginTop = "10px";
-    div.style.background = "#22283a";
-    div.style.borderRadius = "8px";
-    div.innerText = hw.title;
-
-    container.appendChild(div);
-  });
-}
-
-loadProfile();
-loadHomework();
-</script>
-
 </body>
 </html>
