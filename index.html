@@ -1,90 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-  <title>School Login</title>
+  <title>تسجيل الدخول</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: monospace;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 350px;
+      border: 1px solid #334155;
+      animation: fadeIn 0.3s ease;
+    }
+
+    h2 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #38bdf8;
+      color: black;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+      transform: scale(1.03);
+    }
+
+    .error {
+      color: #ef4444;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
 </head>
 
 <body>
 
-  <h2>School System Login</h2>
+<div class="card">
 
-  <input id="username" placeholder="Username">
-  <br><br>
+<h2>⚡ تسجيل الدخول</h2>
 
-  <input id="password" type="password" placeholder="Password">
-  <br><br>
+<input id="username" placeholder="اسم المستخدم">
+<input id="password" type="password" placeholder="كلمة المرور">
 
-  <button onclick="login()">Login</button>
+<button onclick="login()">دخول</button>
 
-  <p id="msg"></p>
+<div class="error" id="error"></div>
 
-  <!-- FIREBASE + LOGIN LOGIC -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } 
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+</div>
 
-    // 🔥 Your Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
-      authDomain: "qayrawan-school-system.firebaseapp.com",
-      projectId: "qayrawan-school-system",
-      storageBucket: "qayrawan-school-system.firebasestorage.app",
-      messagingSenderId: "785321248181",
-      appId: "1:785321248181:web:643e6d29cdca556218c5fc"
-    };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain: "qayrawan-school-system.firebaseapp.com",
+  projectId: "qayrawan-school-system",
+  storageBucket: "qayrawan-school-system.firebasestorage.app",
+  messagingSenderId: "785321248181",
+  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+};
 
-    // 🌐 LOGIN FUNCTION (Option 1: Firestore username system)
-    window.login = async function () {
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const msg = document.getElementById("msg");
+// 🔐 LOGIN SYSTEM
+window.login = async () => {
+  const userInput = username.value;
+  const passInput = password.value;
 
-      try {
-        const q = query(
-          collection(db, "users"),
-          where("username", "==", username)
-        );
+  const snap = await getDocs(collection(db, "users"));
 
-        const snapshot = await getDocs(q);
+  let found = false;
 
-        if (snapshot.empty) {
-          msg.innerText = "❌ User not found";
-          return;
-        }
+  snap.forEach(doc => {
+    const data = doc.data();
 
-        const userData = snapshot.docs[0].data();
+    if (data.username === userInput && data.password === passInput) {
+      found = true;
 
-        if (userData.password !== password) {
-          msg.innerText = "❌ Wrong password";
-          return;
-        }
+      localStorage.setItem("user", JSON.stringify(data));
 
-        msg.innerText = "✅ Login successful!";
-localStorage.setItem("user", JSON.stringify(userData));
-        // 🚪 Redirect based on role
-        if (userData.role === "student") {
-          window.location.href = "student.html";
-        } 
-        else if (userData.role === "teacher") {
-          window.location.href = "teacher.html";
-        } 
-        else if (userData.role === "admin") {
-          window.location.href = "admin.html";
-        }
+      // 🎯 REDIRECT
+      if (data.role === "admin") location.href = "admin.html";
+      else if (data.role === "teacher") location.href = "teacher.html";
+      else location.href = "student.html";
+    }
+  });
 
-      } catch (error) {
-        console.error(error);
-        msg.innerText = "⚠️ Something went wrong";
-      }
-    };
-
-  </script>
+  if (!found) {
+    document.getElementById("error").innerText = "بيانات غير صحيحة";
+  }
+};
+</script>
 
 </body>
 </html>
