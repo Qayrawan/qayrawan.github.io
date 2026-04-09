@@ -42,6 +42,7 @@
       border: 1px solid #334155;
       background: #0f172a;
       color: white;
+      outline: none;
     }
 
     button {
@@ -54,6 +55,7 @@
       color: black;
       cursor: pointer;
       transition: 0.2s;
+      font-weight: bold;
     }
 
     button:hover {
@@ -66,6 +68,7 @@
       text-align: center;
       margin-top: 10px;
       font-size: 14px;
+      min-height: 20px;
     }
 
     @keyframes fadeIn {
@@ -78,16 +81,14 @@
 <body>
 
 <div class="card">
+  <h2>⚡ تسجيل الدخول</h2>
 
-<h2>⚡ تسجيل الدخول</h2>
+  <input id="username" placeholder="اسم المستخدم">
+  <input id="password" type="password" placeholder="كلمة المرور">
 
-<input id="username" placeholder="اسم المستخدم">
-<input id="password" type="password" placeholder="كلمة المرور">
+  <button onclick="login()">دخول</button>
 
-<button onclick="login()">دخول</button>
-
-<div class="error" id="error"></div>
-
+  <div class="error" id="error"></div>
 </div>
 
 <script type="module">
@@ -95,6 +96,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
   authDomain: "qayrawan-school-system.firebaseapp.com",
@@ -107,32 +109,60 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🔐 LOGIN SYSTEM
+/* 🧠 LOGIN ENGINE */
 window.login = async () => {
-  const userInput = username.value;
-  const passInput = password.value;
+  const userInput = document.getElementById("username").value.trim();
+  const passInput = document.getElementById("password").value.trim();
+  const errorBox = document.getElementById("error");
 
-  const snap = await getDocs(collection(db, "users"));
+  errorBox.innerText = "";
 
-  let found = false;
+  if (!userInput || !passInput) {
+    errorBox.innerText = "يرجى إدخال جميع البيانات";
+    return;
+  }
 
-  snap.forEach(doc => {
-    const data = doc.data();
+  try {
+    const snap = await getDocs(collection(db, "users"));
 
-    if (data.username === userInput && data.password === passInput) {
-      found = true;
+    let found = false;
 
-      localStorage.setItem("user", JSON.stringify(data));
+    snap.forEach(doc => {
+      const data = doc.data();
 
-      // 🎯 REDIRECT
-      if (data.role === "admin") location.href = "admin.html";
-      else if (data.role === "teacher") location.href = "teacher.html";
-      else location.href = "student.html";
+      if (data.username === userInput && data.password === passInput) {
+        found = true;
+
+        /* 🧩 CLEAN SESSION OBJECT */
+        const sessionUser = {
+          uid: doc.id,
+          name: data.name || "Student",
+          username: data.username,
+          class: data.class || "-",
+          role: data.role || "student",
+          pfp: data.pfp || "placeholder.png"
+        };
+
+        localStorage.setItem("user", JSON.stringify(sessionUser));
+
+        /* 🚀 ROUTE USERS */
+        if (sessionUser.role === "admin") {
+          location.href = "admin.html";
+        } else if (sessionUser.role === "teacher") {
+          location.href = "teacher.html";
+        } else {
+          location.href = "student.html";
+        }
+      }
+    });
+
+    if (!found) {
+      errorBox.innerText = "بيانات غير صحيحة";
     }
-  });
 
-  if (!found) {
-    document.getElementById("error").innerText = "بيانات غير صحيحة";
+  } catch (err) {
+    console.error(err);
+    errorBox.innerText = "خطأ في الاتصال بالخادم";
   }
 };
 </script>
