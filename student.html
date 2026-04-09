@@ -1,1245 +1,305 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>لوحة الطالب</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    :root{
-      --bg:#0b1220;
-      --panel:#101826;
-      --panel-2:#141f2f;
-      --line:#223046;
-      --text:#e7eef9;
-      --muted:#91a4be;
-      --accent:#38bdf8;
-      --accent-2:#60a5fa;
-      --good:#22c55e;
-      --warn:#f59e0b;
-      --shadow:0 18px 50px rgba(0,0,0,.28);
-      --radius:22px;
+    * {
+      box-sizing: border-box;
+      font-family: Arial;
     }
 
-    [data-theme="light"]{
-      --bg:#eef4fb;
-      --panel:#ffffff;
-      --panel-2:#f6f8fc;
-      --line:#d7e0ec;
-      --text:#132033;
-      --muted:#607086;
-      --accent:#0ea5e9;
-      --accent-2:#2563eb;
-      --shadow:0 14px 35px rgba(21,35,59,.10);
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: white;
+      overflow: hidden;
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(56,189,248,.12), transparent 24%),
-        radial-gradient(circle at bottom left, rgba(96,165,250,.10), transparent 22%),
-        var(--bg);
-      color:var(--text);
-      overflow-x:hidden;
+    /* TOP BAR */
+    .topbar {
+      height: 60px;
+      background: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      border-bottom: 1px solid #1f2937;
     }
 
-    button,input{ font:inherit; }
-    button{ cursor:pointer; }
-    img{ display:block; }
-
-    .shell{
-      min-height:100vh;
-      display:grid;
-      grid-template-columns: 280px 1fr 320px;
-      gap:18px;
-      padding:18px;
-    }
-
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), transparent 18%), var(--panel);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .sidebar{
-      display:flex;
-      flex-direction:column;
-      padding:18px;
-      gap:16px;
-      position:sticky;
-      top:18px;
-      height:calc(100vh - 36px);
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:8px 6px 18px;
-      border-bottom:1px solid var(--line);
-    }
-
-    .brand-badge{
-      width:46px;height:46px;
-      border-radius:16px;
-      background:linear-gradient(135deg,var(--accent),var(--accent-2));
-      display:grid;
-      place-items:center;
-      color:#06111f;
-      font-weight:900;
-      flex:0 0 auto;
-    }
-
-    .brand h1{
-      margin:0;
-      font-size:1.02rem;
-      line-height:1.2;
-    }
-
-    .brand p{
-      margin:3px 0 0;
-      font-size:.86rem;
-      color:var(--muted);
-    }
-
-    .nav{
-      display:grid;
-      gap:10px;
-    }
-
-    .nav-item{
-      width:100%;
-      border:none;
-      background:var(--panel-2);
-      color:var(--text);
-      border:1px solid transparent;
-      border-radius:16px;
-      padding:14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      text-align:right;
-    }
-
-    .nav-item.active{
-      border-color:rgba(56,189,248,.35);
-      background:linear-gradient(180deg, rgba(56,189,248,.11), rgba(96,165,250,.06)), var(--panel-2);
-    }
-
-    .nav-left{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
-    }
-
-    .nav-ico{
-      width:34px;height:34px;
-      border-radius:12px;
-      background:#0b1524;
-      color:var(--accent);
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-      border:1px solid rgba(56,189,248,.14);
-    }
-
-    .nav-text{
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .nav-text strong{
-      font-size:.95rem;
-    }
-
-    .nav-text span{
-      font-size:.8rem;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:150px;
-    }
-
-    .sidebar-note{
-      margin-top:auto;
-      color:var(--muted);
-      font-size:.82rem;
-      line-height:1.8;
-      padding:4px 4px 0;
-    }
-
-    .main{
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-      min-width:0;
-      padding-bottom:18px;
-    }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      padding:18px 18px 0;
-      position:sticky;
-      top:0;
-      z-index:20;
-    }
-
-    .menu-box{
-      width:52px;height:52px;
-      border-radius:18px;
-      background:var(--panel);
-      border:1px solid rgba(255,255,255,.06);
-      box-shadow:var(--shadow);
-      display:grid;
-      place-items:center;
-      font-size:1.45rem;
-      user-select:none;
-      touch-action:manipulation;
-    }
-
-    .profile-mini{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:10px;
-      border-radius:18px;
-      background:var(--panel);
-      border:1px solid rgba(255,255,255,.06);
-      box-shadow:var(--shadow);
-      min-width:270px;
-      max-width:100%;
-    }
-
-    .avatar{
-      width:46px;height:46px;
-      border-radius:50%;
-      overflow:hidden;
-      background:linear-gradient(135deg,#1f2937,#334155);
-      border:2px solid rgba(56,189,248,.55);
-      flex:0 0 auto;
-    }
-
-    .avatar img{
-      width:100%;height:100%;
-      object-fit:cover;
-    }
-
-    .meta{
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .meta strong{
-      font-size:.98rem;
-      line-height:1.15;
-    }
-
-    .meta span{
-      font-size:.82rem;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:100%;
-    }
-
-    .hero{
-      margin:0 18px;
-      padding:22px;
-      border-radius:28px;
-      background:
-        linear-gradient(135deg, rgba(56,189,248,.16), rgba(96,165,250,.08)),
-        var(--panel);
-      border:1px solid rgba(255,255,255,.06);
-      box-shadow:var(--shadow);
-      position:relative;
-      overflow:hidden;
-    }
-
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:auto -40px -40px auto;
-      width:180px;height:180px;
-      border-radius:50%;
-      background:radial-gradient(circle, rgba(56,189,248,.18), transparent 70%);
-      pointer-events:none;
-    }
-
-    .hero h2{
-      margin:0;
-      font-size:1.55rem;
-    }
-
-    .hero p{
-      margin:10px 0 0;
-      color:var(--muted);
-      max-width:62ch;
-      line-height:1.8;
-    }
-
-    .chips{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:18px;
-    }
-
-    .chip{
-      padding:10px 14px;
-      border-radius:999px;
-      background:#0d1624;
-      border:1px solid rgba(255,255,255,.07);
-      color:var(--text);
-      font-size:.85rem;
-    }
-
-    .content-grid{
-      display:grid;
-      grid-template-columns: 1.55fr 1fr;
-      gap:18px;
-      padding:0 18px;
-      min-width:0;
-    }
-
-    .card{
-      background:var(--panel);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:26px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      min-width:0;
-    }
-
-    .card-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:18px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-
-    .card-head h3{
-      margin:0;
-      font-size:1.05rem;
-    }
-
-    .card-head span{
-      color:var(--muted);
-      font-size:.84rem;
-    }
-
-    .card-body{
-      padding:18px;
-    }
-
-    .subject{
-      background:var(--panel-2);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:18px;
-      padding:14px;
-      margin-bottom:12px;
-    }
-
-    .subject-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:10px;
+    .menuBtn {
+      font-size: 26px;
+      cursor: pointer;
     }
 
-    .badge{
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:.78rem;
-      background:rgba(56,189,248,.12);
-      color:#8ad8ff;
-      border:1px solid rgba(56,189,248,.18);
-      flex:0 0 auto;
+    .title {
+      font-weight: bold;
+    }
+
+    .pfp {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #374151;
+      cursor: pointer;
+      overflow: hidden;
     }
 
-    .homework-item{
-      padding:12px 14px;
-      border-radius:14px;
-      background:#0b1524;
-      border:1px solid rgba(255,255,255,.06);
-      margin-top:10px;
+    .pfp img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* SIDE MENU */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -260px;
+      width: 260px;
+      height: 100%;
+      background: #111827;
+      transition: 0.3s;
+      padding-top: 60px;
+      border-left: 1px solid #1f2937;
+      z-index: 10;
     }
 
-    .homework-item b{
-      display:block;
-      margin-bottom:4px;
-    }
-
-    .homework-item small{
-      color:var(--muted);
-      line-height:1.7;
-    }
-
-    .tools{
-      display:grid;
-      gap:12px;
-    }
-
-    .tool{
-      background:var(--panel-2);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:18px;
-      padding:14px;
-    }
-
-    .tool label{
-      display:block;
-      color:var(--muted);
-      font-size:.82rem;
-      margin-bottom:8px;
-    }
-
-    .tool input[type="text"]{
-      width:100%;
-      border:none;
-      outline:none;
-      background:#0b1524;
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:14px;
-      padding:12px 14px;
-    }
-
-    .settings-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      background:var(--panel-2);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:18px;
-      padding:14px;
-      margin-top:12px;
-    }
-
-    .settings-row .left{
-      min-width:0;
-    }
-
-    .settings-row .left strong{
-      display:block;
-      font-size:.95rem;
-    }
-
-    .settings-row .left span{
-      color:var(--muted);
-      font-size:.82rem;
-      line-height:1.5;
-    }
-
-    .toggle{
-      width:56px;
-      height:32px;
-      border-radius:999px;
-      border:none;
-      background:#334155;
-      position:relative;
-      flex:0 0 auto;
-    }
-
-    .toggle::after{
-      content:"";
-      position:absolute;
-      top:3px;
-      right:3px;
-      width:26px;
-      height:26px;
-      border-radius:50%;
-      background:white;
-      transition:.2s;
-    }
-
-    .toggle.on{
-      background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    }
-
-    .toggle.on::after{
-      transform:translateX(-24px);
-    }
-
-    .profile-side{
-      display:flex;
-      flex-direction:column;
-    }
-
-    .profile-hero{
-      padding:22px;
-      text-align:center;
-      background:
-        linear-gradient(180deg, rgba(56,189,248,.10), transparent 34%),
-        var(--panel);
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-
-    .profile-hero .avatar{
-      width:98px;height:98px;
-      margin:0 auto 14px;
-      border-width:3px;
-    }
-
-    .profile-hero h3{
-      margin:0;
-      font-size:1.25rem;
-    }
-
-    .profile-hero p{
-      margin:6px 0 0;
-      color:var(--muted);
-    }
-
-    .info-list{
-      padding:18px;
-      display:grid;
-      gap:12px;
-    }
+    .menu.open {
+      right: 0;
+    }
 
-    .info-row{
-      background:var(--panel-2);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px;
-      padding:14px;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
+    .menu div {
+      padding: 15px;
+      border-bottom: 1px solid #1f2937;
+      cursor: pointer;
+    }
+
+    /* CHAT AREA */
+    .chat {
+      height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .msg {
+      background: #1f2937;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 10px;
+      max-width: 70%;
+      width: fit-content;
+    }
+
+    .inputBox {
+      display: flex;
+      gap: 8px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: #1f2937;
+      color: white;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* PROFILE PANEL */
+    .profile {
+      position: fixed;
+      top: 70px;
+      right: 10px;
+      width: 230px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 12px;
+      display: none;
+      z-index: 20;
+    }
+
+    .profile img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* HOMEWORK PANEL */
+    .homework {
+      position: fixed;
+      left: -300px;
+      top: 0;
+      width: 300px;
+      height: 100%;
+      background: #0b1220;
+      transition: 0.3s;
+      padding: 60px 10px 10px;
+      border-right: 1px solid #1f2937;
+      z-index: 15;
+    }
+
+    .homework.open {
+      left: 0;
+    }
+
+    .hw {
+      background: #1f2937;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+
+    /* SETTINGS */
+    .settings {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 220px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 12px;
+      display: none;
+      z-index: 25;
     }
 
-    .info-row span{
-      color:var(--muted);
-      font-size:.84rem;
-    }
-
-    .info-row strong{
-      font-size:.92rem;
-    }
-
-    .dot{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:var(--good);
-      box-shadow:0 0 0 5px rgba(34,197,94,.12);
-      flex:0 0 auto;
-    }
-
-    .dot.warn{
-      background:var(--warn);
-      box-shadow:0 0 0 5px rgba(245,158,11,.12);
-    }
-
-    .page{
-      display:none;
-    }
-
-    .page.active{
-      display:block;
-    }
-
-    .profile-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(4,10,18,.58);
-      backdrop-filter:blur(10px);
-      display:none;
-      z-index:60;
-    }
-
-    .profile-overlay.open{
-      display:block;
-    }
-
-    .profile-drawer{
-      position:absolute;
-      top:14px;
-      left:14px;
-      width:min(420px, calc(100vw - 28px));
-      max-height:calc(100vh - 28px);
-      overflow:auto;
-      background:var(--panel);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:28px;
-      box-shadow:var(--shadow);
-    }
-
-    .profile-drawer .top{
-      padding:18px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .close-btn{
-      border:none;
-      background:#0b1524;
-      color:var(--text);
-      width:38px;
-      height:38px;
-      border-radius:12px;
-      font-size:1.2rem;
-    }
-
-    .profile-block{
-      padding:20px;
-      text-align:center;
-      background:
-        linear-gradient(180deg, rgba(56,189,248,.10), transparent 32%),
-        var(--panel);
-    }
-
-    .profile-block .avatar{
-      width:104px;
-      height:104px;
-      margin:0 auto 14px;
-      border-width:3px;
-    }
-
-    .profile-block h3{
-      margin:0;
-      font-size:1.3rem;
-    }
-
-    .profile-block p{
-      margin:6px 0 0;
-      color:var(--muted);
-    }
-
-    .profile-actions{
-      padding:0 18px 18px;
-      display:grid;
-      gap:10px;
-    }
-
-    .action-btn{
-      width:100%;
-      border:none;
-      background:var(--panel-2);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px;
-      padding:14px;
-      text-align:right;
-    }
-
-    .muted-box{
-      margin:0 18px 18px;
-      background:var(--panel-2);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:18px;
-      padding:14px;
-      color:var(--muted);
-      line-height:1.7;
-      font-size:.88rem;
-    }
-
-    @media (max-width: 1180px){
-      .shell{
-        grid-template-columns:86px 1fr;
-      }
-      .brand,
-      .nav-text,
-      .sidebar-note{
-        display:none;
-      }
-      .sidebar{
-        padding:12px 10px;
-      }
-      .nav-item{
-        justify-content:center;
-        padding:12px 8px;
-      }
-      .nav-left{
-        justify-content:center;
-      }
-      .content-grid{
-        grid-template-columns:1fr;
-      }
-      .profile-side{
-        grid-column:auto;
-      }
-      .profile-mini{
-        min-width:0;
-      }
-    }
-
-    @media (max-width: 760px){
-      .shell{
-        grid-template-columns:1fr;
-        padding:12px;
-        gap:12px;
-      }
-      .sidebar{
-        position:static;
-        height:auto;
-        order:2;
-      }
-      .main{
-        order:1;
-      }
-      .topbar{
-        padding:12px 12px 0;
-        position:static;
-      }
-      .hero,
-      .content-grid{
-        padding:0 12px;
-        margin:0;
-      }
-      .profile-mini{
-        width:100%;
-      }
-      .topbar{
-        flex-direction:column;
-        align-items:stretch;
-      }
-    }
   </style>
 </head>
-<body data-theme="dark">
 
-  <div class="shell">
-    <aside class="panel sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-badge">S</div>
-        <div>
-          <h1>لوحة الطالب</h1>
-          <p>واجهة مدرسية نظيفة</p>
-        </div>
-      </div>
+<body>
 
-      <div class="nav">
-        <button class="nav-item active" data-page="home">
-          <div class="nav-left">
-            <div class="nav-ico">🏠</div>
-            <div class="nav-text">
-              <strong>الرئيسية</strong>
-              <span>نظرة عامة سريعة</span>
-            </div>
-          </div>
-          <span>›</span>
-        </button>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="menuBtn" onclick="toggleMenu()">≡</div>
+  <div class="title">لوحة الطالب</div>
+  <div class="pfp" onclick="toggleProfile()" id="pfpBox"></div>
+</div>
 
-        <button class="nav-item" data-page="homework">
-          <div class="nav-left">
-            <div class="nav-ico">📚</div>
-            <div class="nav-text">
-              <strong>الواجبات</strong>
-              <span>حسب المادة</span>
-            </div>
-          </div>
-          <span>›</span>
-        </button>
+<!-- SIDE MENU -->
+<div class="menu" id="menu">
+  <div onclick="toggleHomework()">📚 الواجبات</div>
+  <div onclick="toggleSettings()">⚙️ الإعدادات</div>
+  <div onclick="logout()">🚪 تسجيل خروج</div>
+</div>
 
-        <button class="nav-item" data-page="announcements">
-          <div class="nav-left">
-            <div class="nav-ico">📢</div>
-            <div class="nav-text">
-              <strong>الإعلانات</strong>
-              <span>رسائل المدرسة</span>
-            </div>
-          </div>
-          <span>›</span>
-        </button>
+<!-- HOMEWORK -->
+<div class="homework" id="homework">
+  <h3>📚 الواجبات</h3>
+  <div class="hw">رياضيات - واجب 1</div>
+  <div class="hw">فيزياء - تجربة</div>
+  <div class="hw">عربي - كتابة</div>
+</div>
 
-        <button class="nav-item" data-page="settings">
-          <div class="nav-left">
-            <div class="nav-ico">⚙️</div>
-            <div class="nav-text">
-              <strong>الإعدادات</strong>
-              <span>المظهر واللغة</span>
-            </div>
-          </div>
-          <span>›</span>
-        </button>
-      </div>
+<!-- CHAT -->
+<div class="chat">
+  <div class="messages" id="messages"></div>
 
-      <div class="sidebar-note">
-        هذه الواجهة تقرأ بيانات المستخدم من <b>currentUser</b> في localStorage.
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="menu-box" id="menuBox" aria-label="القائمة">≡</div>
-
-        <div class="profile-mini" id="profileMini" role="button" tabindex="0">
-          <div class="avatar">
-            <img id="topPfp" src="placeholder.png" alt="الصورة الشخصية">
-          </div>
-          <div class="meta">
-            <strong id="topName">طالب</strong>
-            <span id="topMeta">@guest · غير محدد</span>
-          </div>
-        </div>
-      </div>
-
-      <section class="hero page active" id="page-home">
-        <h2 id="heroTitle">مرحباً بك في لوحة الطالب</h2>
-        <p id="heroText">
-          هذه لوحة مدرسية نظيفة ومريحة. الواجهة هنا فقط، لكنها تتصرف مثل تطبيق حقيقي:
-          تقرأ الحساب المسجل، وتبدّل الصفحات، وتعرض الملف الشخصي، وتحفظ الإعدادات الأساسية.
-        </p>
-
-        <div class="chips">
-          <div class="chip" id="chipClass">الصف: غير محدد</div>
-          <div class="chip" id="chipTheme">المظهر: داكن</div>
-          <div class="chip" id="chipStatus">الحالة: جاهز</div>
-        </div>
-      </section>
-
-      <section class="content-grid page active" id="page-homework">
-        <article class="card">
-          <div class="card-head">
-            <div>
-              <h3>الواجبات</h3>
-              <span>مرتبة حسب المادة</span>
-            </div>
-            <span id="hwCount">0 عناصر</span>
-          </div>
-
-          <div class="card-body">
-            <div class="tool" style="margin-bottom:12px;">
-              <label for="searchHw">البحث في الواجبات</label>
-              <input id="searchHw" type="text" placeholder="اكتب اسم المادة أو عنوان الواجب..." />
-            </div>
-
-            <div id="homeworkList"></div>
-          </div>
-        </article>
-
-        <aside class="card profile-side">
-          <div class="profile-hero">
-            <div class="avatar">
-              <img id="sidePfp" src="placeholder.png" alt="الصورة الشخصية">
-            </div>
-            <h3 id="sideName">طالب</h3>
-            <p id="sideMeta">@guest</p>
-          </div>
-
-          <div class="info-list">
-            <div class="info-row">
-              <div>
-                <strong>الصف</strong><br>
-                <span>المستوى الدراسي</span>
-              </div>
-              <strong id="sideClass">غير محدد</strong>
-            </div>
-
-            <div class="info-row">
-              <div>
-                <strong>الإشعارات</strong><br>
-                <span>الحالة الحالية</span>
-              </div>
-              <span class="dot"></span>
-            </div>
-
-            <div class="info-row">
-              <div>
-                <strong>النظام</strong><br>
-                <span>وضع الواجهة</span>
-              </div>
-              <span class="dot warn"></span>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      <section class="content-grid page" id="page-announcements">
-        <article class="card" style="grid-column:1/-1;">
-          <div class="card-head">
-            <div>
-              <h3>الإعلانات</h3>
-              <span>رسائل المدرسة والصف</span>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="subject">
-              <div class="subject-top">
-                <strong>إعلان اليوم</strong>
-                <span class="badge">عام</span>
-              </div>
-              <div class="homework-item">
-                <b>لا توجد إعلانات جديدة</b>
-                <small>ستظهر هنا الإعلانات الخاصة بالمدرسة أو الصف بشكل مرتب وواضح.</small>
-              </div>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section class="content-grid page" id="page-settings">
-        <article class="card">
-          <div class="card-head">
-            <div>
-              <h3>الإعدادات</h3>
-              <span>تفضيلات الواجهة</span>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="settings-row">
-              <div class="left">
-                <strong>المظهر</strong>
-                <span>التبديل بين الوضع الداكن والفاتح</span>
-              </div>
-              <button class="toggle" id="themeToggle" aria-label="تبديل المظهر"></button>
-            </div>
-
-            <div class="settings-row">
-              <div class="left">
-                <strong>الضغط على الصورة</strong>
-                <span>فتح الملف الشخصي من الشريط العلوي</span>
-              </div>
-              <span class="badge">مفعل</span>
-            </div>
-
-            <div class="settings-row">
-              <div class="left">
-                <strong>قراءة المستخدم</strong>
-                <span>يتم أخذ الاسم والصورة والصف من currentUser</span>
-              </div>
-              <span class="badge">localStorage</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-head">
-            <div>
-              <h3>حالة الواجهة</h3>
-              <span>ملخص سريع</span>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="tools">
-              <div class="tool">
-                <label>اسم المستخدم الحالي</label>
-                <input id="debugName" type="text" disabled />
-              </div>
-              <div class="tool">
-                <label>اسم الحساب</label>
-                <input id="debugUser" type="text" disabled />
-              </div>
-              <div class="tool">
-                <label>الصف</label>
-                <input id="debugClass" type="text" disabled />
-              </div>
-            </div>
-          </div>
-        </article>
-      </section>
-    </main>
+  <div class="inputBox">
+    <input id="input" placeholder="اكتب رسالة..." />
+    <button onclick="send()">إرسال</button>
   </div>
+</div>
 
-  <div class="profile-overlay" id="profileOverlay" aria-hidden="true">
-    <div class="profile-drawer">
-      <div class="top">
-        <strong>الملف الشخصي</strong>
-        <button class="close-btn" id="closeProfile">×</button>
-      </div>
+<!-- PROFILE -->
+<div class="profile" id="profile"></div>
 
-      <div class="profile-block">
-        <div class="avatar">
-          <img id="profilePfp" src="placeholder.png" alt="الصورة الشخصية">
-        </div>
-        <h3 id="profileName">طالب</h3>
-        <p id="profileUsername">@guest</p>
-      </div>
+<!-- SETTINGS -->
+<div class="settings" id="settings">
+  <h4>⚙️ الإعدادات</h4>
+  <p>الوضع الليلي: مفعّل</p>
+</div>
 
-      <div class="profile-actions">
-        <button class="action-btn">تعديل الصورة</button>
-        <button class="action-btn">تغيير الاسم</button>
-        <button class="action-btn">إعدادات الحساب</button>
-      </div>
+<script>
+let user = null;
 
-      <div class="muted-box" id="profileClassBox">
-        الصف: غير محدد
-      </div>
-    </div>
-  </div>
+/* 🔐 AUTH CHECK */
+window.onload = () => {
+  user = JSON.parse(localStorage.getItem("user"));
 
-  <script>
-    const fallbackUser = {
-      name: "طالب",
-      username: "guest",
-      class: "غير محدد",
-      pfp: "placeholder.png"
-    };
+  if (!user) {
+    location.href = "index.html";
+    return;
+  }
 
-    const currentUser = (() => {
-      try{
-        const raw = localStorage.getItem("currentUser");
-        const parsed = raw ? JSON.parse(raw) : null;
-        return {
-          ...fallbackUser,
-          ...(parsed && typeof parsed === "object" ? parsed : {})
-        };
-      }catch{
-        return fallbackUser;
-      }
-    })();
+  loadProfile();
+};
 
-    const homeworkData = [
-      { subject: "رياضيات", title: "حل صفحة 32", desc: "تمارين مهمة ومركزة على الدرس الأخير.", class: "4A", tag: "مهم" },
-      { subject: "رياضيات", title: "واجب إضافي", desc: "أسئلة قصيرة للتدريب والتثبيت.", class: "4A", tag: "واجب" },
-      { subject: "فيزياء", title: "قراءة الفصل الأول", desc: "مراجعة المفاهيم الأساسية والملخص.", class: "4A", tag: "جديد" },
-      { subject: "إنشاء", title: "موضوع تعبير", desc: "اكتب فقرة منظمة عن المستقبل.", class: "4A", tag: "مهم" },
-      { subject: "لغة عربية", title: "تلخيص النص", desc: "تلخيص قصير مع استخراج الأفكار الرئيسة.", class: "4B", tag: "خاص" }
-    ];
+/* 👤 PROFILE */
+function loadProfile() {
+  document.getElementById("pfpBox").innerHTML =
+    `<img src="${user.pfp || 'placeholder.png'}">`;
+}
 
-    const state = {
-      page: "home",
-      theme: localStorage.getItem("studentTheme") || "dark",
-      search: ""
-    };
+function toggleProfile() {
+  const p = document.getElementById("profile");
 
-    const el = (id) => document.getElementById(id);
+  p.innerHTML = `
+    <img src="${user.pfp || 'placeholder.png'}">
+    <h4>${user.name}</h4>
+    <p>@${user.username}</p>
+    <p>Class: ${user.class}</p>
+  `;
 
-    const pages = {
-      home: el("page-home"),
-      homework: el("page-homework"),
-      announcements: el("page-announcements"),
-      settings: el("page-settings")
-    };
+  p.style.display = p.style.display === "block" ? "none" : "block";
+}
 
-    function applyTheme(theme){
-      document.body.dataset.theme = theme;
-      state.theme = theme;
-      localStorage.setItem("studentTheme", theme);
-      el("themeToggle").classList.toggle("on", theme === "light");
-      el("chipTheme").textContent = `المظهر: ${theme === "light" ? "فاتح" : "داكن"}`;
-    }
+/* ☰ MENU */
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("open");
+}
 
-    function setPage(page){
-      state.page = page;
-      Object.entries(pages).forEach(([key, node]) => {
-        node.classList.toggle("active", key === page);
-      });
+/* 📚 HOMEWORK */
+function toggleHomework() {
+  document.getElementById("homework").classList.toggle("open");
+}
 
-      document.querySelectorAll(".nav-item").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.page === page);
-      });
-    }
+/* ⚙️ SETTINGS */
+function toggleSettings() {
+  const s = document.getElementById("settings");
+  s.style.display = s.style.display === "block" ? "none" : "block";
+}
 
-    function openProfile(){
-      el("profileOverlay").classList.add("open");
-      el("profileOverlay").setAttribute("aria-hidden", "false");
-    }
+/* 💬 CHAT */
+function send() {
+  const input = document.getElementById("input");
+  if (!input.value) return;
 
-    function closeProfile(){
-      el("profileOverlay").classList.remove("open");
-      el("profileOverlay").setAttribute("aria-hidden", "true");
-    }
+  const div = document.createElement("div");
+  div.className = "msg";
+  div.innerText = input.value;
 
-    function renderUser(){
-      const pfp = currentUser.pfp || "placeholder.png";
-      const name = currentUser.name || fallbackUser.name;
-      const username = currentUser.username || fallbackUser.username;
-      const className = currentUser.class || fallbackUser.class;
+  document.getElementById("messages").appendChild(div);
+  input.value = "";
+}
 
-      el("topPfp").src = pfp;
-      el("sidePfp").src = pfp;
-      el("profilePfp").src = pfp;
+/* 🚪 LOGOUT */
+function logout() {
+  localStorage.removeItem("user");
+  location.href = "index.html";
+}
+</script>
 
-      el("topName").textContent = name;
-      el("topMeta").textContent = `@${username} · ${className}`;
-
-      el("sideName").textContent = name;
-      el("sideMeta").textContent = `@${username}`;
-      el("sideClass").textContent = className;
-
-      el("profileName").textContent = name;
-      el("profileUsername").textContent = `@${username}`;
-      el("profileClassBox").textContent = `الصف: ${className}`;
-
-      el("heroTitle").textContent = `مرحباً بك يا ${name}`;
-      el("heroText").textContent = `هذه لوحة الطالب الخاصة بـ @${username}. تم سحب بيانات الحساب من localStorage وعرضها داخل الواجهة بشكل مباشر.`;
-      el("chipClass").textContent = `الصف: ${className}`;
-
-      el("debugName").value = name;
-      el("debugUser").value = `@${username}`;
-      el("debugClass").value = className;
-    }
-
-    function groupHomework(list){
-      const grouped = {};
-      list.forEach(item => {
-        if(item.class !== currentUser.class) return;
-        if(!grouped[item.subject]) grouped[item.subject] = [];
-        grouped[item.subject].push(item);
-      });
-      return grouped;
-    }
-
-    function renderHomework(){
-      const wrapper = el("homeworkList");
-      const filtered = homeworkData.filter(item => {
-        if(item.class !== currentUser.class) return false;
-        const q = state.search.trim().toLowerCase();
-        if(!q) return true;
-        return (
-          item.subject.toLowerCase().includes(q) ||
-          item.title.toLowerCase().includes(q) ||
-          item.desc.toLowerCase().includes(q)
-        );
-      });
-
-      el("hwCount").textContent = `${filtered.length} عنصر`;
-
-      const grouped = groupHomework(filtered);
-      const subjects = Object.keys(grouped);
-
-      if(subjects.length === 0){
-        wrapper.innerHTML = `
-          <div class="subject">
-            <div class="homework-item">
-              <b>لا توجد واجبات مطابقة</b>
-              <small>جرّب كتابة اسم مادة أخرى في مربع البحث.</small>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      wrapper.innerHTML = subjects.map(subject => {
-        const items = grouped[subject].map(item => `
-          <div class="homework-item">
-            <b>${item.title}</b>
-            <small>${item.desc}</small>
-          </div>
-        `).join("");
-
-        return `
-          <div class="subject">
-            <div class="subject-top">
-              <strong>${subject}</strong>
-              <span class="badge">${grouped[subject].length} واجب</span>
-            </div>
-            ${items}
-          </div>
-        `;
-      }).join("");
-    }
-
-    function initNavigation(){
-      document.querySelectorAll(".nav-item").forEach(btn => {
-        btn.addEventListener("click", () => {
-          setPage(btn.dataset.page);
-          if(window.innerWidth <= 1180) closeSidebar();
-        });
-      });
-    }
-
-    function openSidebar(){
-      document.getElementById("sidebar").style.transform = "translateX(0)";
-      document.getElementById("sidebar").dataset.open = "1";
-    }
-
-    function closeSidebar(){
-      document.getElementById("sidebar").style.transform = "";
-      document.getElementById("sidebar").dataset.open = "0";
-    }
-
-    function initSidebarBehavior(){
-      const sidebar = el("sidebar");
-      const menuBox = el("menuBox");
-      let touchTimer = null;
-
-      menuBox.addEventListener("click", () => {
-        const isMobile = window.matchMedia("(max-width: 1180px)").matches;
-        if(isMobile){
-          const open = sidebar.dataset.open === "1";
-          if(open) closeSidebar();
-          else openSidebar();
-        }
-      });
-
-      menuBox.addEventListener("mouseenter", () => {
-        const isWide = window.matchMedia("(min-width: 1181px)").matches;
-        if(isWide) openSidebar();
-      });
-
-      sidebar.addEventListener("mouseleave", () => {
-        const isWide = window.matchMedia("(min-width: 1181px)").matches;
-        if(isWide) closeSidebar();
-      });
-
-      menuBox.addEventListener("touchstart", () => {
-        touchTimer = setTimeout(() => openSidebar(), 120);
-      }, { passive: true });
-
-      menuBox.addEventListener("touchend", () => {
-        clearTimeout(touchTimer);
-      }, { passive: true });
-
-      document.addEventListener("click", (e) => {
-        const isMobile = window.matchMedia("(max-width: 1180px)").matches;
-        if(!isMobile) return;
-        if(!sidebar.contains(e.target) && !menuBox.contains(e.target)){
-          closeSidebar();
-        }
-      });
-    }
-
-    function initProfileUI(){
-      el("profileMini").addEventListener("click", openProfile);
-      el("profileMini").addEventListener("keydown", (e) => {
-        if(e.key === "Enter" || e.key === " ") openProfile();
-      });
-      el("closeProfile").addEventListener("click", closeProfile);
-      el("profileOverlay").addEventListener("click", (e) => {
-        if(e.target.id === "profileOverlay") closeProfile();
-      });
-    }
-
-    function initSettings(){
-      applyTheme(state.theme);
-
-      el("themeToggle").addEventListener("click", () => {
-        applyTheme(state.theme === "dark" ? "light" : "dark");
-      });
-    }
-
-    function initSearch(){
-      el("searchHw").addEventListener("input", (e) => {
-        state.search = e.target.value;
-        renderHomework();
-      });
-    }
-
-    function init(){
-      renderUser();
-      renderHomework();
-      initNavigation();
-      initSidebarBehavior();
-      initProfileUI();
-      initSettings();
-      initSearch();
-      setPage("home");
-      closeSidebar();
-    }
-
-    init();
-  </script>
 </body>
 </html>
