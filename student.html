@@ -1,145 +1,168 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <title>لوحة الطالب</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الطالب</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+:root{
+  --bg:#0b1220;
+  --panel:#111827;
+  --line:#243042;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#38bdf8;
+  --radius:16px;
+}
 
-    body {
-      font-family: monospace;
-      background: #0f172a;
-      color: #e2e8f0;
-      margin: 0;
-      padding: 15px;
-    }
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+  direction: rtl;
+}
 
-    h2 {
-      text-align: center;
-      color: #38bdf8;
-    }
+/* Layout */
+.container{
+  padding:16px;
+}
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:12px;
+}
 
-    .card {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-      border: 1px solid #334155;
-      animation: fadeIn 0.3s ease;
-    }
+/* Header */
+.header{
+  font-size:1.3rem;
+  font-weight:600;
+  margin-bottom:10px;
+}
 
-    .user-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+/* Homework */
+.homework{
+  background:#0b1322;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  margin-top:10px;
+}
 
-    img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-    }
+.title{
+  font-weight:600;
+}
 
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #38bdf8;
-      color: black;
-      cursor: pointer;
-    }
+.meta{
+  color:var(--muted);
+  font-size:.85rem;
+  margin-top:4px;
+}
 
-    button:hover {
-      background: #0ea5e9;
-    }
+/* Empty state */
+.empty{
+  text-align:center;
+  color:var(--muted);
+  margin-top:20px;
+}
 
-    .empty {
-      text-align: center;
-      color: #94a3b8;
-      margin-top: 10px;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(10px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-  </style>
+/* Badge */
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  background:rgba(56,189,248,.12);
+  color:#bae6fd;
+  border-radius:999px;
+  font-size:.75rem;
+  margin-top:6px;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-<h2>🎓 لوحة الطالب</h2>
+  <div class="header">📚 واجباتك</div>
 
-<!-- 👤 USER INFO -->
-<div class="card">
-  <div class="user-box">
-    <img id="pfp">
-    <div>
-      <b id="name"></b><br>
-      <small id="class"></small>
-    </div>
-  </div>
-</div>
-
-<!-- 📝 HOMEWORK -->
-<div class="card">
-  <h3>📚 الواجبات</h3>
-  <div id="homeworkList" class="empty">لا يوجد واجبات حالياً</div>
-</div>
-
-<!-- 💬 MESSAGES -->
-<div class="card">
-  <h3>💬 الرسائل</h3>
-  <div id="messages" class="empty">لا توجد رسائل</div>
-</div>
-
-<button onclick="logout()">تسجيل خروج</button>
+  <div id="homeworkList"></div>
 
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
-  authDomain: "qayrawan-school-system.firebaseapp.com",
-  projectId: "qayrawan-school-system",
-  storageBucket: "qayrawan-school-system.firebasestorage.app",
-  messagingSenderId: "785321248181",
-  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+/* =========================
+   بيانات الطالب (عدّل هنا فقط)
+========================= */
+const student = {
+  name: "منتظر",
+  class: "4A" // 🔥 غيّر الصف هنا فقط
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+/* =========================
+   قاعدة بيانات الواجبات
+========================= */
+const homeworkData = [
+  {
+    title: "رياضيات - الجبر",
+    description: "حل تمارين صفحة 32",
+    class: "4A",
+    subject: "رياضيات",
+    date: "اليوم"
+  },
+  {
+    title: "إنشاء عربي",
+    description: "اكتب عن مكانك المفضل",
+    class: "4B",
+    subject: "عربي",
+    date: "غداً"
+  },
+  {
+    title: "فيزياء",
+    description: "دراسة الفصل الأول",
+    class: "4A",
+    subject: "فيزياء",
+    date: "اليوم"
+  }
+];
 
-// 🛡️ CHECK LOGIN
-const user = JSON.parse(localStorage.getItem("user"));
-if (!user) {
-  location.href = "index.html";
+/* =========================
+   عرض الواجبات
+========================= */
+function renderHomework(){
+  const container = document.getElementById("homeworkList");
+  container.innerHTML = "";
+
+  const filtered = homeworkData.filter(hw => hw.class === student.class);
+
+  if(filtered.length === 0){
+    container.innerHTML = `<div class="empty">لا يوجد واجبات حالياً 🎉</div>`;
+    return;
+  }
+
+  filtered.forEach(hw => {
+    const div = document.createElement("div");
+    div.className = "homework";
+
+    div.innerHTML = `
+      <div class="title">${hw.title}</div>
+      <div class="meta">${hw.description}</div>
+      <div class="badge">${hw.subject} • ${hw.date}</div>
+    `;
+
+    container.appendChild(div);
+  });
 }
 
-// 👤 LOAD USER INFO
-document.getElementById("name").innerText = user.displayName || "بدون اسم";
-document.getElementById("class").innerText = "الصف: " + (user.class || "-");
-document.getElementById("pfp").src = user.pfp || "https://via.placeholder.com/50";
+/* =========================
+   تشغيل
+========================= */
+renderHomework();
 
-// 🚪 LOGOUT
-window.logout = () => {
-  localStorage.removeItem("user");
-  location.href = "index.html";
-};
 </script>
 
 </body>
