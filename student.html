@@ -1,376 +1,185 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام الطالب</title>
+<title>Student Panel</title>
 
 <style>
-:root{
-  --bg:#0b1220;
-  --panel:#111827;
-  --line:#243042;
-  --text:#e5e7eb;
-  --muted:#9ca3af;
-  --accent:#38bdf8;
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f1115;
+  color: white;
 }
 
-body{
-  margin:0;
-  font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-  user-select:none;
+/* TOP BAR */
+.topbar {
+  height: 60px;
+  background: #151823;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
 }
 
-/* ===== شريط علوي ===== */
-.topbar{
-  height:56px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 12px;
-  background:var(--panel);
-  border-bottom:1px solid var(--line);
+.menuBtn {
+  font-size: 28px;
+  cursor: pointer;
 }
 
-.icon{
-  font-size:22px;
-  cursor:pointer;
+/* PROFILE */
+.profileBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: gray;
+  cursor: pointer;
 }
 
-.profile-pic{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  overflow:hidden;
-  border:2px solid var(--accent);
-  cursor:pointer;
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: -220px;
+  width: 220px;
+  height: 100%;
+  background: #1a1f2e;
+  transition: 0.3s;
+  padding: 10px;
 }
 
-.profile-pic img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.sidebar:hover {
+  left: 0;
 }
 
-/* ===== القائمة الجانبية ===== */
-.sidebar{
-  position:fixed;
-  top:0;
-  right:-260px;
-  width:230px;
-  height:100%;
-  background:var(--panel);
-  border-left:1px solid var(--line);
-  transition:.25s;
-  padding:14px;
-  z-index:50;
+.sidebar a {
+  display: block;
+  padding: 12px;
+  color: white;
+  text-decoration: none;
 }
 
-.sidebar.open{ right:0; }
-
-.menu-btn{
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  background:#1f2937;
-  color:white;
-  border-radius:10px;
-  cursor:pointer;
+.sidebar a:hover {
+  background: #2a3145;
 }
 
-/* ===== الصفحات ===== */
-.container{ padding:14px; }
-.page{ display:none; }
-.page.active{ display:block; }
-
-/* ===== ملف شخصي (ستايل تيليجرام) ===== */
-.profile-screen{
-  position:fixed;
-  inset:0;
-  background:var(--bg);
-  display:none;
-  flex-direction:column;
-  z-index:100;
+/* MAIN */
+.main {
+  padding: 20px;
 }
 
-.profile-screen.show{ display:flex; }
-
-.profile-header{
-  padding:20px;
-  text-align:center;
-  background:var(--panel);
-  border-bottom:1px solid var(--line);
+/* HOMEWORK PANEL */
+.hwPanel {
+  background: #1a1f2e;
+  padding: 15px;
+  border-radius: 10px;
 }
 
-.big-pfp{
-  width:95px;
-  height:95px;
-  border-radius:50%;
-  margin:auto;
-  overflow:hidden;
-  border:3px solid var(--accent);
-}
-
-.big-pfp img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.profile-info{
-  margin-top:8px;
-  color:var(--muted);
-}
-
-.close-btn{
-  margin-top:auto;
-  padding:12px;
-  border:none;
-  background:#1f2937;
-  color:white;
-  cursor:pointer;
-}
-
-/* ===== الواجبات (مجلدات) ===== */
-.subject{
-  margin-top:12px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  overflow:hidden;
-}
-
-.subject-title{
-  padding:12px;
-  background:#111827;
-  cursor:pointer;
-  display:flex;
-  justify-content:space-between;
-}
-
-.subject-content{
-  display:none;
-  padding:10px;
-  background:#0b1322;
-}
-
-.subject.open .subject-content{
-  display:block;
-}
-
-.hw{
-  padding:10px;
-  margin:8px 0;
-  border-radius:10px;
-  background:#111827;
-  border:1px solid var(--line);
-}
-
-.small{ color:var(--muted); font-size:.85rem; }
-
-/* ===== قائمة زر يمين (ويندوز) ===== */
-.context-menu,
-.new-menu{
-  position:fixed;
-  display:none;
-  background:#111827;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:6px;
-  width:180px;
-  z-index:9999;
-}
-
-.context-item{
-  padding:8px;
-  cursor:pointer;
-  border-radius:6px;
-}
-
-.context-item:hover{
-  background:#1f2937;
+/* PROFILE MODAL */
+.profileModal {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 250px;
+  background: #1a1f2e;
+  padding: 15px;
+  border-radius: 10px;
+  display: none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== شريط علوي ===== -->
+<!-- TOP -->
 <div class="topbar">
-  <div class="icon" onclick="toggleSidebar()">☰</div>
-  <div>📚 نظام الطالب</div>
-  <div class="profile-pic" onclick="فتح_الملف()">
-    <img id="pfpSmall" src="placeholder.png">
+  <div class="menuBtn">≡</div>
+  <div class="profileBtn" onclick="toggleProfile()"></div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <a href="#">🏠 Home</a>
+  <a href="#">📚 Homework</a>
+  <a href="#">📢 Announcements</a>
+  <a href="#">⚙️ Settings</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <h2>Student Dashboard</h2>
+
+  <div class="hwPanel">
+    <h3>Homework</h3>
+    <div id="hwList"></div>
   </div>
 </div>
 
-<!-- ===== القائمة ===== -->
-<div id="sidebar" class="sidebar">
-  <button class="menu-btn" onclick="go('home')">🏠 الرئيسية</button>
-  <button class="menu-btn" onclick="go('homework')">📚 الواجبات</button>
+<!-- PROFILE -->
+<div class="profileModal" id="profile">
+  <h3 id="pName"></h3>
+  <p id="pUser"></p>
+  <p id="pClass"></p>
 </div>
-
-<!-- ===== الصفحات ===== -->
-<div class="container">
-
-  <div id="home" class="page active">
-    <h3>🏠 الرئيسية</h3>
-    <p class="small">مرحباً بك داخل نظام الطالب 👋</p>
-  </div>
-
-  <div id="homework" class="page">
-    <h3>📚 الواجبات</h3>
-    <div id="subjects"></div>
-  </div>
-
-</div>
-
-<!-- ===== ملف شخصي ===== -->
-<div id="profile" class="profile-screen">
-
-  <div class="profile-header">
-    <div class="big-pfp">
-      <img id="pfpBig" src="placeholder.png">
-    </div>
-
-    <h3 id="nameText">...</h3>
-    <div class="profile-info" id="userText">@</div>
-    <div class="profile-info" id="classText"></div>
-  </div>
-
-  <button class="close-btn" onclick="closeProfile()">رجوع</button>
-</div>
-
-<!-- ===== قائمة زر يمين ===== -->
-<div id="contextMenu" class="context-menu"></div>
 
 <script>
+/* FIRESTORE STYLE DB */
+const db = {
+  users: {
+    montadar: {
+      name: "منتظر",
+      username: "montadar",
+      class: "4A",
+      pfp: "placeholder.png"
+    }
+  },
 
-/* ===== بيانات تسجيل الدخول (جلسة) ===== */
-const session = {
-  name: "منتظر",
-  username: "montadar",
-  class: "4A",
-  pfp: "placeholder.png"
+  homework: {
+    hw1: {
+      title: "حل صفحة 32",
+      class: "4A"
+    },
+    hw2: {
+      title: "قراءة الفصل الأول",
+      class: "4A"
+    }
+  }
 };
 
-/* ===== بيانات الواجبات ===== */
-let homeworkData = [
-  {subject:"رياضيات", title:"حل صفحة 32", desc:"تمارين مهمة", class:"4A"},
-  {subject:"رياضيات", title:"واجب إضافي", desc:"أسئلة 1-5", class:"4A"},
-  {subject:"فيزياء", title:"قراءة الفصل الأول", desc:"مراجعة", class:"4A"},
-  {subject:"إنشاء", title:"موضوع تعبير", desc:"عن المستقبل", class:"4A"}
-];
+let currentUser = db.users.montadar;
 
-/* ===== تحديث الملف الشخصي ===== */
-function renderProfile(){
-  document.getElementById("nameText").innerText = session.name;
-  document.getElementById("userText").innerText = "@"+session.username;
-  document.getElementById("classText").innerText = "الصف: "+session.class;
-
-  document.getElementById("pfpBig").src = session.pfp;
-  document.getElementById("pfpSmall").src = session.pfp;
-}
-renderProfile();
-
-/* ===== تنقل الصفحات ===== */
-function go(page){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(page).classList.add("active");
-  toggleSidebar(false);
+/* LOAD PROFILE */
+function loadProfile(){
+  document.getElementById("pName").innerText = currentUser.name;
+  document.getElementById("pUser").innerText = "@"+currentUser.username;
+  document.getElementById("pClass").innerText = currentUser.class;
 }
 
-/* ===== القائمة الجانبية ===== */
-function toggleSidebar(force){
-  const s = document.getElementById("sidebar");
-  if(force===false){ s.classList.remove("open"); return; }
-  s.classList.toggle("open");
+/* TOGGLE PROFILE */
+function toggleProfile(){
+  let p = document.getElementById("profile");
+  p.style.display = (p.style.display === "block") ? "none" : "block";
 }
 
-/* ===== فتح/إغلاق الملف ===== */
-function فتح_الملف(){
-  document.getElementById("profile").classList.add("show");
-}
-
-function closeProfile(){
-  document.getElementById("profile").classList.remove("show");
-}
-
-/* ===== بناء الواجبات (نظام المجلدات) ===== */
+/* LOAD HOMEWORK */
 function loadHomework(){
-  const container = document.getElementById("subjects");
+  let container = document.getElementById("hwList");
   container.innerHTML = "";
 
-  const grouped = {};
+  Object.values(db.homework).forEach(hw => {
+    let div = document.createElement("div");
+    div.style.padding = "10px";
+    div.style.marginTop = "10px";
+    div.style.background = "#22283a";
+    div.style.borderRadius = "8px";
+    div.innerText = hw.title;
 
-  homeworkData.forEach(h=>{
-    if(h.class !== session.class) return;
-    if(!grouped[h.subject]) grouped[h.subject] = [];
-    grouped[h.subject].push(h);
+    container.appendChild(div);
   });
-
-  for(let subject in grouped){
-
-    const box = document.createElement("div");
-    box.className = "subject";
-
-    box.innerHTML = `
-      <div class="subject-title" onclick="this.parentElement.classList.toggle('open')">
-        <span>📘 ${subject}</span>
-        <span>▼</span>
-      </div>
-
-      <div class="subject-content">
-        ${grouped[subject].map(h=>`
-          <div class="hw">
-            <b>${h.title}</b>
-            <div class="small">${h.desc}</div>
-          </div>
-        `).join("")}
-      </div>
-    `;
-
-    container.appendChild(box);
-  }
 }
+
+loadProfile();
 loadHomework();
-
-/* ===== زر يمين (Windows "New") ===== */
-document.addEventListener("contextmenu",(e)=>{
-  e.preventDefault();
-
-  const menu = document.getElementById("contextMenu");
-  menu.style.display="block";
-  menu.style.left=e.pageX+"px";
-  menu.style.top=e.pageY+"px";
-
-  menu.innerHTML=`
-    <div class="context-item" onclick="createHomework()">➕ جديد واجب</div>
-  `;
-});
-
-document.addEventListener("click",()=>{
-  document.getElementById("contextMenu").style.display="none";
-});
-
-/* ===== إنشاء واجب ===== */
-function createHomework(){
-  const subject = prompt("المادة:");
-  const title = prompt("عنوان الواجب:");
-  const desc = prompt("الوصف:");
-
-  homeworkData.push({
-    subject,
-    title,
-    desc,
-    class: session.class
-  });
-
-  loadHomework();
-}
-
 </script>
 
 </body>
