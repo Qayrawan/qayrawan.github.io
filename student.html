@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تطبيق الطالب</title>
+<title>Student OS</title>
 
 <style>
 :root{
@@ -22,52 +22,54 @@ body{
   color:var(--text);
 }
 
-/* TOPBAR */
+/* TOPBAR (reversed flow) */
 .topbar{
-  height:55px;
+  height:56px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:0 12px;
   border-bottom:1px solid var(--line);
-  background:#111827;
+  background:var(--panel);
 }
 
 .icon{
-  font-size:20px;
+  font-size:22px;
   cursor:pointer;
 }
 
-.profile{
+.profile-pic{
   width:36px;
   height:36px;
   border-radius:50%;
   background:#1f2937;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  overflow:hidden;
   cursor:pointer;
+  border:2px solid var(--accent);
+}
+
+.profile-pic img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 /* SIDEBAR */
 .sidebar{
   position:fixed;
   top:0;
-  right:-250px;
-  width:220px;
+  right:-260px;
+  width:230px;
   height:100%;
-  background:#111827;
+  background:var(--panel);
   border-left:1px solid var(--line);
-  transition:.2s;
-  padding:16px;
+  transition:.25s;
+  padding:14px;
 }
 
-.sidebar.open{
-  right:0;
-}
+.sidebar.open{ right:0; }
 
 .menu-btn{
-  display:block;
   width:100%;
   margin-top:10px;
   padding:10px;
@@ -78,112 +80,173 @@ body{
   cursor:pointer;
 }
 
-/* CONTENT */
-.container{
-  padding:16px;
-}
+/* PAGES */
+.container{ padding:14px; }
 
-.page{
+.page{ display:none; }
+.page.active{ display:block; }
+
+/* TELEGRAM STYLE PROFILE */
+.profile-screen{
+  position:fixed;
+  inset:0;
+  background:var(--bg);
   display:none;
+  flex-direction:column;
 }
 
-.page.active{
+.profile-screen.show{ display:flex; }
+
+.profile-header{
+  padding:20px;
+  text-align:center;
+  border-bottom:1px solid var(--line);
+  background:var(--panel);
+}
+
+.big-pfp{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  margin:auto;
+  overflow:hidden;
+  border:3px solid var(--accent);
+}
+
+.big-pfp img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profile-info{
+  margin-top:10px;
+  color:var(--muted);
+}
+
+/* HOMEWORK LIKE TELEGRAM CHATS */
+.subject{
+  margin-top:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.subject-title{
+  padding:12px;
+  background:#111827;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.subject-content{
+  display:none;
+  padding:10px;
+  background:#0b1322;
+}
+
+.subject.open .subject-content{
   display:block;
 }
 
-/* HOMEWORK */
 .hw{
-  background:#0b1322;
-  border:1px solid var(--line);
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
-}
-
-/* PROFILE PANEL */
-.profile-panel{
-  position:fixed;
-  top:60px;
-  left:10px;
-  right:10px;
+  padding:10px;
+  margin:8px 0;
+  border-radius:10px;
   background:#111827;
   border:1px solid var(--line);
-  border-radius:14px;
-  padding:16px;
-  display:none;
 }
 
-.profile-panel.show{
-  display:block;
-}
+.small{ color:var(--muted); font-size:.85rem; }
 
-.small{
-  color:var(--muted);
-  font-size:.85rem;
+.close-btn{
+  padding:10px;
+  background:#1f2937;
+  border:none;
+  color:white;
+  width:100%;
+  cursor:pointer;
+  margin-top:auto;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="icon" onclick="toggleSidebar()">☰</div>
-  <div>📚 التطبيق</div>
-  <div class="profile" onclick="toggleProfile()">👤</div>
+  <div>📚 Student OS</div>
+
+  <div class="profile-pic" onclick="openProfile()">
+    <img src="placeholder.png" alt="pfp">
+  </div>
 </div>
 
 <!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
   <button class="menu-btn" onclick="go('home')">🏠 الرئيسية</button>
-  <button class="menu-btn" onclick="go('announcements')">📢 الإعلانات</button>
   <button class="menu-btn" onclick="go('homework')">📚 الواجبات</button>
+  <button class="menu-btn" onclick="go('announcements')">📢 الإعلانات</button>
 </div>
 
-<!-- PROFILE PANEL -->
-<div id="profilePanel" class="profile-panel">
-  <div><strong>👤 منتظر</strong></div>
-  <div class="small">Username: montadar</div>
-  <div class="small">الصف: 4A</div>
-</div>
-
-<!-- CONTENT -->
+<!-- MAIN -->
 <div class="container">
 
-  <!-- HOME -->
   <div id="home" class="page active">
     <h3>🏠 الرئيسية</h3>
-    <p class="small">أهلاً بك 👋</p>
+    <p class="small">مرحباً بك داخل النظام 👋</p>
   </div>
 
-  <!-- ANNOUNCEMENTS -->
   <div id="announcements" class="page">
     <h3>📢 الإعلانات</h3>
-    <p class="small">لا توجد إعلانات حالياً</p>
+    <p class="small">لا يوجد جديد حالياً</p>
   </div>
 
-  <!-- HOMEWORK -->
+  <!-- HOMEWORK (TELEGRAM STYLE) -->
   <div id="homework" class="page">
-    <h3>📚 واجباتك</h3>
-    <div id="hwList"></div>
+    <h3>📚 الواجبات</h3>
+    <div id="subjects"></div>
   </div>
 
+</div>
+
+<!-- PROFILE SCREEN -->
+<div id="profile" class="profile-screen">
+
+  <div class="profile-header">
+    <div class="big-pfp">
+      <img src="placeholder.png">
+    </div>
+
+    <h3>منتظر</h3>
+    <div class="profile-info">@montadar</div>
+    <div class="profile-info">الصف: 4A</div>
+  </div>
+
+  <div style="padding:14px;">
+    <p class="small">👤 هذا هو ملفك الشخصي مثل Telegram</p>
+  </div>
+
+  <button class="close-btn" onclick="closeProfile()">رجوع</button>
 </div>
 
 <script>
 
-/* STUDENT */
 const student = {
-  name: "منتظر",
-  username: "montadar",
-  class: "4A"
+  name:"منتظر",
+  username:"montadar",
+  class:"4A",
+  pfp:"placeholder.png"
 };
 
-/* DATA */
 const homeworkData = [
-  {title:"رياضيات", desc:"حل صفحة 32", class:"4A"},
-  {title:"فيزياء", desc:"اقرأ الفصل الأول", class:"4A"},
-  {title:"إنشاء", desc:"موضوع تعبير", class:"4B"}
+  {subject:"رياضيات", title:"حل صفحة 32", desc:"تمارين مهمة", class:"4A"},
+  {subject:"رياضيات", title:"واجب إضافي", desc:"أسئلة 1-5", class:"4A"},
+  {subject:"فيزياء", title:"قراءة", desc:"الفصل الأول", class:"4A"},
+  {subject:"إنشاء", title:"موضوع", desc:"اكتب عن المستقبل", class:"4A"}
 ];
 
 /* NAV */
@@ -201,33 +264,51 @@ function toggleSidebar(force){
 }
 
 /* PROFILE */
-function toggleProfile(){
-  document.getElementById("profilePanel").classList.toggle("show");
+function openProfile(){
+  document.getElementById("profile").classList.add("show");
+}
+function closeProfile(){
+  document.getElementById("profile").classList.remove("show");
 }
 
-/* HOMEWORK FILTER */
-function loadHW(){
-  const list = document.getElementById("hwList");
-  list.innerHTML = "";
+/* HOMEWORK GROUPED BY SUBJECT */
+function loadHomework(){
+  const container = document.getElementById("subjects");
+  container.innerHTML = "";
 
-  const filtered = homeworkData.filter(h => h.class === student.class);
+  const grouped = {};
 
-  if(filtered.length === 0){
-    list.innerHTML = `<p class="small">لا يوجد واجبات 🎉</p>`;
-    return;
-  }
+  homeworkData.forEach(h=>{
+    if(h.class !== student.class) return;
+    if(!grouped[h.subject]) grouped[h.subject] = [];
+    grouped[h.subject].push(h);
+  });
 
-  filtered.forEach(h=>{
-    list.innerHTML += `
-      <div class="hw">
-        <b>${h.title}</b>
-        <div class="small">${h.desc}</div>
+  Object.keys(grouped).forEach(subject=>{
+    const div = document.createElement("div");
+    div.className = "subject";
+
+    div.innerHTML = `
+      <div class="subject-title" onclick="this.parentElement.classList.toggle('open')">
+        <span>📘 ${subject}</span>
+        <span>⌄</span>
+      </div>
+
+      <div class="subject-content">
+        ${grouped[subject].map(h=>`
+          <div class="hw">
+            <b>${h.title}</b>
+            <div class="small">${h.desc}</div>
+          </div>
+        `).join("")}
       </div>
     `;
+
+    container.appendChild(div);
   });
 }
 
-loadHW();
+loadHomework();
 
 </script>
 
