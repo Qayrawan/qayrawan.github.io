@@ -371,8 +371,8 @@ function updateBadge(id, count) {
 document.getElementById("pfpBox").innerHTML =
   `<img src="${sanitize(user.pfp || "placeholder.png")}" alt="pfp">`;
 
-document.getElementById("homeGreeting").textContent = `👋 أهلاً ${user.name}`;
-document.getElementById("pName").textContent  = user.name;
+document.getElementById("homeGreeting").textContent = `👋 أهلاً ${user.displayName}`;
+document.getElementById("pName").textContent  = user.displayName;
 document.getElementById("pUser").textContent  = `@${user.username}`;
 document.getElementById("pClass").textContent = user.class;
 
