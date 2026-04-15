@@ -24,9 +24,12 @@
       border-bottom: 2px solid #334155;
     }
 
-    header h2 {
-      margin: 0;
-      font-size: 18px;
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: url("placeholder.png");
+      background-size: cover;
     }
 
     .logout {
@@ -38,74 +41,39 @@
       border-radius: 6px;
     }
 
-    .container {
-      padding: 15px;
-    }
+    .container { padding: 15px; }
 
     .card {
       background: #1e293b;
       padding: 15px;
       border-radius: 12px;
       margin-bottom: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-
-    .card h3 {
-      margin-top: 0;
-      font-size: 16px;
-      margin-bottom: 10px;
     }
 
     .homework {
-      margin-bottom: 10px;
-      padding: 10px;
       background: #334155;
+      padding: 10px;
       border-radius: 8px;
-    }
-
-    .submit-box {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
+      margin-bottom: 8px;
     }
 
     textarea {
-      flex: 1;
-      resize: none;
+      width: 100%;
+      margin-top: 10px;
       padding: 8px;
       border-radius: 8px;
       border: none;
-      outline: none;
       background: #0f172a;
       color: white;
     }
 
-    .icon-btn {
-      background: #475569;
-      border: none;
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
-    }
-
-    .send-btn {
-      background: #22c55e;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
-    }
-
-    .settings {
+    .actions {
+      margin-top: 8px;
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 6px;
     }
 
-    .settings button {
-      background: #475569;
+    button {
       border: none;
       padding: 8px;
       border-radius: 8px;
@@ -113,119 +81,136 @@
       color: white;
     }
 
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: url("placeholder.png");
-      background-size: cover;
-    }
+    .send { background: #22c55e; }
+    .icon { background: #475569; }
 
   </style>
 </head>
+
 <body>
 
 <header>
-  <div style="display:flex; align-items:center; gap:10px;">
+  <div style="display:flex; gap:10px; align-items:center;">
     <div class="avatar"></div>
-    <h2 id="studentName">طالب</h2>
+    <h3 id="studentName">...</h3>
   </div>
   <button class="logout" onclick="logout()">تسجيل خروج</button>
 </header>
 
 <div class="container">
 
-  <!-- 📚 Homework Section -->
+  <!-- 📚 Homework -->
   <div class="card">
     <h3>📚 الواجبات</h3>
-
     <div id="homeworkList"></div>
 
-    <!-- Submit -->
-    <div class="submit-box">
-      <textarea id="hwInput" rows="2" placeholder="اكتب الحل..."></textarea>
-      <button class="icon-btn" title="إرفاق">+</button>
-      <button class="icon-btn" title="تسجيل صوتي">🎤</button>
-      <button class="send-btn" onclick="submitHW()">إرسال</button>
-    </div>
-  </div>
+    <textarea id="hwInput" rows="2" placeholder="اكتب الحل..."></textarea>
 
-  <!-- 📊 Grades -->
-  <div class="card">
-    <h3>📊 الدرجات</h3>
-    <p id="grades">لا توجد بيانات حالياً</p>
-  </div>
-
-  <!-- ⚙️ Settings -->
-  <div class="card">
-    <h3>⚙️ الإعدادات</h3>
-    <div class="settings">
-      <button onclick="toggleDark()">تبديل الوضع</button>
-      <button onclick="changeName()">تغيير الاسم</button>
-      <button onclick="clearHW()">مسح الواجبات</button>
+    <div class="actions">
+      <button class="icon">+</button>
+      <button class="icon">🎤</button>
+      <button class="send" onclick="submitHW()">إرسال</button>
     </div>
   </div>
 
 </div>
 
-<script>
-  // 🔐 Check login
-  const user = localStorage.getItem("student");
+<!-- 🔥 Firebase Script -->
+<script type="module">
 
-  if (!user) {
-    location.href = "index.html";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  onSnapshot,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// 🔐 Your config
+const firebaseConfig = {
+  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain: "qayrawan-school-system.firebaseapp.com",
+  projectId: "qayrawan-school-system",
+  storageBucket: "qayrawan-school-system.firebasestorage.app",
+  messagingSenderId: "785321248181",
+  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
+};
+
+// 🚀 Init
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+// 🔐 AUTH CHECK (THE MOST IMPORTANT PART)
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+
+    document.getElementById("studentName").innerText =
+      user.email || "طالب";
+
+    listenHomework(user.uid);
+
   } else {
-    document.getElementById("studentName").innerText = user;
+    location.href = "index.html";
   }
+});
 
-  // 📚 Load Homework
-  function loadHW() {
+// 📡 REALTIME HOMEWORK (THIS IS 🔥)
+function listenHomework(uid) {
+  const q = query(
+    collection(db, "homework"),
+    where("uid", "==", uid),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, (snapshot) => {
     const list = document.getElementById("homeworkList");
     list.innerHTML = "";
 
-    const data = JSON.parse(localStorage.getItem("hw") || "[]");
+    snapshot.forEach((doc) => {
+      const data = doc.data();
 
-    data.forEach((hw, i) => {
       const div = document.createElement("div");
       div.className = "homework";
-      div.innerText = hw;
+      div.innerText = data.text;
+
       list.appendChild(div);
     });
-  }
+  });
+}
 
-  loadHW();
+// ✍️ SUBMIT HOMEWORK
+window.submitHW = async function () {
+  const input = document.getElementById("hwInput");
 
-  // ✍️ Submit Homework
-  function submitHW() {
-    const input = document.getElementById("hwInput");
-    if (input.value.trim() === "") return;
+  if (!input.value.trim()) return;
 
-    let data = JSON.parse(localStorage.getItem("hw") || "[]");
-    data.push(input.value);
-    localStorage.setItem("hw", JSON.stringify(data));
+  await addDoc(collection(db, "homework"), {
+    text: input.value,
+    uid: currentUser.uid,
+    createdAt: Date.now()
+  });
 
-    input.value = "";
-    loadHW();
-  }
+  input.value = "";
+};
 
-  // ⚙️ Settings
-  function toggleDark() {
-    document.body.style.background =
-      document.body.style.background === "white" ? "#0f172a" : "white";
-  }
+// 🚪 LOGOUT
+window.logout = function () {
+  signOut(auth);
+};
 
-  function changeName() {
-    let newName = prompt("ادخل الاسم الجديد:");
-    if (newName) {
-      localStorage.setItem("student", newName);
-      document.getElementById("studentName").innerText = newName;
-    }
-  }
-
-  function clearHW() {
-    localStorage.removeItem("hw");
-    loadHW();
-  }
 </script>
 
 </body>
