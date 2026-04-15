@@ -6,208 +6,228 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-}
+*{box-sizing:border-box;font-family:Arial}
+body{margin:0;background:#0f172a;color:white;overflow:hidden}
 
 /* TOPBAR */
 .topbar{
   height:60px;
   background:#111827;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
   padding:0 12px;
   border-bottom:1px solid #1f2937;
 }
 
-.menuBtn{font-size:24px;cursor:pointer;}
-.title{font-weight:bold;}
+.menuBtn{font-size:26px;cursor:pointer}
+.title{font-weight:bold}
 
 .pfp{
   width:38px;height:38px;border-radius:50%;
-  overflow:hidden;background:#374151;cursor:pointer;
+  overflow:hidden;cursor:pointer;background:#374151;
 }
-.pfp img{width:100%;height:100%;object-fit:cover;}
+.pfp img{width:100%;height:100%;object-fit:cover}
+
+/* PROFILE POPUP */
+.profileBar{
+  position:fixed;
+  top:65px;
+  right:10px;
+  background:#111827;
+  border:1px solid #1f2937;
+  border-radius:10px;
+  padding:10px;
+  display:none;
+  z-index:50;
+}
 
 /* MENU */
 .menu{
   position:fixed;
   right:-260px;
   top:0;
-  width:260px;
-  height:100%;
+  width:260px;height:100%;
   background:#111827;
-  transition:.25s;
+  transition:.3s;
   padding-top:60px;
-  z-index:10;
+  border-left:1px solid #1f2937;
+  z-index:40;
 }
-.menu.open{right:0;}
+.menu.open{right:0}
+
 .menu div{
   padding:15px;
   border-bottom:1px solid #1f2937;
   cursor:pointer;
 }
-.menu div:hover{background:#1f2937;}
-
-/* SECTIONS */
-.section{
-  display:none;
-  padding:12px;
-  height:calc(100vh - 60px);
-  overflow:auto;
-}
-.active{display:block;}
-
-/* HOME */
-.home-card{
-  background:#1f2937;
-  padding:14px;
-  border-radius:12px;
-}
-
-/* HOMEWORK */
-.subject{
-  background:#1f2937;
-  margin:10px 0;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.subject-header{
-  padding:12px;
-  cursor:pointer;
-  display:flex;
-  justify-content:space-between;
-}
-
-.subject-body{
-  display:none;
-  padding:10px;
-  border-top:1px solid #374151;
-  color:#9ca3af;
-}
-
-.subject.open .subject-body{display:block;}
 
 /* CHAT */
+.chat{
+  height:calc(100vh - 60px);
+  display:flex;
+  flex-direction:column;
+}
+
 .messages{
-  height:75%;
-  overflow:auto;
-  padding-bottom:10px;
+  flex:1;
+  overflow-y:auto;
+  padding:10px;
 }
 
 .msg{
   background:#1f2937;
-  padding:8px 10px;
+  padding:10px;
   margin:6px 0;
   border-radius:10px;
   max-width:75%;
 }
 
-.msg b{color:#38bdf8;}
+.meta{
+  font-size:12px;
+  color:#9ca3af;
+  margin-bottom:4px;
+}
 
+/* INPUT */
 .inputBox{
   display:flex;
   gap:8px;
+  padding:10px;
 }
 
 input{
   flex:1;
   padding:10px;
-  background:#1f2937;
   border:none;
-  color:white;
   border-radius:8px;
+  background:#1f2937;
+  color:white;
 }
 
 button{
   padding:10px;
-  background:#2563eb;
   border:none;
+  background:#2563eb;
   color:white;
   border-radius:8px;
   cursor:pointer;
 }
 
-/* PROFILE */
-.profile{
+/* HOMEWORK PANEL */
+.homework{
   position:fixed;
-  top:70px;
-  right:10px;
-  background:#111827;
-  padding:12px;
-  border-radius:12px;
-  display:none;
-  z-index:20;
-  width:220px;
+  left:-320px;
+  top:0;
+  width:320px;height:100%;
+  background:#0b1220;
+  transition:.3s;
+  padding:60px 10px;
+  border-right:1px solid #1f2937;
+  z-index:30;
 }
-.profile img{
-  width:60px;height:60px;border-radius:50%;
+.homework.open{left:0}
+
+.subject{
+  padding:10px;
+  margin:6px 0;
+  background:#1f2937;
+  border-radius:8px;
+  cursor:pointer;
 }
 
-/* ANIMATION */
-.fade{
-  animation:fade .2s ease;
+/* SUBJECT VIEW */
+.subjectView{
+  position:fixed;
+  left:0;
+  top:0;
+  width:100%;height:100%;
+  background:#0f172a;
+  display:none;
+  flex-direction:column;
+  z-index:60;
 }
-@keyframes fade{
-  from{opacity:0;transform:translateY(6px);}
-  to{opacity:1;}
+
+.subjectMessages{
+  flex:1;
+  overflow:auto;
+  padding:10px;
 }
+
+.readonly{
+  text-align:center;
+  padding:10px;
+  color:#9ca3af;
+}
+
+/* SETTINGS */
+.settings{
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  background:#111827;
+  border:1px solid #1f2937;
+  padding:10px;
+  display:none;
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="menuBtn" onclick="toggleMenu()">≡</div>
   <div class="title">لوحة الطالب</div>
   <div class="pfp" onclick="toggleProfile()" id="pfpBox"></div>
 </div>
 
+<!-- PROFILE -->
+<div class="profileBar" id="profileBar"></div>
+
+<!-- MENU -->
 <div class="menu" id="menu">
-  <div onclick="openSection('home')">🏠 الرئيسية</div>
-  <div onclick="openSection('homework')">📚 الواجبات</div>
-  <div onclick="openSection('chat')">💬 الدردشة</div>
+  <div onclick="toggleHomework()">📚 الواجبات</div>
+  <div onclick="toggleSettings()">⚙️ الإعدادات</div>
   <div onclick="logout()">🚪 تسجيل خروج</div>
 </div>
 
-<!-- HOME -->
-<div id="home" class="section active fade">
-  <div class="home-card">
-    <h3>👋 أهلاً ${""}</h3>
-    <p style="color:#9ca3af">تابع واجباتك وتواصل مع زملائك بسهولة</p>
-  </div>
-</div>
-
 <!-- HOMEWORK -->
-<div id="homework" class="section fade"></div>
+<div class="homework" id="homework"></div>
+
+<!-- SUBJECT VIEW -->
+<div class="subjectView" id="subjectView">
+  <div class="topbar">
+    <button onclick="closeSubject()">⬅</button>
+    <div id="subjectTitle"></div>
+  </div>
+  <div class="subjectMessages" id="subjectMessages"></div>
+  <div class="readonly">📢 هذا القسم للمعلم فقط</div>
+</div>
 
 <!-- CHAT -->
-<div id="chat" class="section fade">
+<div class="chat">
   <div class="messages" id="messages"></div>
+
   <div class="inputBox">
-    <input id="msgInput" placeholder="اكتب رسالة...">
-    <button onclick="sendMsg()">إرسال</button>
+    <input id="input" placeholder="اكتب رسالة..." />
+    <button onclick="send()">إرسال</button>
   </div>
 </div>
 
-<!-- PROFILE -->
-<div class="profile" id="profile"></div>
-
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* FIREBASE */
-const app = initializeApp({
-  apiKey:"AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
-  authDomain:"qayrawan-school-system.firebaseapp.com",
-  projectId:"qayrawan-school-system"
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain: "qayrawan-school-system.firebaseapp.com",
+  projectId: "qayrawan-school-system",
+};
+
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* USER */
@@ -215,89 +235,105 @@ let user = JSON.parse(localStorage.getItem("user"));
 if(!user) location.href="index.html";
 
 /* PROFILE */
-document.getElementById("pfpBox").innerHTML =
-`<img src="${user.pfp || 'placeholder.png'}">`;
+pfpBox.innerHTML = `<img src="${user.pfp || 'placeholder.png'}">`;
 
 function toggleProfile(){
-  const p = document.getElementById("profile");
-  p.innerHTML = `
-    <img src="${user.pfp || 'placeholder.png'}">
-    <h4>${user.name}</h4>
-    <p>@${user.username}</p>
-    <p>${user.class}</p>
+  const bar = document.getElementById("profileBar");
+  bar.innerHTML = `
+    <b>${user.name}</b><br>
+    @${user.username}<br>
+    الصف: ${user.class}
   `;
-  p.style.display = p.style.display=="block"?"none":"block";
+  bar.style.display = "block";
 }
 
-/* MENU */
-window.toggleMenu=()=>{
-  document.getElementById("menu").classList.toggle("open");
-};
-
-window.openSection=(id)=>{
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  toggleMenu();
-};
-
-/* HOMEWORK */
-const subjects=[
-"التربية الاسلامية","اللغة العربية","اللغة الانجليزية",
-"الاحياء","الكيمياء","الفيزياء","الرياضيات",
-"جرائم حزب البعث","اللغة الفرنسية","التربية الفنية","الحاسوب"
-];
-
-const hwDiv=document.getElementById("homework");
-
-subjects.forEach(sub=>{
-  const div=document.createElement("div");
-  div.className="subject";
-  div.innerHTML=`
-    <div class="subject-header">${sub} ⬅️</div>
-    <div class="subject-body">لا يوجد واجب حالياً</div>
-  `;
-  div.onclick=()=>div.classList.toggle("open");
-  hwDiv.appendChild(div);
+/* close profile outside click */
+document.addEventListener("click", e=>{
+  if(!e.target.closest(".pfp") && !e.target.closest("#profileBar")){
+    profileBar.style.display="none";
+  }
 });
 
-/* CHAT */
-const ref=collection(db,"classes",user.class,"messages");
+/* MENU */
+function toggleMenu(){
+  menu.classList.toggle("open");
+}
 
-window.sendMsg=async ()=>{
-  const input=document.getElementById("msgInput");
+/* SETTINGS */
+function toggleSettings(){
+  alert("قريباً...");
+}
+
+/* HOMEWORK SUBJECTS */
+const subjects = [
+"التربية الاسلامية",
+"اللغة العربية",
+"اللغة الانجليزية",
+"الاحياء",
+"الفيزياء",
+"الكيمياء",
+"الرياضيات",
+"جرائم حزب البعث",
+"اللغة الفرنسية",
+"التربية الفنية",
+"الحاسوب"
+];
+
+subjects.forEach(sub=>{
+  homework.innerHTML += `<div class="subject" onclick="openSubject('${sub}')">${sub}</div>`;
+});
+
+/* SUBJECT VIEW */
+function openSubject(name){
+  subjectView.style.display="flex";
+  subjectTitle.innerText=name;
+
+  subjectMessages.innerHTML="<p style='color:gray'>لا يوجد واجبات بعد</p>";
+}
+
+function closeSubject(){
+  subjectView.style.display="none";
+}
+
+/* HOMEWORK PANEL */
+function toggleHomework(){
+  homework.classList.toggle("open");
+}
+
+/* CHAT REALTIME */
+const q = query(collection(db,"messages"), orderBy("time"));
+
+onSnapshot(q, snap=>{
+  messages.innerHTML="";
+  snap.forEach(doc=>{
+    const m = doc.data();
+    messages.innerHTML += `
+      <div class="msg">
+        <div class="meta">${m.name}/${m.class}</div>
+        ${m.text}
+      </div>`;
+  });
+});
+
+/* SEND */
+async function send(){
   if(!input.value) return;
 
-  await addDoc(ref,{
-    text:input.value,
-    name:user.name,
-    time:Date.now()
+  await addDoc(collection(db,"messages"),{
+    text: input.value,
+    name: user.name,
+    class: user.class,
+    time: Date.now()
   });
 
   input.value="";
-};
-
-const q=query(ref,orderBy("time"));
-
-onSnapshot(q,snap=>{
-  const box=document.getElementById("messages");
-  box.innerHTML="";
-
-  snap.forEach(doc=>{
-    const m=doc.data();
-    const div=document.createElement("div");
-    div.className="msg fade";
-    div.innerHTML=`<b>${m.name}</b><br>${m.text}`;
-    box.appendChild(div);
-  });
-
-  box.scrollTop=box.scrollHeight;
-});
+}
 
 /* LOGOUT */
-window.logout=()=>{
+function logout(){
   localStorage.removeItem("user");
   location.href="index.html";
-};
+}
 </script>
 
 </body>
