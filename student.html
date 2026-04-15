@@ -342,7 +342,8 @@ const db = getFirestore(app);
 /* ─── USER ─── */
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) location.href = "index.html";
-
+// Add this safety line:
+if (!user.name) user.name = user.displayName
 /* ─── HELPERS ─── */
 function sanitize(str) {
   const d = document.createElement("div");
