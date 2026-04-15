@@ -1,209 +1,237 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>لوحة الطالب</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>لوحة الطالب</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-}
+  <style>
+    * { box-sizing: border-box; }
 
-/* TOPBAR */
-.topbar{
-  height:60px;
-  background:#111827;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 12px;
-}
+    body {
+      margin: 0;
+      font-family: monospace;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
 
-.menuBtn{font-size:24px;cursor:pointer;}
-.pfp{width:38px;height:38px;border-radius:50%;overflow:hidden;background:#333;cursor:pointer;}
-.pfp img{width:100%;height:100%;object-fit:cover;}
+    header {
+      background: #1e293b;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #334155;
+    }
 
-/* MENU */
-.menu{
-  position:fixed;
-  right:-260px;
-  top:0;
-  width:260px;
-  height:100%;
-  background:#111827;
-  transition:.3s;
-  padding-top:60px;
-}
-.menu.open{right:0;}
-.menu div{
-  padding:15px;
-  border-bottom:1px solid #1f2937;
-  cursor:pointer;
-}
+    header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
 
-/* SECTIONS */
-.section{display:none;padding:10px;height:calc(100vh - 60px);}
-.active{display:block;}
+    .logout {
+      background: #ef4444;
+      border: none;
+      padding: 8px 12px;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+    }
 
-/* HOMEWORK */
-.subject{
-  background:#1f2937;
-  margin:10px 0;
-  padding:10px;
-  border-radius:10px;
-}
+    .container {
+      padding: 15px;
+    }
 
-/* CHAT */
-.messages{height:80%;overflow:auto;}
-.msg{background:#1f2937;padding:8px;margin:6px 0;border-radius:8px;}
-.inputBox{display:flex;gap:8px;}
-input{flex:1;padding:10px;background:#1f2937;border:none;color:white;border-radius:8px;}
-button{padding:10px;background:#2563eb;border:none;color:white;border-radius:8px;cursor:pointer;}
-</style>
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .homework {
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #334155;
+      border-radius: 8px;
+    }
+
+    .submit-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: #0f172a;
+      color: white;
+    }
+
+    .icon-btn {
+      background: #475569;
+      border: none;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .send-btn {
+      background: #22c55e;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .settings {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .settings button {
+      background: #475569;
+      border: none;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: url("placeholder.png");
+      background-size: cover;
+    }
+
+  </style>
 </head>
-
 <body>
 
-<div class="topbar">
-  <div class="menuBtn" onclick="toggleMenu()">≡</div>
-  <div>لوحة الطالب</div>
-  <div class="pfp" onclick="toggleProfile()" id="pfpBox"></div>
-</div>
-
-<div class="menu" id="menu">
-  <div onclick="openSection('home')">🏠 الرئيسية</div>
-  <div onclick="openSection('homework')">📚 الواجبات</div>
-  <div onclick="openSection('chat')">💬 الدردشة</div>
-  <div onclick="logout()">🚪 خروج</div>
-</div>
-
-<!-- HOME -->
-<div id="home" class="section active">
-  <h3>👋 أهلاً بك</h3>
-</div>
-
-<!-- HOMEWORK -->
-<div id="homework" class="section"></div>
-
-<!-- CHAT -->
-<div id="chat" class="section">
-  <div class="messages" id="messages"></div>
-  <div class="inputBox">
-    <input id="msgInput" placeholder="اكتب رسالة...">
-    <button onclick="sendMsg()">إرسال</button>
+<header>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <div class="avatar"></div>
+    <h2 id="studentName">طالب</h2>
   </div>
+  <button class="logout" onclick="logout()">تسجيل خروج</button>
+</header>
+
+<div class="container">
+
+  <!-- 📚 Homework Section -->
+  <div class="card">
+    <h3>📚 الواجبات</h3>
+
+    <div id="homeworkList"></div>
+
+    <!-- Submit -->
+    <div class="submit-box">
+      <textarea id="hwInput" rows="2" placeholder="اكتب الحل..."></textarea>
+      <button class="icon-btn" title="إرفاق">+</button>
+      <button class="icon-btn" title="تسجيل صوتي">🎤</button>
+      <button class="send-btn" onclick="submitHW()">إرسال</button>
+    </div>
+  </div>
+
+  <!-- 📊 Grades -->
+  <div class="card">
+    <h3>📊 الدرجات</h3>
+    <p id="grades">لا توجد بيانات حالياً</p>
+  </div>
+
+  <!-- ⚙️ Settings -->
+  <div class="card">
+    <h3>⚙️ الإعدادات</h3>
+    <div class="settings">
+      <button onclick="toggleDark()">تبديل الوضع</button>
+      <button onclick="changeName()">تغيير الاسم</button>
+      <button onclick="clearHW()">مسح الواجبات</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- PROFILE -->
-<div id="profile" style="position:fixed;top:70px;right:10px;background:#111827;padding:10px;border-radius:10px;display:none;"></div>
+<script>
+  // 🔐 Check login
+  const user = localStorage.getItem("student");
 
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  if (!user) {
+    location.href = "index.html";
+  } else {
+    document.getElementById("studentName").innerText = user;
+  }
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
-  authDomain: "qayrawan-school-system.firebaseapp.com",
-  projectId: "qayrawan-school-system"
-};
+  // 📚 Load Homework
+  function loadHW() {
+    const list = document.getElementById("homeworkList");
+    list.innerHTML = "";
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const data = JSON.parse(localStorage.getItem("hw") || "[]");
 
-/* USER */
-let user = JSON.parse(localStorage.getItem("user"));
-if(!user) location.href="index.html";
+    data.forEach((hw, i) => {
+      const div = document.createElement("div");
+      div.className = "homework";
+      div.innerText = hw;
+      list.appendChild(div);
+    });
+  }
 
-/* PROFILE */
-document.getElementById("pfpBox").innerHTML =
-`<img src="${user.pfp || 'placeholder.png'}">`;
+  loadHW();
 
-function toggleProfile(){
-  const p = document.getElementById("profile");
-  p.innerHTML = `
-  <img src="${user.pfp || 'placeholder.png'}" width="60">
-  <h4>${user.name}</h4>
-  <p>@${user.username}</p>
-  <p>${user.class}</p>
-  `;
-  p.style.display = p.style.display=="block"?"none":"block";
-}
+  // ✍️ Submit Homework
+  function submitHW() {
+    const input = document.getElementById("hwInput");
+    if (input.value.trim() === "") return;
 
-/* MENU */
-window.toggleMenu = ()=> document.getElementById("menu").classList.toggle("open");
+    let data = JSON.parse(localStorage.getItem("hw") || "[]");
+    data.push(input.value);
+    localStorage.setItem("hw", JSON.stringify(data));
 
-window.openSection = (id)=>{
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
+    input.value = "";
+    loadHW();
+  }
 
-/* HOMEWORK SUBJECTS */
-const subjects = [
-"التربية الاسلامية",
-"اللغة العربية",
-"اللغة الانجليزية",
-"الاحياء",
-"الكيمياء",
-"الفيزياء",
-"الرياضيات",
-"جرائم حزب البعث",
-"اللغة الفرنسية",
-"التربية الفنية",
-"الحاسوب"
-];
+  // ⚙️ Settings
+  function toggleDark() {
+    document.body.style.background =
+      document.body.style.background === "white" ? "#0f172a" : "white";
+  }
 
-const hwDiv = document.getElementById("homework");
+  function changeName() {
+    let newName = prompt("ادخل الاسم الجديد:");
+    if (newName) {
+      localStorage.setItem("student", newName);
+      document.getElementById("studentName").innerText = newName;
+    }
+  }
 
-subjects.forEach(sub=>{
-  const div = document.createElement("div");
-  div.className="subject";
-  div.innerHTML=`<b>${sub}</b><br><span style="color:gray">لا يوجد واجب حالياً</span>`;
-  hwDiv.appendChild(div);
-});
+  function clearHW() {
+    localStorage.removeItem("hw");
+    loadHW();
+  }
 
-/* CHAT SYSTEM (REALTIME 🔥) */
-const messagesRef = collection(db, "classes", user.class, "messages");
-
-window.sendMsg = async ()=>{
-  const input = document.getElementById("msgInput");
-  if(!input.value) return;
-
-  await addDoc(messagesRef,{
-    text:input.value,
-    name:user.name,
-    time:Date.now()
-  });
-
-  input.value="";
-};
-
-const q = query(messagesRef, orderBy("time"));
-
-onSnapshot(q,(snapshot)=>{
-  const container = document.getElementById("messages");
-  container.innerHTML="";
-
-  snapshot.forEach(doc=>{
-    const m = doc.data();
-    const div = document.createElement("div");
-    div.className="msg";
-    div.innerHTML=`<b>${m.name}:</b> ${m.text}`;
-    container.appendChild(div);
-  });
-
-  container.scrollTop = container.scrollHeight;
-});
-
-/* LOGOUT */
-window.logout=()=>{
-  localStorage.removeItem("user");
-  location.href="index.html";
-};
+  // 🚪 Logout
+  function logout() {
+    localStorage.removeItem("student");
+    location.href = "index.html";
+  }
 </script>
 
 </body>
