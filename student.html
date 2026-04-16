@@ -5,14 +5,20 @@
 <title>لوحة الطالب</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent: #38bdf8;
+  --accent-btn: #2563eb;
+  --accent-btn-hover: #1d4ed8;
+  --font-size: 14px;
+  --bubble-radius: 14px;
+}
 
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
   background: #0f172a;
   color: white;
-  padding-bottom: 70px;
   overflow-x: hidden;
 }
 
@@ -25,8 +31,8 @@ body {
   align-items: center;
   padding: 0 16px;
   border-bottom: 1px solid #1f2937;
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: 0; left: 0; right: 0;
   z-index: 50;
 }
 .title { font-weight: bold; font-size: 17px; }
@@ -35,7 +41,7 @@ body {
   overflow: hidden; background: #374151; cursor: pointer;
   border: 2px solid #374151; transition: border-color 0.2s; flex-shrink: 0;
 }
-.pfp:hover { border-color: #38bdf8; }
+.pfp:hover { border-color: var(--accent); }
 .pfp img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ── PROFILE MINI BAR ── */
@@ -58,7 +64,7 @@ body {
 }
 .profile-name  { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
 .profile-user  { color: #94a3b8; font-size: 13px; margin-bottom: 4px; }
-.profile-class { color: #38bdf8; font-size: 13px; margin-bottom: 12px; }
+.profile-class { color: var(--accent); font-size: 13px; margin-bottom: 12px; }
 .profile-logout {
   background: #ef4444; border: none; color: white;
   padding: 8px 14px; border-radius: 8px; cursor: pointer;
@@ -84,7 +90,7 @@ body {
   transition: color 0.2s; user-select: none;
 }
 .nav-item .icon { font-size: 22px; line-height: 1; }
-.nav-item.active { color: #38bdf8; }
+.nav-item.active { color: var(--accent); }
 .nav-item:hover  { color: #cbd5e1; }
 .badge {
   position: absolute; top: 6px; left: 50%; margin-left: 4px;
@@ -95,8 +101,12 @@ body {
 
 /* ── SECTIONS ── */
 .section {
-  display: none; padding: 12px;
-  min-height: calc(100vh - 60px - 64px);
+  display: none;
+  position: fixed;
+  top: 60px; left: 0; right: 0; bottom: 64px;
+  overflow-y: auto;
+  padding: 12px;
+  -webkit-overflow-scrolling: touch;
 }
 .section.active { display: block; }
 
@@ -105,18 +115,32 @@ body {
   background: #1f2937; padding: 16px;
   border-radius: 14px; margin-bottom: 12px;
 }
-.home-card h3 { margin: 0 0 6px; font-size: 18px; }
-.home-card p  { margin: 0; color: #9ca3af; font-size: 14px; }
-.home-stats {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 10px; margin-top: 12px;
+.home-card h3 { font-size: 18px; margin-bottom: 4px; }
+.home-card p  { color: #9ca3af; font-size: 13px; }
+
+.section-label {
+  font-size: 12px; color: #6b7280;
+  margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.05em;
 }
-.stat-card {
-  background: #1f2937; border-radius: 12px;
-  padding: 14px; text-align: center;
+
+/* ANNOUNCEMENTS */
+.announcement {
+  background: #1f2937;
+  border-right: 3px solid var(--accent);
+  border-radius: 0 12px 12px 0;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  font-size: var(--font-size);
+  line-height: 1.6;
+  animation: fadeIn 0.2s ease;
 }
-.stat-card .stat-num   { font-size: 28px; font-weight: bold; color: #38bdf8; }
-.stat-card .stat-label { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+.announcement .ann-meta {
+  font-size: 11px; color: #475569; margin-top: 6px;
+}
+.announcement .ann-title {
+  font-weight: bold; color: var(--accent);
+  font-size: 13px; margin-bottom: 4px;
+}
 
 /* ── SUBJECT LIST ── */
 .subject-item {
@@ -132,11 +156,11 @@ body {
   user-select: none;
 }
 .subject-item:hover  { background: #263244; }
-.subject-item:active { background: #1d4ed8; }
-.subject-item .sub-name { font-size: 15px; }
+.subject-item:active { background: #1e3a8a; }
+.subject-item .sub-name  { font-size: 15px; }
 .subject-item .sub-arrow { color: #6b7280; font-size: 13px; }
 
-/* ── SUBJECT DETAIL SCREEN ── */
+/* ── SUBJECT SCREEN ── */
 .subject-screen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -146,11 +170,8 @@ body {
   transition: transform 0.28s cubic-bezier(.4,0,.2,1);
   display: flex;
   flex-direction: column;
-  padding-bottom: 0;
 }
-.subject-screen.open {
-  transform: translateX(0);
-}
+.subject-screen.open { transform: translateX(0); }
 
 .subject-topbar {
   height: 60px;
@@ -163,15 +184,11 @@ body {
   gap: 12px;
 }
 .back-btn {
-  background: none; border: none; color: #38bdf8;
-  font-size: 22px; cursor: pointer; padding: 0;
-  line-height: 1; flex-shrink: 0;
+  background: none; border: none; color: var(--accent);
+  font-size: 22px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
 }
-.subject-topbar-title {
-  font-weight: bold; font-size: 16px; flex: 1;
-}
+.subject-topbar-title { font-weight: bold; font-size: 16px; flex: 1; }
 
-/* SUBJECT TABS */
 .subject-tabs {
   display: flex;
   border-bottom: 1px solid #1f2937;
@@ -182,36 +199,165 @@ body {
   flex: 1; padding: 12px 0; text-align: center;
   font-size: 13px; color: #6b7280; cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: 0.2s;
-  user-select: none;
+  transition: 0.2s; user-select: none;
 }
-.s-tab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+.s-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* TAB PANELS */
-.tab-panel { display: none; flex: 1; overflow-y: auto; padding: 12px; }
+.tab-panel {
+  display: none; flex: 1;
+  overflow-y: auto; padding: 12px;
+  -webkit-overflow-scrolling: touch;
+}
 .tab-panel.active { display: block; }
 
-/* TEACHER POSTS */
 .teacher-post {
   background: #1f2937;
-  border-right: 3px solid #38bdf8;
+  border-right: 3px solid var(--accent);
   padding: 12px 14px;
   border-radius: 0 10px 10px 0;
   margin-bottom: 10px;
-  font-size: 14px;
+  font-size: var(--font-size);
   line-height: 1.6;
+  animation: fadeIn 0.2s ease;
 }
-.teacher-post .post-meta {
-  font-size: 11px; color: #475569; margin-top: 6px;
-}
-.teacher-post .post-due {
-  font-size: 12px; color: #fbbf24;
-  margin-top: 4px;
-}
+.teacher-post .post-meta { font-size: 11px; color: #475569; margin-top: 6px; }
+.teacher-post .post-due  { font-size: 12px; color: #fbbf24; margin-top: 4px; }
+
 .empty-state {
   text-align: center; color: #475569;
   font-size: 14px; padding: 40px 0;
 }
+
+/* ── CHAT ── */
+#chat {
+  display: none;
+  flex-direction: column;
+  padding: 12px;
+}
+#chat.active { display: flex; }
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 8px;
+  min-height: 0;
+  /* fills available space above input */
+  max-height: calc(100vh - 60px - 64px - 58px - 24px - 20px);
+}
+
+.msg {
+  max-width: 78%; padding: 9px 12px;
+  border-radius: var(--bubble-radius); word-break: break-word;
+  font-size: var(--font-size); line-height: 1.4;
+}
+.msg.mine {
+  background: var(--accent-btn);
+  border-radius: var(--bubble-radius) var(--bubble-radius) 2px var(--bubble-radius);
+  align-self: flex-start;
+}
+.msg.theirs {
+  background: #1f2937;
+  border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 2px;
+  align-self: flex-end;
+}
+.msg .sender { font-size: 11px; color: var(--accent); margin-bottom: 3px; font-weight: bold; }
+.msg .time   { font-size: 10px; color: #475569; margin-top: 3px; }
+
+.typing-indicator {
+  font-size: 12px; color: #6b7280;
+  min-height: 18px; font-style: italic;
+  padding: 2px 0;
+  flex-shrink: 0;
+}
+
+.chat-input-bar {
+  display: flex; gap: 8px;
+  padding-top: 6px;
+  flex-shrink: 0;
+}
+
+input[type=text] {
+  flex: 1; padding: 11px 14px;
+  background: #1f2937; border: 1px solid #374151;
+  color: white; border-radius: 10px; font-size: var(--font-size);
+  outline: none; transition: border-color 0.2s; font-family: Arial;
+}
+input[type=text]:focus { border-color: var(--accent); }
+.send-btn {
+  padding: 11px 16px; background: var(--accent-btn); border: none;
+  color: white; border-radius: 10px; cursor: pointer;
+  font-size: 16px; transition: background 0.2s; flex-shrink: 0;
+}
+.send-btn:hover { background: var(--accent-btn-hover); }
+
+/* ── SETTINGS ── */
+.settings-group {
+  background: #1f2937; border-radius: 14px;
+  margin-bottom: 14px; overflow: hidden;
+}
+.settings-group-title {
+  font-size: 11px; color: #6b7280;
+  padding: 12px 14px 6px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.setting-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 13px 14px;
+  border-top: 1px solid #374151;
+  font-size: 14px;
+}
+.setting-row:first-of-type { border-top: none; }
+
+/* COLOR SWATCHES */
+.swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.swatch {
+  width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.swatch.selected { border-color: white; transform: scale(1.15); }
+
+/* FONT SIZE BUTTONS */
+.size-row { display: flex; gap: 6px; }
+.size-btn {
+  padding: 5px 12px; border-radius: 8px;
+  background: #374151; border: 2px solid transparent;
+  color: white; cursor: pointer; font-size: 13px;
+  transition: 0.2s;
+}
+.size-btn.selected { border-color: var(--accent); background: #1e3a5f; }
+
+/* BUBBLE STYLE */
+.bubble-btn {
+  padding: 5px 12px; border-radius: 8px;
+  background: #374151; border: 2px solid transparent;
+  color: white; cursor: pointer; font-size: 13px;
+  transition: 0.2s;
+}
+.bubble-btn.selected { border-color: var(--accent); background: #1e3a5f; }
+
+/* TOGGLE */
+.toggle {
+  position: relative; width: 44px; height: 24px;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0;
+  background: #374151; border-radius: 24px;
+  transition: 0.3s; cursor: pointer;
+}
+.slider:before {
+  content: ""; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  left: 3px; top: 3px; background: white;
+  transition: 0.3s;
+}
+input:checked + .slider { background: var(--accent-btn); }
+input:checked + .slider:before { transform: translateX(20px); }
 
 /* SKELETON */
 .skeleton {
@@ -225,58 +371,12 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* ── CHAT ── */
-.chat-container {
-  display: flex; flex-direction: column;
-  height: calc(100vh - 60px - 64px - 24px);
-}
-.messages {
-  flex: 1; overflow-y: auto;
-  padding: 4px 0 6px;
-  display: flex; flex-direction: column; gap: 4px;
-}
-.msg {
-  max-width: 78%; padding: 9px 12px;
-  border-radius: 14px; word-break: break-word;
-  font-size: 14px; line-height: 1.4;
-}
-.msg.mine {
-  background: #1d4ed8;
-  border-radius: 14px 14px 2px 14px;
-  align-self: flex-start;
-}
-.msg.theirs {
-  background: #1f2937;
-  border-radius: 14px 14px 14px 2px;
-  align-self: flex-end;
-}
-.msg .sender { font-size: 11px; color: #38bdf8; margin-bottom: 3px; font-weight: bold; }
-.msg .time   { font-size: 10px; color: #475569; margin-top: 3px; }
-.typing-indicator {
-  font-size: 12px; color: #6b7280;
-  padding: 2px 4px; min-height: 18px; font-style: italic;
-}
-.chat-input-bar { display: flex; gap: 8px; padding-top: 8px; }
-
-input[type=text] {
-  flex: 1; padding: 11px 14px;
-  background: #1f2937; border: 1px solid #374151;
-  color: white; border-radius: 10px; font-size: 14px;
-  outline: none; transition: border-color 0.2s; font-family: Arial;
-}
-input[type=text]:focus { border-color: #38bdf8; }
-.send-btn {
-  padding: 11px 16px; background: #2563eb; border: none;
-  color: white; border-radius: 10px; cursor: pointer;
-  font-size: 16px; transition: background 0.2s; flex-shrink: 0;
-}
-.send-btn:hover { background: #1d4ed8; }
-
 .fade-in { animation: fadeIn 0.2s ease; }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
@@ -307,41 +407,95 @@ input[type=text]:focus { border-color: #38bdf8; }
     <h3 id="homeGreeting">👋 أهلاً</h3>
     <p>تابع واجباتك وتواصل مع زملائك بسهولة</p>
   </div>
-  <div class="home-stats">
-    <div class="stat-card">
-      <div class="stat-num">11</div>
-      <div class="stat-label">المواد</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statMsgs">—</div>
-      <div class="stat-label">رسائل الفصل</div>
-    </div>
+  <div class="section-label">📢 إعلانات الإدارة</div>
+  <div id="announcementsList">
+    <div class="skeleton" style="height:60px"></div>
+    <div class="skeleton" style="height:48px;width:85%"></div>
   </div>
 </div>
 
-<!-- HOMEWORK (subject list) -->
+<!-- HOMEWORK -->
 <div id="homework" class="section">
-  <p style="color:#6b7280;font-size:13px;margin:0 0 8px">اختر مادة للاطلاع على الواجبات</p>
+  <p style="color:#6b7280;font-size:13px;margin-bottom:10px">اختر مادة للاطلاع على الواجبات</p>
   <div id="subjectList"></div>
 </div>
 
 <!-- CHAT -->
 <div id="chat" class="section">
-  <div class="chat-container">
-    <div class="messages" id="messages">
-      <div class="skeleton"></div>
-      <div class="skeleton" style="width:55%"></div>
-      <div class="skeleton" style="width:70%"></div>
-    </div>
-    <div class="typing-indicator" id="typingIndicator"></div>
-    <div class="chat-input-bar">
-      <input type="text" id="msgInput" placeholder="اكتب رسالة...">
-      <button class="send-btn" onclick="window.sendMsg()">➤</button>
-    </div>
+  <div class="messages" id="messages">
+    <div class="skeleton"></div>
+    <div class="skeleton" style="width:55%"></div>
+    <div class="skeleton" style="width:70%"></div>
+  </div>
+  <div class="typing-indicator" id="typingIndicator"></div>
+  <div class="chat-input-bar">
+    <input type="text" id="msgInput" placeholder="اكتب رسالة...">
+    <button class="send-btn" onclick="window.sendMsg()">➤</button>
   </div>
 </div>
 
-<!-- SUBJECT DETAIL SCREEN (slides in) -->
+<!-- SETTINGS -->
+<div id="settings" class="section">
+
+  <div class="settings-group">
+    <div class="settings-group-title">🎨 لون التمييز</div>
+    <div class="setting-row">
+      <span>اللون</span>
+      <div class="swatch-row" id="swatchRow">
+        <div class="swatch selected" data-accent="#38bdf8" data-btn="#2563eb" data-btnhover="#1d4ed8" style="background:#38bdf8"></div>
+        <div class="swatch" data-accent="#34d399" data-btn="#059669" data-btnhover="#047857" style="background:#34d399"></div>
+        <div class="swatch" data-accent="#a78bfa" data-btn="#7c3aed" data-btnhover="#6d28d9" style="background:#a78bfa"></div>
+        <div class="swatch" data-accent="#fb923c" data-btn="#ea580c" data-btnhover="#c2410c" style="background:#fb923c"></div>
+        <div class="swatch" data-accent="#f472b6" data-btn="#db2777" data-btnhover="#be185d" style="background:#f472b6"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">🔤 حجم الخط</div>
+    <div class="setting-row">
+      <span>الحجم</span>
+      <div class="size-row">
+        <button class="size-btn" data-size="12px">ص</button>
+        <button class="size-btn selected" data-size="14px">م</button>
+        <button class="size-btn" data-size="16px">ك</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">💬 فقاعات الدردشة</div>
+    <div class="setting-row">
+      <span>الشكل</span>
+      <div class="size-row">
+        <button class="bubble-btn selected" data-radius="14px">مدور</button>
+        <button class="bubble-btn" data-radius="6px">مربع</button>
+        <button class="bubble-btn" data-radius="20px">بيضاوي</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">⚙️ عام</div>
+    <div class="setting-row">
+      <span>إظهار الوقت في الرسائل</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggleTimestamps" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <span>رسائل مضغوطة</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggleCompact">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUBJECT SCREEN (slides in) -->
 <div class="subject-screen" id="subjectScreen">
   <div class="subject-topbar">
     <button class="back-btn" onclick="window.closeSubject()">◀</button>
@@ -350,20 +504,11 @@ input[type=text]:focus { border-color: #38bdf8; }
 
   <div class="subject-tabs">
     <div class="s-tab active" data-panel="panelPosts">📢 واجبات المعلم</div>
-    <div class="s-tab"        data-panel="panelInfo" >📋 معلومات المادة</div>
   </div>
 
-  <!-- Teacher posts panel -->
   <div class="tab-panel active" id="panelPosts">
     <div class="skeleton"></div>
     <div class="skeleton" style="height:50px;width:80%"></div>
-  </div>
-
-  <!-- Info panel (ready for teacher to fill later) -->
-  <div class="tab-panel" id="panelInfo">
-    <div class="empty-state">
-      🔒 سيتم إضافة معلومات المادة من قِبَل المعلم قريباً
-    </div>
   </div>
 </div>
 
@@ -379,6 +524,9 @@ input[type=text]:focus { border-color: #38bdf8; }
   <div class="nav-item"        id="nav-chat"     onclick="window.openSection('chat')">
     <span class="icon">💬</span><span>الدردشة</span>
     <span class="badge" id="chatBadge"></span>
+  </div>
+  <div class="nav-item"        id="nav-settings" onclick="window.openSection('settings')">
+    <span class="icon">⚙️</span><span>الإعدادات</span>
   </div>
 </div>
 
@@ -398,8 +546,17 @@ const app = initializeApp({
 const db = getFirestore(app);
 
 /* ── USER ── */
-const user = JSON.parse(localStorage.getItem("user"));
-if (!user) location.href = "index.html";
+const raw  = JSON.parse(localStorage.getItem("user"));
+if (!raw) location.href = "index.html";
+
+/* normalise — works whether login saved displayName or name */
+const user = {
+  name:     raw.displayName || raw.name || raw.username || "طالب",
+  username: raw.username || "unknown",
+  class:    raw.class    || "—",
+  pfp:      raw.pfp      || "",
+  role:     raw.role     || "student"
+};
 
 /* ── HELPERS ── */
 function sanitize(str) {
@@ -415,16 +572,93 @@ function formatTime(ts) {
 function updateBadge(id, count) {
   const b = document.getElementById(id);
   if (!b) return;
-  if (count > 0) { b.textContent = count > 99 ? "99+" : count; b.style.display = "inline"; }
-  else           { b.style.display = "none"; }
+  b.textContent  = count > 99 ? "99+" : count;
+  b.style.display = count > 0 ? "inline" : "none";
 }
+
+/* ── SETTINGS (load from localStorage) ── */
+const prefs = JSON.parse(localStorage.getItem("prefs") || "{}");
+function applyPrefs() {
+  const root = document.documentElement;
+  root.style.setProperty("--accent",       prefs.accent     || "#38bdf8");
+  root.style.setProperty("--accent-btn",   prefs.accentBtn  || "#2563eb");
+  root.style.setProperty("--accent-btn-hover", prefs.accentBtnHover || "#1d4ed8");
+  root.style.setProperty("--font-size",    prefs.fontSize   || "14px");
+  root.style.setProperty("--bubble-radius",prefs.bubbleRadius|| "14px");
+
+  document.getElementById("toggleTimestamps").checked = prefs.timestamps !== false;
+  document.getElementById("toggleCompact").checked    = !!prefs.compact;
+
+  if (prefs.compact) document.documentElement.style.setProperty("--msg-padding","5px 8px");
+  else               document.documentElement.style.removeProperty("--msg-padding");
+
+  /* mark selected swatches/buttons */
+  document.querySelectorAll(".swatch").forEach(s =>
+    s.classList.toggle("selected", s.dataset.accent === (prefs.accent || "#38bdf8"))
+  );
+  document.querySelectorAll(".size-btn").forEach(b =>
+    b.classList.toggle("selected", b.dataset.size === (prefs.fontSize || "14px"))
+  );
+  document.querySelectorAll(".bubble-btn").forEach(b =>
+    b.classList.toggle("selected", b.dataset.radius === (prefs.bubbleRadius || "14px"))
+  );
+}
+applyPrefs();
+
+/* swatch clicks */
+document.getElementById("swatchRow").addEventListener("click", e => {
+  const sw = e.target.closest(".swatch");
+  if (!sw) return;
+  prefs.accent          = sw.dataset.accent;
+  prefs.accentBtn       = sw.dataset.btn;
+  prefs.accentBtnHover  = sw.dataset.btnhover;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+  applyPrefs();
+});
+
+/* font size */
+document.querySelectorAll(".size-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    prefs.fontSize = b.dataset.size;
+    localStorage.setItem("prefs", JSON.stringify(prefs));
+    applyPrefs();
+  });
+});
+
+/* bubble style */
+document.querySelectorAll(".bubble-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    prefs.bubbleRadius = b.dataset.radius;
+    localStorage.setItem("prefs", JSON.stringify(prefs));
+    applyPrefs();
+  });
+});
+
+/* toggles */
+document.getElementById("toggleTimestamps").addEventListener("change", e => {
+  prefs.timestamps = e.target.checked;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+  /* hide/show all .time elements */
+  document.querySelectorAll(".msg .time").forEach(t =>
+    t.style.display = prefs.timestamps ? "" : "none"
+  );
+});
+
+document.getElementById("toggleCompact").addEventListener("change", e => {
+  prefs.compact = e.target.checked;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+  applyPrefs();
+  document.querySelectorAll(".msg").forEach(m =>
+    m.style.padding = prefs.compact ? "5px 8px" : ""
+  );
+});
 
 /* ── PROFILE ── */
 document.getElementById("pfpBox").innerHTML =
   `<img src="${sanitize(user.pfp || "placeholder.png")}" alt="pfp">`;
 
-document.getElementById("homeGreeting").textContent = `👋 أهلاً ${user.displayName}`;
-document.getElementById("pName").textContent  = user.displayName;
+document.getElementById("homeGreeting").textContent = `👋 أهلاً ${user.name}`;
+document.getElementById("pName").textContent  = user.name;
 document.getElementById("pUser").textContent  = `@${user.username}`;
 document.getElementById("pClass").textContent = user.class;
 
@@ -448,6 +682,30 @@ window.openSection = (id) => {
   if (id === "homework") { localStorage.setItem("lastSeenHw",   Date.now()); updateBadge("hwBadge",   0); }
 };
 
+/* ── ANNOUNCEMENTS ── */
+const annRef = collection(db, "announcements");
+onSnapshot(query(annRef, orderBy("time", "desc")), snap => {
+  const box = document.getElementById("announcementsList");
+
+  if (snap.empty) {
+    box.innerHTML = `<div class="empty-state" style="padding:20px 0">لا توجد إعلانات حالياً</div>`;
+    return;
+  }
+
+  box.innerHTML = "";
+  snap.forEach(d => {
+    const m  = d.data();
+    const el = document.createElement("div");
+    el.className = "announcement fade-in";
+    el.innerHTML = `
+      ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
+      ${sanitize(m.text)}
+      <div class="ann-meta">📌 ${sanitize(m.author || "الإدارة")} · ${formatTime(m.time)}</div>
+    `;
+    box.appendChild(el);
+  });
+});
+
 /* ── SUBJECTS ── */
 const subjects = [
   "التربية الاسلامية","اللغة العربية","اللغة الانجليزية",
@@ -456,7 +714,6 @@ const subjects = [
 ];
 
 const subjectList = document.getElementById("subjectList");
-
 subjects.forEach(sub => {
   const el = document.createElement("div");
   el.className = "subject-item";
@@ -475,27 +732,17 @@ window.openSubject = (sub) => {
   document.getElementById("subjectScreenTitle").textContent = sub;
   document.getElementById("subjectScreen").classList.add("open");
 
-  // reset panels
   const postsPanel = document.getElementById("panelPosts");
   postsPanel.innerHTML = `<div class="skeleton"></div><div class="skeleton" style="height:50px;width:80%"></div>`;
 
-  // reset tabs
-  document.querySelectorAll(".s-tab").forEach(t => t.classList.remove("active"));
-  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-  document.querySelector(".s-tab[data-panel='panelPosts']").classList.add("active");
-  postsPanel.classList.add("active");
-
-  // clear old listener
   if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
 
-  // listen to teacher posts for this subject
   const ref = collection(db, "classes", user.class, "homework", sub, "messages");
   activeSubjectUnsub = onSnapshot(query(ref, orderBy("time")), snap => {
     if (snap.empty) {
       postsPanel.innerHTML = `<div class="empty-state">📭 لا يوجد واجب حالياً</div>`;
       return;
     }
-
     postsPanel.innerHTML = "";
     snap.forEach(d => {
       const m  = d.data();
@@ -516,20 +763,26 @@ window.closeSubject = () => {
   if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
 };
 
-// tab switching inside subject screen
-document.querySelectorAll(".s-tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".s-tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.panel).classList.add("active");
-  });
-});
-
 /* ── CHAT ── */
 const chatRef   = collection(db, "classes", user.class, "messages");
 const chatQuery = query(chatRef, orderBy("time"));
 let   chatReady = false;
+
+function makeMsg(m) {
+  const isMe     = m.username === user.username;
+  const showTime = document.getElementById("toggleTimestamps").checked;
+  const compact  = document.getElementById("toggleCompact").checked;
+
+  const el = document.createElement("div");
+  el.className = `msg fade-in ${isMe ? "mine" : "theirs"}`;
+  if (compact) el.style.padding = "5px 8px";
+  el.innerHTML = `
+    ${!isMe ? `<div class="sender">${sanitize(m.name)} · ${sanitize(m.class)}</div>` : ""}
+    ${sanitize(m.text)}
+    <div class="time" style="${showTime ? "" : "display:none"}">${formatTime(m.time)}</div>
+  `;
+  return el;
+}
 
 onSnapshot(chatQuery, snap => {
   const box        = document.getElementById("messages");
@@ -545,20 +798,11 @@ onSnapshot(chatQuery, snap => {
     const m    = d.data();
     const isMe = m.username === user.username;
     if (!chatActive && !isMe && m.time > lastSeen) unread++;
-
-    const el = document.createElement("div");
-    el.className = `msg fade-in ${isMe ? "mine" : "theirs"}`;
-    el.innerHTML = `
-      ${!isMe ? `<div class="sender">${sanitize(m.name)} · ${sanitize(m.class)}</div>` : ""}
-      ${sanitize(m.text)}
-      <div class="time">${formatTime(m.time)}</div>
-    `;
-    box.appendChild(el);
+    box.appendChild(makeMsg(m));
   });
 
   if (!chatActive && unread > 0) updateBadge("chatBadge", unread);
   box.scrollTop = box.scrollHeight;
-  document.getElementById("statMsgs").textContent = snap.size;
 });
 
 window.sendMsg = async () => {
@@ -566,7 +810,7 @@ window.sendMsg = async () => {
   if (!input.value.trim()) return;
   await addDoc(chatRef, {
     text:     input.value.trim(),
-    name:     user.displayName,
+    name:     user.name,
     username: user.username,
     class:    user.class,
     time:     Date.now()
@@ -580,14 +824,12 @@ document.getElementById("msgInput").addEventListener("keydown", e => {
   if (e.key === "Enter") window.sendMsg();
 });
 
-/* ── TYPING INDICATOR ── */
+/* ── TYPING ── */
 let typingTimeout;
-
 document.getElementById("msgInput").addEventListener("input", async () => {
   try {
     await setDoc(doc(db, "classes", user.class, "typing", user.username), {
-      name: user.displayName,
-      ts:   Date.now()
+      name: user.name, ts: Date.now()
     });
   } catch {}
   clearTimeout(typingTimeout);
@@ -597,12 +839,11 @@ document.getElementById("msgInput").addEventListener("input", async () => {
 });
 
 onSnapshot(collection(db, "classes", user.class, "typing"), snap => {
-  const now    = Date.now();
+  const now = Date.now();
   const typers = [];
   snap.forEach(d => {
-    const data = d.data();
-    if (d.id !== user.username && now - data.ts < 4000)
-      typers.push(sanitize(data.name));
+    if (d.id !== user.username && now - d.data().ts < 4000)
+      typers.push(sanitize(d.data().name));
   });
   document.getElementById("typingIndicator").textContent =
     typers.length === 0 ? "" :
