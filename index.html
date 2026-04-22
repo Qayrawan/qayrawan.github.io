@@ -1,171 +1,216 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <title>تسجيل الدخول</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>تسجيل الدخول</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <style>
-    * { box-sizing: border-box; }
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
 
-    body {
-      font-family: monospace;
-      background: #0f172a;
-      color: #e2e8f0;
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+.login-box {
+  background: #1f2937;
+  border: 1px solid #334155;
+  border-radius: 20px;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
 
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 350px;
-      border: 1px solid #334155;
-      animation: fadeIn 0.3s ease;
-    }
+.logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.logo-icon  { font-size: 48px; line-height: 1; margin-bottom: 10px; }
+.logo-title { font-size: 20px; font-weight: bold; color: #38bdf8; }
+.logo-sub   { font-size: 12px; color: #6b7280; margin-top: 4px; }
 
-    h2 {
-      text-align: center;
-      color: #38bdf8;
-      margin-bottom: 15px;
-    }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.field label { font-size: 12px; color: #94a3b8; letter-spacing: 0.04em; }
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: white;
-      outline: none;
-    }
+input {
+  width: 100%; padding: 12px 14px;
+  background: #0f172a; border: 1px solid #334155;
+  border-radius: 10px; color: white;
+  font-size: 15px; font-family: Arial;
+  outline: none; transition: border-color 0.2s;
+}
+input:focus { border-color: #38bdf8; }
 
-    button {
-      width: 100%;
-      margin-top: 15px;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #38bdf8;
-      color: black;
-      cursor: pointer;
-      transition: 0.2s;
-      font-weight: bold;
-    }
+.btn {
+  width: 100%; padding: 13px;
+  background: #2563eb; border: none;
+  border-radius: 10px; color: white;
+  font-size: 15px; font-weight: bold;
+  cursor: pointer; transition: background 0.2s;
+  font-family: Arial; margin-top: 6px;
+}
+.btn:hover    { background: #1d4ed8; }
+.btn:disabled { background: #374151; cursor: not-allowed; }
 
-    button:hover {
-      background: #0ea5e9;
-      transform: scale(1.03);
-    }
+.error {
+  background: #4c0519;
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-top: 12px;
+  display: none;
+}
+.error.show { display: block; }
 
-    .error {
-      color: #ef4444;
-      text-align: center;
-      margin-top: 10px;
-      font-size: 14px;
-      min-height: 20px;
-    }
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(10px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-  </style>
+.footer {
+  text-align: center;
+  color: #334155;
+  font-size: 11px;
+  margin-top: 24px;
+}
+</style>
 </head>
-
 <body>
 
-<div class="card">
-  <h2>⚡ تسجيل الدخول</h2>
+<div class="login-box">
+  <div class="logo">
+    <div class="logo-icon">🏫</div>
+    <div class="logo-title">نظام القيروان</div>
+    <div class="logo-sub">المدرسي التعليمي</div>
+  </div>
 
-  <input id="username" placeholder="اسم المستخدم">
-  <input id="password" type="password" placeholder="كلمة المرور">
+  <div class="field">
+    <label>اسم المستخدم</label>
+    <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off">
+  </div>
 
-  <button onclick="login()">دخول</button>
+  <div class="field">
+    <label>كلمة المرور</label>
+    <input type="password" id="password" placeholder="••••••••">
+  </div>
 
-  <div class="error" id="error"></div>
+  <button class="btn" id="loginBtn" onclick="window.login()">تسجيل الدخول</button>
+
+  <div class="error" id="errorMsg"></div>
+
+  <div class="footer">نظام القيروان المدرسي · v1.0</div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore, collection, getDocs, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
-  authDomain: "qayrawan-school-system.firebaseapp.com",
-  projectId: "qayrawan-school-system",
-  storageBucket: "qayrawan-school-system.firebasestorage.app",
+const app = initializeApp({
+  apiKey:            "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain:        "qayrawan-school-system.firebaseapp.com",
+  projectId:         "qayrawan-school-system",
+  storageBucket:     "qayrawan-school-system.firebasestorage.app",
   messagingSenderId: "785321248181",
-  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
-};
-
-const app = initializeApp(firebaseConfig);
+  appId:             "1:785321248181:web:643e6d29cdca556218c5fc"
+});
 const db = getFirestore(app);
 
-/* 🧠 LOGIN ENGINE */
+function showError(msg) {
+  const el = document.getElementById("errorMsg");
+  el.textContent = msg;
+  el.classList.add("show");
+}
+function hideError() {
+  document.getElementById("errorMsg").classList.remove("show");
+}
+function setLoading(on) {
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = on;
+  btn.innerHTML = on
+    ? `جاري التحقق <span class="spinner"></span>`
+    : "تسجيل الدخول";
+}
+
+/* Enter key support */
+document.getElementById("password").addEventListener("keydown", e => {
+  if (e.key === "Enter") window.login();
+});
+document.getElementById("username").addEventListener("keydown", e => {
+  if (e.key === "Enter") window.login();
+});
+
 window.login = async () => {
-  const userInput = document.getElementById("username").value.trim();
-  const passInput = document.getElementById("password").value.trim();
-  const errorBox = document.getElementById("error");
+  hideError();
 
-  errorBox.innerText = "";
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
 
-  if (!userInput || !passInput) {
-    errorBox.innerText = "يرجى إدخال جميع البيانات";
+  if (!username || !password) {
+    showError("يرجى إدخال اسم المستخدم وكلمة المرور");
     return;
   }
 
+  setLoading(true);
+
   try {
-    const snap = await getDocs(collection(db, "users"));
+    /* Query Firestore for matching username */
+    const q    = query(collection(db, "users"), where("username", "==", username));
+    const snap = await getDocs(q);
 
-    let found = false;
-
-    snap.forEach(doc => {
-      const data = doc.data();
-
-      if (data.username === userInput && data.password === passInput) {
-        found = true;
-
-        /* 🧩 CLEAN SESSION OBJECT */
-        const sessionUser = {
-          uid: doc.id,
-          name: data.name || "Student",
-          username: data.username,
-          class: data.class || "-",
-          role: data.role || "student",
-          pfp: data.pfp || "placeholder.png"
-        };
-
-        localStorage.setItem("user", JSON.stringify(sessionUser));
-
-        /* 🚀 ROUTE USERS */
-        if (sessionUser.role === "admin") {
-          location.href = "admin.html";
-        } else if (sessionUser.role === "teacher") {
-          location.href = "teacher.html";
-        } else {
-          location.href = "student.html";
-        }
-      }
-    });
-
-    if (!found) {
-      errorBox.innerText = "بيانات غير صحيحة";
+    if (snap.empty) {
+      showError("اسم المستخدم غير موجود");
+      setLoading(false);
+      return;
     }
+
+    const userDoc  = snap.docs[0];
+    const userData = userDoc.data();
+
+    if (userData.password !== password) {
+      showError("كلمة المرور غير صحيحة");
+      setLoading(false);
+      return;
+    }
+
+    /* ── Save to localStorage using EXACT Firestore field names ── */
+    localStorage.setItem("user", JSON.stringify({
+      displayName: userData.displayName || "",   // ← exact Firestore field
+      username:    userData.username    || "",
+      class:       userData.class       || "",
+      pfp:         userData.pfp         || "",
+      role:        userData.role        || "student",
+      uid:         userDoc.id
+    }));
+
+    /* Role-based redirect */
+    if      (userData.role === "admin")   location.href = "admin.html";
+    else if (userData.role === "teacher") location.href = "teacher.html";
+    else                                  location.href = "student.html";
 
   } catch (err) {
     console.error(err);
-    errorBox.innerText = "خطأ في الاتصال بالخادم";
+    showError("حدث خطأ في الاتصال، حاول مرة أخرى");
+    setLoading(false);
   }
 };
 </script>
-
 </body>
 </html>
