@@ -334,6 +334,7 @@ textarea { resize: vertical; min-height: 80px; }
       <label>الموجه إلى</label>
       <select id="quickTarget">
         <option value="">📣 كل الصفوف</option>
+        <option value="__teachers__">👩‍🏫 المدرسين فقط</option>
         <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
         <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
         <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
@@ -456,6 +457,7 @@ textarea { resize: vertical; min-height: 80px; }
       <label>الموجه إلى</label>
       <select id="annTarget">
         <option value="">📣 كل الصفوف</option>
+        <option value="__teachers__">👩‍🏫 المدرسين فقط</option>
         <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
         <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
         <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
@@ -471,6 +473,7 @@ textarea { resize: vertical; min-height: 80px; }
     <select id="annFilterTarget" onchange="window.filterAnnouncements()">
       <option value="">كل الإعلانات</option>
       <option value="__global__">للكل فقط</option>
+      <option value="__teachers__">👩‍🏫 للمدرسين فقط</option>
       <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
       <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
       <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
@@ -979,8 +982,9 @@ function renderAnnouncements() {
   const filter = document.getElementById("annFilterTarget")?.value || "";
 
   const filtered = allAnnouncements.filter(m => {
-    if (filter === "")           return true;
-    if (filter === "__global__") return !m.target;
+    if (filter === "")             return true;
+    if (filter === "__global__")   return !m.target;
+    if (filter === "__teachers__") return m.target === "__teachers__";
     return m.target === filter;
   });
 
@@ -992,10 +996,16 @@ function renderAnnouncements() {
   filtered.forEach(m => {
     const el = document.createElement("div");
     el.className = "ann-card fade-in";
+    let badge = "";
+    if (!m.target) {
+      badge = `<span class="target-badge target-all">📣 كل الصفوف</span>`;
+    } else if (m.target === "__teachers__") {
+      badge = `<span class="target-badge" style="background:#1a2e1a;color:#4ade80;border:1px solid #166534">👩‍🏫 للمدرسين</span>`;
+    } else {
+      badge = `<span class="target-badge target-class">🎯 ${sanitize(m.target)}</span>`;
+    }
     el.innerHTML = `
-      ${m.target
-        ? `<span class="target-badge target-class">🎯 ${sanitize(m.target)}</span>`
-        : `<span class="target-badge target-all">📣 كل الصفوف</span>`}
+      ${badge}
       ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
       <div class="ann-text">${sanitize(m.text)}</div>
       <div class="ann-meta">📌 ${sanitize(m.author)} · ${formatTime(m.time)}</div>
