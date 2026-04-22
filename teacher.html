@@ -1,1 +1,890 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة المدرس</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  overflow-x: hidden;
+  padding-bottom: 70px;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 60px;
+  background: #111827;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #1f2937;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-pfp {
+  width: 34px; height: 34px; border-radius: 50%;
+  object-fit: cover; border: 2px solid #334155;
+}
+.topbar-name { font-weight: bold; font-size: 15px; color: #e2e8f0; }
+.topbar-role { font-size: 11px; color: #4ade80; }
+.logout-btn {
+  background: #ef4444; border: none; color: white;
+  padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; transition: background 0.2s;
+}
+.logout-btn:hover { background: #dc2626; }
+
+/* ── BOTTOM NAV ── */
+.bottomnav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 64px;
+  background: #111827;
+  border-top: 1px solid #1f2937;
+  display: flex;
+  z-index: 50;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; font-size: 11px;
+  color: #6b7280; gap: 3px;
+  transition: color 0.2s; user-select: none;
+}
+.nav-item .icon { font-size: 20px; line-height: 1; }
+.nav-item.active { color: #4ade80; }
+.nav-item:hover  { color: #cbd5e1; }
+
+/* ── SECTIONS ── */
+.section {
+  display: none;
+  position: fixed;
+  top: 60px; left: 0; right: 0; bottom: 64px;
+  overflow-y: auto;
+  padding: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+.section.active { display: block; }
+
+/* chat section has no padding-bottom so input stays flush */
+#chat.active {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* ── CARDS ── */
+.card {
+  background: #1f2937;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid #334155;
+}
+.card-title {
+  font-size: 13px; font-weight: bold;
+  color: #94a3b8; margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+/* ── FORM ── */
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.field label { font-size: 12px; color: #94a3b8; }
+
+input[type=text], select, textarea {
+  width: 100%; padding: 10px 12px;
+  background: #0f172a; border: 1px solid #334155;
+  border-radius: 8px; color: white;
+  font-size: 14px; font-family: Arial;
+  outline: none; transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: #4ade80; }
+textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.btn {
+  padding: 10px 16px; border: none; border-radius: 8px;
+  cursor: pointer; font-size: 14px; font-weight: bold;
+  transition: 0.2s; width: 100%; margin-top: 4px;
+}
+.btn-primary { background: #059669; color: white; }
+.btn-primary:hover { background: #047857; }
+.btn-danger  { background: #ef4444; color: white; }
+.btn-danger:hover  { background: #dc2626; }
+.btn-ghost {
+  background: #374151; color: #cbd5e1;
+  padding: 6px 12px; width: auto; font-size: 12px;
+}
+
+/* ── HW CARDS ── */
+.hw-card {
+  background: #111827; border: 1px solid #1f2937;
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+}
+.hw-subject { font-size: 12px; color: #4ade80; font-weight: bold; margin-bottom: 4px; }
+.hw-text    { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+.hw-meta    { font-size: 11px; color: #475569; margin-top: 6px; }
+.hw-due     { font-size: 12px; color: #fbbf24; margin-top: 3px; }
+.hw-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+
+/* ── ANNOUNCEMENT CARDS ── */
+.ann-card {
+  background: #111827; border: 1px solid #1f2937;
+  border-right: 3px solid #4ade80;
+  border-radius: 0 12px 12px 0;
+  padding: 14px; margin-bottom: 10px;
+}
+.ann-badge {
+  display: inline-block; font-size: 11px; font-weight: bold;
+  padding: 2px 10px; border-radius: 20px; margin-bottom: 6px;
+  background: #14532d; color: #4ade80;
+}
+.ann-title { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.ann-text  { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+.ann-meta  { font-size: 11px; color: #475569; margin-top: 6px; }
+
+/* ── CHAT ── */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.chat-input-bar {
+  background: #111827;
+  border-top: 1px solid #1f2937;
+  padding: 10px 14px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+.chat-input-bar textarea {
+  flex: 1;
+  min-height: 40px;
+  max-height: 100px;
+  padding: 10px 12px;
+  font-size: 14px;
+  resize: none;
+  border-radius: 20px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+  outline: none;
+  font-family: Arial;
+  line-height: 1.4;
+  transition: border-color 0.2s;
+}
+.chat-input-bar textarea:focus { border-color: #4ade80; }
+.send-btn {
+  width: 42px; height: 42px;
+  background: #059669; border: none;
+  border-radius: 50%; cursor: pointer;
+  font-size: 18px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.send-btn:hover { background: #047857; }
+
+/* chat bubbles */
+.bubble-wrap {
+  display: flex; flex-direction: column;
+  max-width: 78%;
+}
+.bubble-wrap.me { align-self: flex-start; align-items: flex-start; }
+.bubble-wrap.other { align-self: flex-end; align-items: flex-end; }
+
+.bubble {
+  padding: 9px 13px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.bubble-wrap.me    .bubble { background: #1a3a2a; border: 1px solid #166534; color: #d1fae5; border-bottom-right-radius: 4px; }
+.bubble-wrap.other .bubble { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; border-bottom-left-radius: 4px; }
+
+.bubble-name { font-size: 11px; color: #6b7280; margin-bottom: 3px; }
+.bubble-time { font-size: 10px; color: #475569; margin-top: 3px; }
+
+.chat-date-divider {
+  text-align: center; font-size: 11px; color: #475569;
+  padding: 4px 0; position: relative;
+}
+.chat-date-divider::before {
+  content: ""; position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 1px; background: #1f2937; z-index: -1;
+}
+.chat-date-divider span {
+  background: #0f172a; padding: 0 8px;
+}
+
+/* ── SETTINGS ── */
+.settings-pfp-wrap {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+}
+.settings-pfp {
+  width: 64px; height: 64px; border-radius: 50%;
+  object-fit: cover; border: 2px solid #334155; flex-shrink: 0;
+}
+.settings-pfp-hint { font-size: 12px; color: #475569; margin-top: 4px; }
+
+.info-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.info-tag {
+  padding: 4px 12px; border-radius: 20px; font-size: 12px;
+  background: #0f172a; border: 1px solid #334155; color: #94a3b8;
+}
+.info-tag.green { border-color: #166534; color: #4ade80; background: #0d2318; }
+.info-tag.blue  { border-color: #1d4ed8; color: #60a5fa; background: #0d1a2e; }
+
+.divider {
+  border: none; border-top: 1px solid #1f2937; margin: 16px 0;
+}
+
+.btn-warning { background: #d97706; color: white; }
+.btn-warning:hover { background: #b45309; }
+
+/* ── MISC ── */
+.empty {
+  text-align: center; color: #475569;
+  font-size: 14px; padding: 32px 0;
+}
+.skeleton {
+  background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px; height: 64px; margin: 8px 0;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.toast {
+  position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
+  background: #1f2937; border: 1px solid #334155;
+  color: white; padding: 10px 20px; border-radius: 20px;
+  font-size: 13px; z-index: 999;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 300; display: none;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #1e293b; border: 1px solid #334155;
+  border-radius: 16px; padding: 24px; width: 280px; text-align: center;
+}
+.modal h3 { margin-bottom: 10px; font-size: 16px; }
+.modal p  { color: #9ca3af; font-size: 13px; margin-bottom: 20px; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-btns button { flex: 1; }
+
+.search-bar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.search-bar select { flex: 1; min-width: 120px; }
+
+.badge-dot {
+  display: inline-block; width: 8px; height: 8px;
+  background: #ef4444; border-radius: 50;
+  position: absolute; top: 6px; right: 6px;
+}
+.nav-item { position: relative; }
+
+.fade-in { animation: fadeIn 0.2s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; }
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img class="topbar-pfp" id="topPfp" src="placeholder.png" onerror="this.src='placeholder.png'">
+    <div>
+      <div class="topbar-name" id="topName">—</div>
+      <div class="topbar-role">👩‍🏫 مدرس</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HOMEWORK ══ -->
+<div id="homework" class="section active">
+
+  <div class="card">
+    <div class="card-title">📚 نشر واجب جديد</div>
+    <div class="form-row">
+      <div class="field">
+        <label>الصف</label>
+        <select id="hwClass">
+          <option value="">— الصف —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>المادة</label>
+        <select id="hwSubject">
+          <option value="">— المادة —</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>نص الواجب</label>
+      <textarea id="hwText" placeholder="اكتب الواجب هنا..."></textarea>
+    </div>
+    <div class="field">
+      <label>الموعد النهائي (اختياري)</label>
+      <input type="text" id="hwDue" placeholder="مثال: الأحد 15/6">
+    </div>
+    <button class="btn btn-primary" onclick="window.postHomework()">📤 نشر الواجب</button>
+  </div>
+
+  <!-- view my posted homework -->
+  <div class="card-title" style="padding: 0 2px 8px">واجباتي المنشورة</div>
+  <div class="search-bar">
+    <select id="hwViewClass" onchange="window.loadMyHomework()">
+      <option value="">— كل صفوفي —</option>
+    </select>
+    <select id="hwViewSubject" onchange="window.loadMyHomework()">
+      <option value="">— كل موادي —</option>
+    </select>
+  </div>
+  <div id="hwList"><div class="empty">اختر صفاً لعرض الواجبات</div></div>
+</div>
+
+<!-- ══ CHAT ══ -->
+<div id="chat" class="section">
+  <div class="chat-messages" id="chatMessages">
+    <div class="skeleton"></div>
+    <div class="skeleton" style="height:48px;width:70%;align-self:flex-end"></div>
+    <div class="skeleton" style="height:56px;width:80%"></div>
+  </div>
+  <div class="chat-input-bar">
+    <textarea id="chatInput" placeholder="رسالة للمدرسين..." rows="1"
+      onkeydown="window.chatKeydown(event)"></textarea>
+    <button class="send-btn" onclick="window.sendChat()">➤</button>
+  </div>
+</div>
+
+<!-- ══ ANNOUNCEMENTS ══ -->
+<div id="announcements" class="section">
+  <div class="card-title" style="padding: 0 2px 12px">📢 إعلانات الإدارة</div>
+  <div id="annList">
+    <div class="skeleton" style="height:80px"></div>
+    <div class="skeleton" style="height:60px;width:85%"></div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div id="settings" class="section">
+
+  <div class="card">
+    <div class="card-title">👤 الملف الشخصي</div>
+
+    <!-- pfp preview -->
+    <div class="settings-pfp-wrap">
+      <img class="settings-pfp" id="settingsPfpPreview" src="placeholder.png"
+           onerror="this.src='placeholder.png'">
+      <div style="flex:1">
+        <div class="field" style="margin-bottom:0">
+          <label>رابط الصورة</label>
+          <input type="text" id="settingsPfp" placeholder="https://..."
+                 oninput="window.previewPfp(this.value)">
+        </div>
+        <div class="settings-pfp-hint">الصق رابط صورة وستظهر فوراً</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>الاسم الظاهر</label>
+      <input type="text" id="settingsName" placeholder="اسمك الكامل">
+    </div>
+    <div class="field">
+      <label>كلمة المرور الجديدة</label>
+      <input type="text" id="settingsPassword" placeholder="اتركها فارغة إن لم ترد التغيير">
+    </div>
+    <button class="btn btn-primary" onclick="window.saveSettings()">💾 حفظ التغييرات</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 بياناتك المسندة</div>
+    <div class="field">
+      <label>صفوفك</label>
+      <div class="info-tags" id="settingsClasses"></div>
+    </div>
+    <hr class="divider">
+    <div class="field">
+      <label>موادك</label>
+      <div class="info-tags" id="settingsSubjects"></div>
+    </div>
+    <div style="font-size:12px;color:#475569;margin-top:10px">
+      تُعدَّل هذه البيانات من قِبل الإدارة فقط
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚠️ منطقة الخطر</div>
+    <button class="btn btn-danger" onclick="window.logout()">🚪 تسجيل الخروج</button>
+  </div>
+
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <h3 id="modalTitle">تأكيد</h3>
+    <p id="modalMsg">هل أنت متأكد؟</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="window.closeModal()">إلغاء</button>
+      <button class="btn btn-danger" id="modalConfirmBtn">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <div class="nav-item active" id="nav-homework" onclick="window.openSection('homework')">
+    <span class="icon">📚</span><span>الواجبات</span>
+  </div>
+  <div class="nav-item" id="nav-chat" onclick="window.openSection('chat')">
+    <span class="icon">💬</span><span>نقاشات</span>
+  </div>
+  <div class="nav-item" id="nav-announcements" onclick="window.openSection('announcements')">
+    <span class="icon">📢</span><span>إعلانات</span>
+    <span class="badge-dot" id="annDot" style="display:none"></span>
+  </div>
+  <div class="nav-item" id="nav-settings" onclick="window.openSection('settings')">
+    <span class="icon">⚙️</span><span>الإعدادات</span>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, getDocs,
+  deleteDoc, doc, updateDoc, query, orderBy, onSnapshot,
+  serverTimestamp, limit
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:            "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain:        "qayrawan-school-system.firebaseapp.com",
+  projectId:         "qayrawan-school-system",
+  storageBucket:     "qayrawan-school-system.firebasestorage.app",
+  messagingSenderId: "785321248181",
+  appId:             "1:785321248181:web:643e6d29cdca556218c5fc"
+});
+const db = getFirestore(app);
+
+/* ── AUTH ── */
+const teacher = JSON.parse(localStorage.getItem("user"));
+if (!teacher || teacher.role !== "teacher") location.href = "index.html";
+
+const myClasses  = teacher.classes  || [];
+const mySubjects = teacher.subjects || [];
+const myName     = teacher.displayName || teacher.name || "مدرس";
+let   teacherDocId = teacher.docId || null; // Firestore doc ID for this teacher
+
+/* ── TOPBAR ── */
+document.getElementById("topName").textContent = myName;
+if (teacher.pfp) document.getElementById("topPfp").src = teacher.pfp;
+
+/* ── HELPERS ── */
+function sanitize(str) {
+  const d = document.createElement("div");
+  d.textContent = str ?? ""; return d.innerHTML;
+}
+function formatTime(ts) {
+  if (!ts) return "";
+  const date = ts.toDate ? ts.toDate() : new Date(ts);
+  return date.toLocaleString("ar-IQ");
+}
+function timeShort(ts) {
+  if (!ts) return "";
+  const date = ts.toDate ? ts.toDate() : new Date(ts);
+  return date.toLocaleTimeString("ar-IQ", { hour: "2-digit", minute: "2-digit" });
+}
+function dayLabel(ts) {
+  if (!ts) return "";
+  const date = ts.toDate ? ts.toDate() : new Date(ts);
+  return date.toLocaleDateString("ar-IQ", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+}
+
+/* ── TOAST ── */
+function toast(msg, dur = 2200) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), dur);
+}
+
+/* ── MODAL ── */
+window.closeModal = () => document.getElementById("confirmModal").classList.remove("open");
+function confirmAction(title, msg, cb) {
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalMsg").textContent   = msg;
+  document.getElementById("confirmModal").classList.add("open");
+  document.getElementById("modalConfirmBtn").onclick = () => { cb(); window.closeModal(); };
+}
+
+/* ── NAV ── */
+window.openSection = (id) => {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById(`nav-${id}`)?.classList.add("active");
+
+  if (id === "chat") {
+    setTimeout(() => scrollChat(), 100);
+  }
+  if (id === "announcements") {
+    document.getElementById("annDot").style.display = "none";
+    localStorage.setItem("annLastSeen", Date.now());
+  }
+  if (id === "settings") {
+    populateSettings();
+  }
+};
+
+/* ══════════════════════════════════════════
+   POPULATE SELECTS from teacher's assignments
+══════════════════════════════════════════ */
+function populateSelects() {
+  const classSelects  = ["hwClass", "hwViewClass"];
+  const subjectSelects = ["hwSubject", "hwViewSubject"];
+
+  classSelects.forEach(id => {
+    const el = document.getElementById(id);
+    // keep first placeholder option
+    const placeholder = el.options[0].outerHTML;
+    el.innerHTML = placeholder;
+    myClasses.forEach(cls => {
+      const opt = document.createElement("option");
+      opt.value = cls; opt.textContent = cls;
+      el.appendChild(opt);
+    });
+  });
+
+  subjectSelects.forEach(id => {
+    const el = document.getElementById(id);
+    const placeholder = el.options[0].outerHTML;
+    el.innerHTML = placeholder;
+    mySubjects.forEach(sub => {
+      const opt = document.createElement("option");
+      opt.value = sub; opt.textContent = sub;
+      el.appendChild(opt);
+    });
+  });
+}
+populateSelects();
+
+/* ══════════════════════════════════════════
+   HOMEWORK
+══════════════════════════════════════════ */
+window.postHomework = async () => {
+  const cls  = document.getElementById("hwClass").value;
+  const sub  = document.getElementById("hwSubject").value;
+  const text = document.getElementById("hwText").value.trim();
+  const due  = document.getElementById("hwDue").value.trim();
+
+  if (!cls || !sub || !text) { toast("⚠️ أكمل الحقول المطلوبة"); return; }
+
+  // Server-side guard: only allow assigned classes and subjects
+  if (!myClasses.includes(cls)) { toast("⛔ هذا الصف غير مسند إليك"); return; }
+  if (!mySubjects.includes(sub)) { toast("⛔ هذه المادة غير مسندة إليك"); return; }
+
+  await addDoc(collection(db, "classes", cls, "homework", sub, "messages"), {
+    text,
+    due:    due || null,
+    author: myName,
+    time:   Date.now()
+  });
+
+  document.getElementById("hwText").value = "";
+  document.getElementById("hwDue").value  = "";
+  toast("✅ تم نشر الواجب");
+  loadMyHomework();
+};
+
+window.loadMyHomework = async () => {
+  const cls = document.getElementById("hwViewClass").value;
+  const sub = document.getElementById("hwViewSubject").value;
+  const box = document.getElementById("hwList");
+
+  const classes  = cls  ? [cls]  : myClasses;
+  const subjects = sub  ? [sub]  : mySubjects;
+
+  if (classes.length === 0) {
+    box.innerHTML = `<div class="empty">لا توجد صفوف مسندة لك</div>`; return;
+  }
+
+  box.innerHTML = `<div class="skeleton" style="height:70px"></div>`;
+
+  let found = 0;
+  const allItems = [];
+
+  for (const c of classes) {
+    for (const s of subjects) {
+      const snap = await getDocs(
+        query(collection(db, "classes", c, "homework", s, "messages"), orderBy("time", "desc"))
+      );
+      snap.forEach(d => {
+        // only show this teacher's posts
+        const m = d.data();
+        if (m.author !== myName) return;
+        allItems.push({ c, s, id: d.id, ...m });
+        found++;
+      });
+    }
+  }
+
+  // sort by time desc
+  allItems.sort((a, b) => b.time - a.time);
+
+  box.innerHTML = "";
+  if (found === 0) {
+    box.innerHTML = `<div class="empty">لم تنشر أي واجب بعد</div>`; return;
+  }
+
+  allItems.forEach(m => {
+    const el = document.createElement("div");
+    el.className = "hw-card fade-in";
+    el.innerHTML = `
+      <div class="hw-subject">📚 ${sanitize(m.s)} — ${sanitize(m.c)}</div>
+      <div class="hw-text">${sanitize(m.text)}</div>
+      ${m.due ? `<div class="hw-due">⏳ ${sanitize(m.due)}</div>` : ""}
+      <div class="hw-meta">${formatTime(m.time)}</div>
+      <div class="hw-actions">
+        <button class="btn btn-danger" style="width:auto;padding:5px 12px;font-size:12px"
+                onclick="window.deleteHw('${m.c}','${m.s}','${m.id}')">🗑️ حذف</button>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+};
+
+window.deleteHw = (cls, sub, id) => {
+  confirmAction("حذف الواجب", "هل تريد حذف هذا الواجب؟", async () => {
+    await deleteDoc(doc(db, "classes", cls, "homework", sub, "messages", id));
+    toast("🗑️ تم حذف الواجب");
+    loadMyHomework();
+  });
+};
+
+// Load on start
+loadMyHomework();
+
+/* ══════════════════════════════════════════
+   TEACHER CHAT
+   Firestore: teacherChat (ordered by time)
+══════════════════════════════════════════ */
+let lastChatDay = null;
+
+function scrollChat() {
+  const el = document.getElementById("chatMessages");
+  el.scrollTop = el.scrollHeight;
+}
+
+onSnapshot(
+  query(collection(db, "teacherChat"), orderBy("time", "asc"), limit(200)),
+  snap => {
+    const box = document.getElementById("chatMessages");
+    box.innerHTML = "";
+    lastChatDay = null;
+
+    if (snap.empty) {
+      box.innerHTML = `<div class="empty" style="margin:auto">لا توجد رسائل بعد، ابدأ النقاش!</div>`;
+      return;
+    }
+
+    snap.forEach(d => {
+      const m   = d.data();
+      const isMe = m.authorId === teacher.username;
+
+      // date divider
+      const day = dayLabel(m.time);
+      if (day !== lastChatDay) {
+        lastChatDay = day;
+        const div = document.createElement("div");
+        div.className = "chat-date-divider";
+        div.innerHTML = `<span>${day}</span>`;
+        box.appendChild(div);
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = `bubble-wrap ${isMe ? "me" : "other"}`;
+      wrap.innerHTML = `
+        ${!isMe ? `<div class="bubble-name">${sanitize(m.author)}</div>` : ""}
+        <div class="bubble">${sanitize(m.text)}</div>
+        <div class="bubble-time">${timeShort(m.time)}</div>
+      `;
+      box.appendChild(wrap);
+    });
+
+    scrollChat();
+  }
+);
+
+window.sendChat = async () => {
+  const input = document.getElementById("chatInput");
+  const text  = input.value.trim();
+  if (!text) return;
+
+  input.value = "";
+  input.style.height = "auto";
+
+  await addDoc(collection(db, "teacherChat"), {
+    text,
+    author:   myName,
+    authorId: teacher.username,
+    time:     serverTimestamp()
+  });
+};
+
+window.chatKeydown = (e) => {
+  // send on Enter (not shift+enter)
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    window.sendChat();
+  }
+};
+
+// auto-resize textarea
+document.getElementById("chatInput").addEventListener("input", function () {
+  this.style.height = "auto";
+  this.style.height = Math.min(this.scrollHeight, 100) + "px";
+});
+
+/* ══════════════════════════════════════════
+   ANNOUNCEMENTS
+   Show: target === "__teachers__" OR target === ""  (global)
+══════════════════════════════════════════ */
+const annLastSeen = parseInt(localStorage.getItem("annLastSeen") || "0");
+
+onSnapshot(
+  query(collection(db, "announcements"), orderBy("time", "desc")),
+  snap => {
+    const box = document.getElementById("annList");
+    const items = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(m => m.target === "__teachers__" || m.target === "");
+
+    // dot badge for new announcements
+    const hasNew = items.some(m => m.time > annLastSeen);
+    const annSection = document.getElementById("announcements");
+    if (hasNew && !annSection.classList.contains("active")) {
+      document.getElementById("annDot").style.display = "block";
+    }
+
+    if (items.length === 0) {
+      box.innerHTML = `<div class="empty">لا توجد إعلانات</div>`; return;
+    }
+
+    box.innerHTML = "";
+    items.forEach(m => {
+      const el = document.createElement("div");
+      el.className = "ann-card fade-in";
+      const label = m.target === "__teachers__" ? "👩‍🏫 للمدرسين" : "📣 للجميع";
+      const badgeCls = m.target === "__teachers__" ? "" : `style="background:#1e3a5f;color:#38bdf8"`;
+      el.innerHTML = `
+        <span class="ann-badge" ${badgeCls}>${label}</span>
+        ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
+        <div class="ann-text">${sanitize(m.text)}</div>
+        <div class="ann-meta">📌 ${sanitize(m.author)} · ${formatTime(m.time)}</div>
+      `;
+      box.appendChild(el);
+    });
+  }
+);
+
+/* ══════════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════════ */
+function populateSettings() {
+  const cur = JSON.parse(localStorage.getItem("user"));
+  document.getElementById("settingsName").value = cur.displayName || "";
+  document.getElementById("settingsPassword").value = "";
+  const pfp = cur.pfp || "";
+  document.getElementById("settingsPfp").value = pfp;
+  document.getElementById("settingsPfpPreview").src = pfp || "placeholder.png";
+
+  // assigned classes tags
+  const cBox = document.getElementById("settingsClasses");
+  cBox.innerHTML = (cur.classes || []).length
+    ? (cur.classes).map(c => `<span class="info-tag blue">${sanitize(c)}</span>`).join("")
+    : `<span style="color:#475569;font-size:12px">لا توجد صفوف مسندة</span>`;
+
+  // assigned subjects tags
+  const sBox = document.getElementById("settingsSubjects");
+  sBox.innerHTML = (cur.subjects || []).length
+    ? (cur.subjects).map(s => `<span class="info-tag green">${sanitize(s)}</span>`).join("")
+    : `<span style="color:#475569;font-size:12px">لا توجد مواد مسندة</span>`;
+}
+
+window.previewPfp = (url) => {
+  const img = document.getElementById("settingsPfpPreview");
+  img.src = url || "placeholder.png";
+};
+
+window.saveSettings = async () => {
+  const newName = document.getElementById("settingsName").value.trim();
+  const newPass = document.getElementById("settingsPassword").value.trim();
+  const newPfp  = document.getElementById("settingsPfp").value.trim();
+
+  if (!newName) { toast("⚠️ الاسم لا يمكن أن يكون فارغاً"); return; }
+
+  // Find this teacher's Firestore doc by username
+  if (!teacherDocId) {
+    const snap = await getDocs(collection(db, "users"));
+    snap.forEach(d => {
+      if (d.data().username === teacher.username) teacherDocId = d.id;
+    });
+  }
+
+  if (!teacherDocId) { toast("❌ تعذّر العثور على حسابك"); return; }
+
+  const updates = { displayName: newName, pfp: newPfp };
+  if (newPass) updates.password = newPass;
+
+  await updateDoc(doc(db, "users", teacherDocId), updates);
+
+  // Update localStorage
+  const cur = JSON.parse(localStorage.getItem("user"));
+  Object.assign(cur, updates);
+  if (newPass) cur.password = newPass;
+  localStorage.setItem("user", JSON.stringify(cur));
+
+  // Update topbar live
+  document.getElementById("topName").textContent = newName;
+  if (newPfp) document.getElementById("topPfp").src = newPfp;
+
+  toast("✅ تم حفظ التغييرات");
+};
+
+/* ── LOGOUT ── */
+window.logout = () => { localStorage.removeItem("user"); location.href = "index.html"; };
+</script>
+</body>
+</html>
 
