@@ -25,7 +25,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── TOPBAR ── */
 .topbar {
   height: 60px;
   background: var(--surface2);
@@ -48,7 +47,6 @@ body {
 .pfp:hover { border-color: var(--accent); }
 .pfp img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ── PROFILE DROPDOWN ── */
 .profile {
   position: fixed;
   top: 68px; left: 12px;
@@ -102,7 +100,6 @@ body {
 }
 .profile-logout:hover { background: #1f2937; }
 
-/* ── BOTTOM NAV ── */
 .bottomnav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -129,7 +126,6 @@ body {
   text-align: center; display: none;
 }
 
-/* ── SECTIONS ── */
 .section {
   display: none;
   position: fixed;
@@ -148,7 +144,6 @@ body {
 }
 #chat.active { display: flex; }
 
-/* ── HOME ── */
 .home-card {
   background: var(--surface);
   padding: 18px;
@@ -194,7 +189,6 @@ body {
   content: ""; flex: 1; height: 1px; background: #1f2937;
 }
 
-/* ── ANNOUNCEMENTS ── */
 .announcement {
   background: var(--surface);
   border-right: 3px solid var(--accent);
@@ -215,7 +209,6 @@ body {
   padding: 1px 7px; border-radius: 20px;
 }
 
-/* ── CLASS LIST ── */
 .class-item {
   background: var(--surface);
   margin: 8px 0; border-radius: 14px;
@@ -234,7 +227,6 @@ body {
 .class-meta  { font-size: 11px; color: #6b7280; margin-top: 2px; }
 .class-arrow { color: #6b7280; font-size: 12px; }
 
-/* ── CLASS SCREEN (slide-in) ── */
 .class-screen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -266,7 +258,6 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* post form */
 .post-card {
   background: var(--surface);
   border-radius: 14px; padding: 14px;
@@ -290,17 +281,25 @@ select, textarea {
 select:focus, textarea:focus { border-color: var(--accent); }
 textarea { resize: vertical; min-height: 80px; }
 
+input[type=text] {
+  flex: 1; padding: 11px 14px;
+  background: var(--surface); border: 1px solid #374151;
+  color: white; border-radius: 12px; font-size: var(--font-size);
+  outline: none; transition: border-color 0.2s; font-family: Arial;
+  width: 100%;
+}
+input[type=text]:focus { border-color: var(--accent); }
+
 .btn {
   padding: 10px 16px; border: none; border-radius: 10px;
   cursor: pointer; font-size: 14px; font-weight: bold;
-  transition: 0.2s; width: 100%; margin-top: 4px;
+  transition: 0.2s; width: 100%; margin-top: 4px; font-family: Arial;
 }
 .btn-primary { background: var(--accent-btn); color: white; }
 .btn-primary:hover { background: var(--accent-btn-hover); }
 .btn-danger  { background: #ef4444; color: white; }
 .btn-danger:hover  { background: #dc2626; }
 
-/* hw post cards */
 .hw-post {
   background: var(--surface);
   border-right: 3px solid var(--accent);
@@ -325,7 +324,6 @@ textarea { resize: vertical; min-height: 80px; }
 }
 .empty-icon { font-size: 42px; margin-bottom: 10px; }
 
-/* ── CHAT ── */
 .messages {
   flex: 1; overflow-y: auto;
   display: flex; flex-direction: column;
@@ -370,13 +368,10 @@ textarea { resize: vertical; min-height: 80px; }
   display: flex; gap: 8px;
   padding-top: 8px; flex-shrink: 0;
 }
-input[type=text] {
-  flex: 1; padding: 11px 14px;
-  background: var(--surface); border: 1px solid #374151;
-  color: white; border-radius: 12px; font-size: var(--font-size);
-  outline: none; transition: border-color 0.2s; font-family: Arial;
+.chat-input-bar input[type=text] {
+  border-radius: 12px; padding: 11px 14px;
+  background: var(--surface);
 }
-input[type=text]:focus { border-color: var(--accent); }
 .send-btn {
   width: 46px; height: 46px;
   background: var(--accent-btn); border: none;
@@ -386,7 +381,6 @@ input[type=text]:focus { border-color: var(--accent); }
 }
 .send-btn:hover { background: var(--accent-btn-hover); }
 
-/* ── SETTINGS ── */
 .settings-group {
   background: var(--surface); border-radius: 16px;
   margin-bottom: 14px; overflow: hidden;
@@ -404,9 +398,6 @@ input[type=text]:focus { border-color: var(--accent); }
   font-size: 14px; gap: 10px;
 }
 .setting-row:first-of-type { border-top: none; }
-.setting-row input[type=text] {
-  flex: 1; max-width: 100%; padding: 8px 12px; font-size: 13px;
-}
 .setting-col {
   display: flex; flex-direction: column; gap: 8px;
   padding: 14px 16px; border-top: 1px solid #374151;
@@ -414,6 +405,8 @@ input[type=text]:focus { border-color: var(--accent); }
 .setting-col label { font-size: 12px; color: #94a3b8; }
 .setting-col input[type=text] {
   width: 100%; padding: 9px 12px; font-size: 13px;
+  border-radius: 8px; background: #0f172a;
+  border: 1px solid #334155;
 }
 
 .swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -456,7 +449,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .save-btn:hover { background: var(--accent-btn-hover); }
 
-/* ── TOAST ── */
 .toast {
   position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
   background: #1f2937; border: 1px solid #334155;
@@ -467,7 +459,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .toast.show { opacity: 1; }
 
-/* ── SKELETON ── */
 .skeleton {
   background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%);
   background-size: 200% 100%;
@@ -479,7 +470,6 @@ input:checked + .slider:before { transform: translateX(20px); }
   100% { background-position: -200% 0; }
 }
 
-/* ── MODAL ── */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6);
   z-index: 300; display: none;
@@ -535,14 +525,13 @@ input:checked + .slider:before { transform: translateX(20px); }
   <button class="profile-logout" onclick="window.logout()">🚪 تسجيل خروج</button>
 </div>
 
-<!-- ══ HOME ══ -->
+<!-- HOME -->
 <div id="home" class="section active">
   <div class="home-card">
     <h3 id="homeGreeting">👋 أهلاً</h3>
     <p class="sub">إدارة واجباتك والتواصل مع زملائك</p>
     <div class="home-date" id="homeDate"></div>
   </div>
-
   <div class="stats-row">
     <div class="stat-mini">
       <div class="stat-mini-num" id="statClasses">—</div>
@@ -553,7 +542,6 @@ input:checked + .slider:before { transform: translateX(20px); }
       <div class="stat-mini-label">موادك</div>
     </div>
   </div>
-
   <div class="section-label">📢 إعلانات الإدارة</div>
   <div id="announcementsList">
     <div class="skeleton" style="height:60px"></div>
@@ -561,13 +549,13 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- ══ HOMEWORK ══ -->
+<!-- HOMEWORK -->
 <div id="homework" class="section">
   <div class="section-label" style="margin-top:4px">🏫 صفوفك</div>
   <div id="classList"></div>
 </div>
 
-<!-- ══ CHAT ══ -->
+<!-- CHAT -->
 <div id="chat" class="section">
   <div class="messages" id="messages">
     <div class="skeleton"></div>
@@ -581,12 +569,12 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- ══ SETTINGS ══ -->
+<!-- SETTINGS -->
 <div id="settings" class="section">
 
   <div class="settings-group">
     <div class="settings-group-title">👤 الملف الشخصي</div>
-    <div class="setting-row" style="flex-direction:row;align-items:center">
+    <div class="setting-row">
       <span>الصورة الحالية</span>
       <img id="pfpPreview" src="placeholder.png" onerror="this.src='placeholder.png'"
            style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)">
@@ -686,7 +674,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- ══ CLASS SCREEN ══ -->
+<!-- CLASS SCREEN -->
 <div class="class-screen" id="classScreen">
   <div class="class-topbar">
     <button class="back-btn" onclick="window.closeClass()">◀</button>
@@ -730,8 +718,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs, deleteDoc,
-  doc, setDoc, updateDoc, onSnapshot, query, orderBy,
-  serverTimestamp, limit
+  doc, setDoc, updateDoc, getDoc, onSnapshot,
+  query, orderBy, where, serverTimestamp, limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app = initializeApp({
@@ -752,8 +740,8 @@ const user = {
   name:     raw.displayName || raw.name || raw.username || "مدرس",
   username: raw.username || "unknown",
   pfp:      raw.pfp      || "",
-  classes:  raw.classes  || [],
-  subjects: raw.subjects || [],
+  classes:  Array.isArray(raw.classes)  ? raw.classes  : [],
+  subjects: Array.isArray(raw.subjects) ? raw.subjects : [],
 };
 let teacherDocId = raw.docId || null;
 
@@ -771,7 +759,9 @@ function formatTime(ts) {
 function dayLabel(ts) {
   if (!ts) return "";
   const d = ts?.toDate ? ts.toDate() : new Date(ts);
-  return d.toLocaleDateString("ar-IQ", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+  return d.toLocaleDateString("ar-IQ", {
+    weekday:"long", year:"numeric", month:"long", day:"numeric"
+  });
 }
 function updateBadge(id, count) {
   const b = document.getElementById(id); if (!b) return;
@@ -806,10 +796,64 @@ document.getElementById("homeDate").textContent =
   new Date().toLocaleDateString("ar-IQ", {
     weekday: "long", year: "numeric", month: "long", day: "numeric"
   });
-document.getElementById("statClasses").textContent  = user.classes.length  || "0";
-document.getElementById("statSubjects").textContent = user.subjects.length || "0";
 
-/* ── PROFILE DROPDOWN ── */
+/* ── FETCH TEACHER DATA FROM FIRESTORE IF MISSING ── */
+async function ensureTeacherData() {
+  /* If both arrays already have data we're good */
+  if (user.classes.length > 0 && user.subjects.length > 0) {
+    updateStatsUI();
+    buildClassList();
+    return;
+  }
+
+  try {
+    let data = null;
+
+    if (teacherDocId) {
+      const snap = await getDoc(doc(db, "users", teacherDocId));
+      if (snap.exists()) data = snap.data();
+    }
+
+    /* Fallback: query by username */
+    if (!data) {
+      const snap = await getDocs(
+        query(collection(db, "users"), where("username", "==", user.username))
+      );
+      if (!snap.empty) {
+        teacherDocId  = snap.docs[0].id;
+        data          = snap.docs[0].data();
+      }
+    }
+
+    if (data) {
+      user.classes  = Array.isArray(data.classes)  ? data.classes  : [];
+      user.subjects = Array.isArray(data.subjects) ? data.subjects : [];
+
+      /* Persist so next session is instant */
+      const cur = JSON.parse(localStorage.getItem("user"));
+      cur.classes  = user.classes;
+      cur.subjects = user.subjects;
+      cur.docId    = teacherDocId;
+      localStorage.setItem("user", JSON.stringify(cur));
+    }
+  } catch (e) {
+    console.error("ensureTeacherData:", e);
+  }
+
+  updateStatsUI();
+  buildClassList();
+}
+
+function updateStatsUI() {
+  document.getElementById("statClasses").textContent  = user.classes.length  || "0";
+  document.getElementById("statSubjects").textContent = user.subjects.length || "0";
+}
+
+/* Show immediate counts from localStorage, then correct after fetch */
+updateStatsUI();
+ensureTeacherData();
+
+/* ── PROFILE ── */
 function refreshProfileUI() {
   const cur = JSON.parse(localStorage.getItem("user"));
   const pfp = cur.pfp || "";
@@ -819,10 +863,12 @@ function refreshProfileUI() {
   document.getElementById("pName").textContent  = cur.displayName || user.name;
   document.getElementById("pUser").textContent  = `@${user.username}`;
 
-  const sBox = document.getElementById("profileSubjects");
-  const shown = user.subjects.slice(0, 6);
+  const sBox   = document.getElementById("profileSubjects");
+  const shown  = user.subjects.slice(0, 6);
   sBox.innerHTML = shown.map(s => `<span class="profile-sub-tag">${sanitize(s)}</span>`).join("")
-    + (user.subjects.length > 6 ? `<span class="profile-sub-tag">+${user.subjects.length - 6}</span>` : "");
+    + (user.subjects.length > 6
+      ? `<span class="profile-sub-tag">+${user.subjects.length - 6}</span>`
+      : "");
 }
 refreshProfileUI();
 
@@ -900,7 +946,7 @@ function populateProfileForm() {
   document.getElementById("settingsName").value     = cur.displayName || "";
   document.getElementById("settingsPfp").value      = cur.pfp || "";
   document.getElementById("settingsPassword").value = "";
-  document.getElementById("pfpPreview").src = cur.pfp || "placeholder.png";
+  document.getElementById("pfpPreview").src         = cur.pfp || "placeholder.png";
 }
 populateProfileForm();
 
@@ -916,8 +962,10 @@ window.saveProfile = async () => {
   if (!newName) { toast("⚠️ الاسم لا يمكن أن يكون فارغاً"); return; }
 
   if (!teacherDocId) {
-    const snap = await getDocs(collection(db, "users"));
-    snap.forEach(d => { if (d.data().username === user.username) teacherDocId = d.id; });
+    const snap = await getDocs(
+      query(collection(db, "users"), where("username", "==", user.username))
+    );
+    if (!snap.empty) teacherDocId = snap.docs[0].id;
   }
   if (!teacherDocId) { toast("❌ تعذّر العثور على حسابك"); return; }
 
@@ -927,7 +975,7 @@ window.saveProfile = async () => {
   await updateDoc(doc(db, "users", teacherDocId), updates);
 
   const cur = JSON.parse(localStorage.getItem("user"));
-  Object.assign(cur, updates); if (newPass) cur.password = newPass;
+  Object.assign(cur, updates);
   localStorage.setItem("user", JSON.stringify(cur));
 
   user.name = newName; user.pfp = newPfp;
@@ -954,16 +1002,14 @@ window.openSection = (id) => {
   if (id === "settings") populateProfileForm();
 };
 
-/* ══════════════════════════════════════════
-   ANNOUNCEMENTS (teacher + global)
-══════════════════════════════════════════ */
+/* ── ANNOUNCEMENTS ── */
 const lastSeenAnn = parseInt(localStorage.getItem("lastSeenAnn") || "0");
 
 onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap => {
   const box   = document.getElementById("announcementsList");
   const items = snap.docs
     .map(d => ({ id: d.id, ...d.data() }))
-    .filter(m => !m.target || m.target === "__teachers__");
+    .filter(m => !m.target || m.target === "" || m.target === "__teachers__");
 
   if (items.length === 0) {
     box.innerHTML = `<div style="color:#475569;font-size:13px;text-align:center;padding:20px 0">لا توجد إعلانات حالياً</div>`;
@@ -972,7 +1018,7 @@ onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap
   box.innerHTML = "";
   items.forEach(m => {
     const isNew = m.time > lastSeenAnn;
-    const el = document.createElement("div");
+    const el    = document.createElement("div");
     el.className = "announcement fade-in";
     el.innerHTML = `
       ${isNew ? `<span class="ann-new">جديد</span>` : ""}
@@ -985,9 +1031,7 @@ onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap
   localStorage.setItem("lastSeenAnn", Date.now().toString());
 });
 
-/* ══════════════════════════════════════════
-   CLASS LIST
-══════════════════════════════════════════ */
+/* ── CLASS LIST ── */
 function getClassIcon(cls) {
   const n = parseInt(cls);
   if (n <= 8)  return "🌱";
@@ -995,12 +1039,18 @@ function getClassIcon(cls) {
   return "🎓";
 }
 
-(function buildClassList() {
+function buildClassList() {
   const list = document.getElementById("classList");
+
   if (user.classes.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🏫</div>لا توجد صفوف مسندة إليك</div>`;
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🏫</div>
+        لا توجد صفوف مسندة إليك
+      </div>`;
     return;
   }
+
   list.innerHTML = "";
   user.classes.forEach(cls => {
     const el = document.createElement("div");
@@ -1018,11 +1068,9 @@ function getClassIcon(cls) {
     el.addEventListener("click", () => window.openClass(cls));
     list.appendChild(el);
   });
-})();
+}
 
-/* ══════════════════════════════════════════
-   CLASS SCREEN
-══════════════════════════════════════════ */
+/* ── CLASS SCREEN ── */
 let activeClass = null;
 
 window.openClass = (cls) => {
@@ -1050,7 +1098,9 @@ window.openClass = (cls) => {
       <div class="field">
         <label>الموعد النهائي (اختياري)</label>
         <input type="text" id="csDue" placeholder="مثال: الأحد 15/6"
-               style="background:#0f172a;border:1px solid #334155;border-radius:8px;color:white;padding:10px 12px;font-size:14px;font-family:Arial;outline:none;width:100%">
+               style="background:#0f172a;border:1px solid #334155;border-radius:8px;
+                      color:white;padding:10px 12px;font-size:14px;
+                      font-family:Arial;outline:none;width:100%">
       </div>
       <button class="btn btn-primary" onclick="window.postHw('${cls}')">📤 نشر</button>
     </div>
@@ -1070,14 +1120,15 @@ window.closeClass = () => {
 };
 
 async function loadClassHw(cls) {
-  const box = document.getElementById("csHwList");
-  if (!box) return;
-
   const allItems = [];
+
   for (const sub of user.subjects) {
     try {
       const snap = await getDocs(
-        query(collection(db, "classes", cls, "homework", sub, "messages"), orderBy("time", "desc"))
+        query(
+          collection(db, "classes", cls, "homework", sub, "messages"),
+          orderBy("time", "desc")
+        )
       );
       snap.forEach(d => {
         const m = d.data();
@@ -1086,16 +1137,22 @@ async function loadClassHw(cls) {
       });
     } catch {}
   }
+
   allItems.sort((a, b) => b.time - a.time);
 
-  const box2 = document.getElementById("csHwList");
-  if (!box2) return;
-  box2.innerHTML = "";
+  const box = document.getElementById("csHwList");
+  if (!box) return;
+  box.innerHTML = "";
 
   if (allItems.length === 0) {
-    box2.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>لم تنشر أي واجب لهذا الصف بعد</div>`;
+    box.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        لم تنشر أي واجب لهذا الصف بعد
+      </div>`;
     return;
   }
+
   allItems.forEach(m => {
     const el = document.createElement("div");
     el.className = "hw-post fade-in";
@@ -1105,11 +1162,14 @@ async function loadClassHw(cls) {
       ${m.due ? `<div class="hw-due">⏳ ${sanitize(m.due)}</div>` : ""}
       <div class="hw-meta">🕐 ${formatTime(m.time)}</div>
       <div class="hw-actions">
-        <button class="btn btn-danger" style="width:auto;padding:5px 12px;font-size:12px"
-                onclick="window.deleteHw('${cls}','${m.sub}','${m.id}')">🗑️ حذف</button>
+        <button class="btn btn-danger"
+                style="width:auto;padding:5px 12px;font-size:12px"
+                onclick="window.deleteHw('${cls}','${m.sub}','${m.id}')">
+          🗑️ حذف
+        </button>
       </div>
     `;
-    box2.appendChild(el);
+    box.appendChild(el);
   });
 }
 
@@ -1119,12 +1179,13 @@ window.postHw = async (cls) => {
   const due  = document.getElementById("csDue").value.trim();
 
   if (!sub || !text) { toast("⚠️ اختر المادة واكتب الواجب"); return; }
-  if (!user.classes.includes(cls))  { toast("⛔ هذا الصف غير مسند إليك");  return; }
+  if (!user.classes.includes(cls))  { toast("⛔ هذا الصف غير مسند إليك");   return; }
   if (!user.subjects.includes(sub)) { toast("⛔ هذه المادة غير مسندة إليك"); return; }
 
-  await addDoc(collection(db, "classes", cls, "homework", sub, "messages"), {
-    text, due: due || null, author: user.name, time: Date.now()
-  });
+  await addDoc(
+    collection(db, "classes", cls, "homework", sub, "messages"),
+    { text, due: due || null, author: user.name, time: Date.now() }
+  );
 
   document.getElementById("csText").value    = "";
   document.getElementById("csDue").value     = "";
@@ -1141,9 +1202,7 @@ window.deleteHw = (cls, sub, id) => {
   });
 };
 
-/* ══════════════════════════════════════════
-   TEACHER CHAT
-══════════════════════════════════════════ */
+/* ── TEACHER CHAT ── */
 let chatReady   = false;
 let lastChatDay = null;
 let typingTimer;
@@ -1183,7 +1242,10 @@ onSnapshot(
       el.innerHTML = `
         ${!isMe ? `<div class="msg-sender">${sanitize(m.author)}</div>` : ""}
         ${sanitize(m.text)}
-        <div class="msg-time" style="${prefs.timestamps === false ? "display:none" : ""}">${formatTime(m.time)}</div>
+        <div class="msg-time"
+             style="${prefs.timestamps === false ? "display:none" : ""}">
+          ${formatTime(m.time)}
+        </div>
       `;
       box.appendChild(el);
     });
@@ -1199,12 +1261,13 @@ window.sendMsg = async () => {
   if (!text) return;
   input.value = "";
   clearTimeout(typingTimer);
-  try {
-    await deleteDoc(doc(db, "teacherTyping", user.username));
-  } catch {}
+  try { await deleteDoc(doc(db, "teacherTyping", user.username)); } catch {}
   try {
     await addDoc(collection(db, "teacherChat"), {
-      text, author: user.name, authorId: user.username, time: serverTimestamp()
+      text,
+      author:   user.name,
+      authorId: user.username,
+      time:     serverTimestamp()
     });
   } catch { toast("⚠️ فشل إرسال الرسالة"); }
 };
@@ -1215,7 +1278,8 @@ document.getElementById("msgInput").addEventListener("keydown", e => {
 
 document.getElementById("msgInput").addEventListener("input", async () => {
   try {
-    await setDoc(doc(db, "teacherTyping", user.username), { name: user.name, ts: Date.now() });
+    await setDoc(doc(db, "teacherTyping", user.username),
+      { name: user.name, ts: Date.now() });
   } catch {}
   clearTimeout(typingTimer);
   typingTimer = setTimeout(async () => {
@@ -1224,7 +1288,7 @@ document.getElementById("msgInput").addEventListener("input", async () => {
 });
 
 onSnapshot(collection(db, "teacherTyping"), snap => {
-  const now = Date.now();
+  const now    = Date.now();
   const typers = [];
   snap.forEach(d => {
     if (d.id !== user.username && now - d.data().ts < 4000)
@@ -1237,7 +1301,10 @@ onSnapshot(collection(db, "teacherTyping"), snap => {
 });
 
 /* ── LOGOUT ── */
-window.logout = () => { localStorage.removeItem("user"); location.href = "index.html"; };
+window.logout = () => {
+  localStorage.removeItem("user");
+  location.href = "index.html";
+};
 </script>
 </body>
 </html>
