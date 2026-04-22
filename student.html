@@ -13,11 +13,14 @@
   --accent-btn-hover: #1d4ed8;
   --font-size: 14px;
   --bubble-radius: 14px;
+  --bg: #0f172a;
+  --surface: #1f2937;
+  --surface2: #111827;
 }
 
 body {
   font-family: Arial, sans-serif;
-  background: #0f172a;
+  background: var(--bg);
   color: white;
   overflow-x: hidden;
 }
@@ -25,7 +28,7 @@ body {
 /* ── TOPBAR ── */
 .topbar {
   height: 60px;
-  background: #111827;
+  background: var(--surface2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,6 +39,7 @@ body {
   z-index: 50;
 }
 .title { font-weight: bold; font-size: 17px; }
+
 .pfp {
   width: 38px; height: 38px; border-radius: 50%;
   overflow: hidden; background: #374151; cursor: pointer;
@@ -44,40 +48,56 @@ body {
 .pfp:hover { border-color: var(--accent); }
 .pfp img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ── PROFILE MINI BAR ── */
+/* ── PROFILE DROPDOWN ── */
 .profile {
   position: fixed;
   top: 68px; left: 12px;
   background: #1e293b;
   border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 14px 16px;
+  border-radius: 16px;
   display: none;
   z-index: 200;
-  min-width: 200px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  min-width: 220px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+  overflow: hidden;
   animation: fadeDown 0.15s ease;
 }
 @keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-6px); }
+  from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.profile-name  { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
-.profile-user  { color: #94a3b8; font-size: 13px; margin-bottom: 4px; }
-.profile-class { color: var(--accent); font-size: 13px; margin-bottom: 12px; }
-.profile-logout {
-  background: #ef4444; border: none; color: white;
-  padding: 8px 14px; border-radius: 8px; cursor: pointer;
-  width: 100%; font-size: 13px; transition: background 0.2s;
+.profile-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
 }
-.profile-logout:hover { background: #dc2626; }
+.profile-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  object-fit: cover; border: 2px solid var(--accent); flex-shrink: 0;
+}
+.profile-name  { font-size: 14px; font-weight: bold; }
+.profile-user  { color: #94a3b8; font-size: 12px; margin-top: 2px; }
+.profile-class {
+  color: var(--accent); font-size: 11px; font-weight: bold;
+  background: #1e3a5f; display: inline-block;
+  padding: 2px 8px; border-radius: 20px; margin-top: 5px;
+}
+.profile-logout {
+  background: none; border: none; color: #ef4444;
+  padding: 13px 16px; cursor: pointer; width: 100%;
+  text-align: right; font-size: 13px; font-family: Arial;
+  display: flex; align-items: center; gap: 8px;
+  transition: background 0.2s;
+}
+.profile-logout:hover { background: #1f2937; }
 
 /* ── BOTTOM NAV ── */
 .bottomnav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   height: 64px;
-  background: #111827;
+  background: var(--surface2);
   border-top: 1px solid #1f2937;
   display: flex;
   z-index: 50;
@@ -93,7 +113,7 @@ body {
 .nav-item.active { color: var(--accent); }
 .nav-item:hover  { color: #cbd5e1; }
 .badge {
-  position: absolute; top: 6px; left: 50%; margin-left: 4px;
+  position: absolute; top: 6px; left: 50%; margin-left: 6px;
   background: #ef4444; color: white; font-size: 10px; font-weight: bold;
   border-radius: 10px; padding: 1px 5px; min-width: 16px;
   text-align: center; display: none;
@@ -110,78 +130,107 @@ body {
 }
 .section.active { display: block; }
 
+/* Chat overrides section scroll */
+#chat {
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px;
+}
+#chat.active { display: flex; }
+
 /* ── HOME ── */
 .home-card {
-  background: #1f2937; padding: 16px;
-  border-radius: 14px; margin-bottom: 12px;
+  background: var(--surface);
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
 }
-.home-card h3 { font-size: 18px; margin-bottom: 4px; }
-.home-card p  { color: #9ca3af; font-size: 13px; }
+.home-card::before {
+  content: "";
+  position: absolute; top: -30px; left: -30px;
+  width: 130px; height: 130px;
+  background: var(--accent); opacity: 0.05;
+  border-radius: 50%;
+}
+.home-card h3    { font-size: 19px; margin-bottom: 3px; }
+.home-card .sub  { color: #9ca3af; font-size: 12px; margin-bottom: 10px; }
+.home-date {
+  font-size: 11px; color: #475569;
+  background: #0f172a; display: inline-block;
+  padding: 3px 10px; border-radius: 20px;
+}
 
 .section-label {
-  font-size: 12px; color: #6b7280;
-  margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.05em;
+  font-size: 11px; color: #6b7280;
+  margin: 16px 0 8px; text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 6px;
+}
+.section-label::after {
+  content: ""; flex: 1; height: 1px; background: #1f2937;
 }
 
-/* ANNOUNCEMENTS */
+/* ── ANNOUNCEMENTS ── */
 .announcement {
-  background: #1f2937;
+  background: var(--surface);
   border-right: 3px solid var(--accent);
-  border-radius: 0 12px 12px 0;
-  padding: 12px 14px;
+  border-radius: 0 14px 14px 0;
+  padding: 14px 16px;
   margin-bottom: 10px;
   font-size: var(--font-size);
   line-height: 1.6;
   animation: fadeIn 0.2s ease;
+  position: relative;
 }
-.announcement .ann-meta {
-  font-size: 11px; color: #475569; margin-top: 6px;
-}
-.announcement .ann-title {
-  font-weight: bold; color: var(--accent);
-  font-size: 13px; margin-bottom: 4px;
+.ann-title { font-weight: bold; color: var(--accent); font-size: 14px; margin-bottom: 5px; }
+.ann-meta  { font-size: 11px; color: #475569; margin-top: 8px; }
+.ann-new {
+  position: absolute; top: 12px; left: 12px;
+  background: #ef4444; color: white;
+  font-size: 10px; font-weight: bold;
+  padding: 1px 7px; border-radius: 20px;
 }
 
 /* ── SUBJECT LIST ── */
 .subject-item {
-  background: #1f2937;
-  margin: 10px 0;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
+  background: var(--surface);
+  margin: 8px 0; border-radius: 14px;
+  display: flex; align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  cursor: pointer;
-  transition: background 0.15s;
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
   user-select: none;
+  border: 1px solid transparent;
 }
-.subject-item:hover  { background: #263244; }
-.subject-item:active { background: #1e3a8a; }
-.subject-item .sub-name  { font-size: 15px; }
-.subject-item .sub-arrow { color: #6b7280; font-size: 13px; }
+.subject-item:hover  { background: #263244; border-color: #334155; }
+.subject-item:active { transform: scale(0.98); }
+.subject-left  { display: flex; align-items: center; gap: 12px; }
+.sub-icon      { font-size: 22px; line-height: 1; }
+.sub-name      { font-size: 14px; font-weight: bold; }
+.sub-arrow     { color: #6b7280; font-size: 12px; }
 
 /* ── SUBJECT SCREEN ── */
 .subject-screen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: #0f172a;
+  background: var(--bg);
   z-index: 100;
   transform: translateX(-100%);
   transition: transform 0.28s cubic-bezier(.4,0,.2,1);
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
 }
 .subject-screen.open { transform: translateX(0); }
 
 .subject-topbar {
   height: 60px;
-  background: #111827;
-  display: flex;
-  align-items: center;
+  background: var(--surface2);
+  display: flex; align-items: center;
   padding: 0 14px;
   border-bottom: 1px solid #1f2937;
-  flex-shrink: 0;
-  gap: 12px;
+  flex-shrink: 0; gap: 12px;
 }
 .back-btn {
   background: none; border: none; color: var(--accent);
@@ -189,69 +238,43 @@ body {
 }
 .subject-topbar-title { font-weight: bold; font-size: 16px; flex: 1; }
 
-.subject-tabs {
-  display: flex;
-  border-bottom: 1px solid #1f2937;
-  background: #111827;
-  flex-shrink: 0;
-}
-.s-tab {
-  flex: 1; padding: 12px 0; text-align: center;
-  font-size: 13px; color: #6b7280; cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: 0.2s; user-select: none;
-}
-.s-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
 .tab-panel {
-  display: none; flex: 1;
-  overflow-y: auto; padding: 12px;
+  flex: 1; overflow-y: auto;
+  padding: 12px;
   -webkit-overflow-scrolling: touch;
 }
-.tab-panel.active { display: block; }
 
 .teacher-post {
-  background: #1f2937;
+  background: var(--surface);
   border-right: 3px solid var(--accent);
-  padding: 12px 14px;
-  border-radius: 0 10px 10px 0;
-  margin-bottom: 10px;
+  padding: 14px 16px;
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 12px;
   font-size: var(--font-size);
   line-height: 1.6;
   animation: fadeIn 0.2s ease;
 }
-.teacher-post .post-meta { font-size: 11px; color: #475569; margin-top: 6px; }
-.teacher-post .post-due  { font-size: 12px; color: #fbbf24; margin-top: 4px; }
+.post-due  { font-size: 12px; color: #fbbf24; margin-top: 6px; }
+.post-meta { font-size: 11px; color: #475569; margin-top: 6px; }
 
 .empty-state {
   text-align: center; color: #475569;
-  font-size: 14px; padding: 40px 0;
+  font-size: 14px; padding: 50px 0;
 }
+.empty-icon { font-size: 42px; margin-bottom: 10px; }
 
 /* ── CHAT ── */
-#chat {
-  display: none;
-  flex-direction: column;
-  padding: 12px;
-}
-#chat.active { display: flex; }
-
 .messages {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-bottom: 8px;
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column;
+  gap: 3px; padding-bottom: 6px;
   min-height: 0;
-  /* fills available space above input */
-  max-height: calc(100vh - 60px - 64px - 58px - 24px - 20px);
 }
 
 .msg {
-  max-width: 78%; padding: 9px 12px;
-  border-radius: var(--bubble-radius); word-break: break-word;
-  font-size: var(--font-size); line-height: 1.4;
+  max-width: 80%; padding: 9px 13px;
+  word-break: break-word;
+  font-size: var(--font-size); line-height: 1.5;
 }
 .msg.mine {
   background: var(--accent-btn);
@@ -259,91 +282,77 @@ body {
   align-self: flex-start;
 }
 .msg.theirs {
-  background: #1f2937;
+  background: var(--surface);
   border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 2px;
   align-self: flex-end;
 }
-.msg .sender { font-size: 11px; color: var(--accent); margin-bottom: 3px; font-weight: bold; }
-.msg .time   { font-size: 10px; color: #475569; margin-top: 3px; }
+.msg-sender { font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
+.msg-time   { font-size: 10px; color: #475569; margin-top: 3px; }
 
 .typing-indicator {
   font-size: 12px; color: #6b7280;
-  min-height: 18px; font-style: italic;
-  padding: 2px 0;
-  flex-shrink: 0;
+  min-height: 20px; font-style: italic;
+  padding: 2px 0; flex-shrink: 0;
 }
-
 .chat-input-bar {
   display: flex; gap: 8px;
-  padding-top: 6px;
-  flex-shrink: 0;
+  padding-top: 8px; flex-shrink: 0;
 }
 
 input[type=text] {
   flex: 1; padding: 11px 14px;
-  background: #1f2937; border: 1px solid #374151;
-  color: white; border-radius: 10px; font-size: var(--font-size);
+  background: var(--surface); border: 1px solid #374151;
+  color: white; border-radius: 12px; font-size: var(--font-size);
   outline: none; transition: border-color 0.2s; font-family: Arial;
 }
 input[type=text]:focus { border-color: var(--accent); }
+
 .send-btn {
-  padding: 11px 16px; background: var(--accent-btn); border: none;
-  color: white; border-radius: 10px; cursor: pointer;
-  font-size: 16px; transition: background 0.2s; flex-shrink: 0;
+  width: 46px; height: 46px;
+  background: var(--accent-btn); border: none;
+  color: white; border-radius: 12px; cursor: pointer;
+  font-size: 18px; transition: background 0.2s; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
 }
 .send-btn:hover { background: var(--accent-btn-hover); }
 
 /* ── SETTINGS ── */
 .settings-group {
-  background: #1f2937; border-radius: 14px;
+  background: var(--surface); border-radius: 16px;
   margin-bottom: 14px; overflow: hidden;
 }
 .settings-group-title {
   font-size: 11px; color: #6b7280;
-  padding: 12px 14px 6px; letter-spacing: 0.06em;
+  padding: 12px 16px 6px; letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 .setting-row {
   display: flex; align-items: center;
   justify-content: space-between;
-  padding: 13px 14px;
+  padding: 14px 16px;
   border-top: 1px solid #374151;
   font-size: 14px;
 }
 .setting-row:first-of-type { border-top: none; }
 
-/* COLOR SWATCHES */
 .swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .swatch {
-  width: 28px; height: 28px; border-radius: 50%;
+  width: 30px; height: 30px; border-radius: 50%;
   cursor: pointer; border: 2px solid transparent;
   transition: border-color 0.2s, transform 0.15s;
 }
-.swatch.selected { border-color: white; transform: scale(1.15); }
+.swatch.selected { border-color: white; transform: scale(1.2); }
 
-/* FONT SIZE BUTTONS */
-.size-row { display: flex; gap: 6px; }
-.size-btn {
-  padding: 5px 12px; border-radius: 8px;
+.btn-group { display: flex; gap: 6px; }
+.opt-btn {
+  padding: 6px 14px; border-radius: 8px;
   background: #374151; border: 2px solid transparent;
   color: white; cursor: pointer; font-size: 13px;
-  transition: 0.2s;
+  font-family: Arial; transition: 0.2s;
 }
-.size-btn.selected { border-color: var(--accent); background: #1e3a5f; }
+.opt-btn.selected { border-color: var(--accent); background: #1e3a5f; }
 
-/* BUBBLE STYLE */
-.bubble-btn {
-  padding: 5px 12px; border-radius: 8px;
-  background: #374151; border: 2px solid transparent;
-  color: white; cursor: pointer; font-size: 13px;
-  transition: 0.2s;
-}
-.bubble-btn.selected { border-color: var(--accent); background: #1e3a5f; }
-
-/* TOGGLE */
-.toggle {
-  position: relative; width: 44px; height: 24px;
-}
+.toggle { position: relative; width: 44px; height: 24px; }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .slider {
   position: absolute; inset: 0;
@@ -353,18 +362,28 @@ input[type=text]:focus { border-color: var(--accent); }
 .slider:before {
   content: ""; position: absolute;
   width: 18px; height: 18px; border-radius: 50%;
-  left: 3px; top: 3px; background: white;
-  transition: 0.3s;
+  left: 3px; top: 3px; background: white; transition: 0.3s;
 }
 input:checked + .slider { background: var(--accent-btn); }
 input:checked + .slider:before { transform: translateX(20px); }
 
-/* SKELETON */
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
+  background: #1f2937; border: 1px solid #334155;
+  color: white; padding: 10px 20px; border-radius: 20px;
+  font-size: 13px; z-index: 999;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* ── SKELETON ── */
 .skeleton {
   background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
-  border-radius: 8px; height: 72px; margin: 10px 0;
+  border-radius: 10px; height: 72px; margin: 8px 0;
 }
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
@@ -376,13 +395,11 @@ input:checked + .slider:before { transform: translateX(20px); }
   from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
 </style>
 </head>
-
 <body>
 
 <!-- TOPBAR -->
@@ -393,11 +410,17 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- PROFILE MINI BAR -->
+<!-- PROFILE DROPDOWN -->
 <div class="profile" id="profile">
-  <div class="profile-name"  id="pName"></div>
-  <div class="profile-user"  id="pUser"></div>
-  <div class="profile-class" id="pClass"></div>
+  <div class="profile-header">
+    <img class="profile-avatar" id="profileAvatar" src="placeholder.png" alt="pfp"
+         onerror="this.src='placeholder.png'">
+    <div>
+      <div class="profile-name"  id="pName"></div>
+      <div class="profile-user"  id="pUser"></div>
+      <div class="profile-class" id="pClass"></div>
+    </div>
+  </div>
   <button class="profile-logout" onclick="window.logout()">🚪 تسجيل خروج</button>
 </div>
 
@@ -405,7 +428,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div id="home" class="section active">
   <div class="home-card">
     <h3 id="homeGreeting">👋 أهلاً</h3>
-    <p>تابع واجباتك وتواصل مع زملائك بسهولة</p>
+    <p class="sub">تابع واجباتك وتواصل مع زملائك</p>
+    <div class="home-date" id="homeDate"></div>
   </div>
   <div class="section-label">📢 إعلانات الإدارة</div>
   <div id="announcementsList">
@@ -416,7 +440,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <!-- HOMEWORK -->
 <div id="homework" class="section">
-  <p style="color:#6b7280;font-size:13px;margin-bottom:10px">اختر مادة للاطلاع على الواجبات</p>
+  <div class="section-label" style="margin-top:4px">📚 المواد الدراسية</div>
   <div id="subjectList"></div>
 </div>
 
@@ -447,6 +471,22 @@ input:checked + .slider:before { transform: translateX(20px); }
         <div class="swatch" data-accent="#a78bfa" data-btn="#7c3aed" data-btnhover="#6d28d9" style="background:#a78bfa"></div>
         <div class="swatch" data-accent="#fb923c" data-btn="#ea580c" data-btnhover="#c2410c" style="background:#fb923c"></div>
         <div class="swatch" data-accent="#f472b6" data-btn="#db2777" data-btnhover="#be185d" style="background:#f472b6"></div>
+        <div class="swatch" data-accent="#facc15" data-btn="#d97706" data-btnhover="#b45309" style="background:#facc15"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">🌑 خلفية التطبيق</div>
+    <div class="setting-row">
+      <span>السمة</span>
+      <div class="btn-group">
+        <button class="opt-btn selected"
+                data-bg="#0f172a" data-surface="#1f2937" data-surface2="#111827">داكن</button>
+        <button class="opt-btn"
+                data-bg="#020617" data-surface="#0f172a" data-surface2="#080f1a">أكثر داكنة</button>
+        <button class="opt-btn"
+                data-bg="#1a1a2e" data-surface="#16213e" data-surface2="#0f172a">أزرق</button>
       </div>
     </div>
   </div>
@@ -455,10 +495,10 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div class="settings-group-title">🔤 حجم الخط</div>
     <div class="setting-row">
       <span>الحجم</span>
-      <div class="size-row">
-        <button class="size-btn" data-size="12px">ص</button>
-        <button class="size-btn selected" data-size="14px">م</button>
-        <button class="size-btn" data-size="16px">ك</button>
+      <div class="btn-group">
+        <button class="opt-btn" data-size="12px">ص</button>
+        <button class="opt-btn selected" data-size="14px">م</button>
+        <button class="opt-btn" data-size="16px">ك</button>
       </div>
     </div>
   </div>
@@ -467,10 +507,10 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div class="settings-group-title">💬 فقاعات الدردشة</div>
     <div class="setting-row">
       <span>الشكل</span>
-      <div class="size-row">
-        <button class="bubble-btn selected" data-radius="14px">مدور</button>
-        <button class="bubble-btn" data-radius="6px">مربع</button>
-        <button class="bubble-btn" data-radius="20px">بيضاوي</button>
+      <div class="btn-group">
+        <button class="opt-btn selected" data-radius="14px">مدور</button>
+        <button class="opt-btn" data-radius="6px">مربع</button>
+        <button class="opt-btn" data-radius="20px">بيضاوي</button>
       </div>
     </div>
   </div>
@@ -478,7 +518,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   <div class="settings-group">
     <div class="settings-group-title">⚙️ عام</div>
     <div class="setting-row">
-      <span>إظهار الوقت في الرسائل</span>
+      <span>إظهار وقت الرسائل</span>
       <label class="toggle">
         <input type="checkbox" id="toggleTimestamps" checked>
         <span class="slider"></span>
@@ -491,26 +531,34 @@ input:checked + .slider:before { transform: translateX(20px); }
         <span class="slider"></span>
       </label>
     </div>
+    <div class="setting-row">
+      <span>إظهار الفصل في الرسائل</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggleShowClass" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
 
+  <div style="text-align:center;color:#334155;font-size:11px;padding:16px 0 4px">
+    نظام القيروان المدرسي · v1.0
+  </div>
 </div>
 
-<!-- SUBJECT SCREEN (slides in) -->
+<!-- SUBJECT SCREEN -->
 <div class="subject-screen" id="subjectScreen">
   <div class="subject-topbar">
     <button class="back-btn" onclick="window.closeSubject()">◀</button>
     <div class="subject-topbar-title" id="subjectScreenTitle"></div>
   </div>
-
-  <div class="subject-tabs">
-    <div class="s-tab active" data-panel="panelPosts">📢 واجبات المعلم</div>
-  </div>
-
-  <div class="tab-panel active" id="panelPosts">
+  <div class="tab-panel" id="panelPosts">
     <div class="skeleton"></div>
     <div class="skeleton" style="height:50px;width:80%"></div>
   </div>
 </div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <!-- BOTTOM NAV -->
 <div class="bottomnav">
@@ -537,7 +585,6 @@ import {
   query, orderBy, doc, setDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* ── FIREBASE ── */
 const app = initializeApp({
   apiKey:     "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
   authDomain: "qayrawan-school-system.firebaseapp.com",
@@ -546,10 +593,9 @@ const app = initializeApp({
 const db = getFirestore(app);
 
 /* ── USER ── */
-const raw  = JSON.parse(localStorage.getItem("user"));
+const raw = JSON.parse(localStorage.getItem("user"));
 if (!raw) location.href = "index.html";
 
-/* normalise — works whether login saved displayName or name */
 const user = {
   name:     raw.displayName || raw.name || raw.username || "طالب",
   username: raw.username || "unknown",
@@ -561,8 +607,7 @@ const user = {
 /* ── HELPERS ── */
 function sanitize(str) {
   const d = document.createElement("div");
-  d.textContent = str ?? "";
-  return d.innerHTML;
+  d.textContent = str ?? ""; return d.innerHTML;
 }
 function formatTime(ts) {
   const d = new Date(ts);
@@ -572,92 +617,98 @@ function formatTime(ts) {
 function updateBadge(id, count) {
   const b = document.getElementById(id);
   if (!b) return;
-  b.textContent  = count > 99 ? "99+" : count;
+  b.textContent   = count > 99 ? "99+" : count;
   b.style.display = count > 0 ? "inline" : "none";
 }
+function toast(msg, dur = 2200) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), dur);
+}
 
-/* ── SETTINGS (load from localStorage) ── */
+/* ── GREETING + DATE ── */
+function getGreeting(name) {
+  const h = new Date().getHours();
+  if (h >= 5  && h < 12) return `☀️ صباح الخير ${name}`;
+  if (h >= 12 && h < 17) return `🌤️ مساء الخير ${name}`;
+  if (h >= 17 && h < 21) return `🌆 مساء النور ${name}`;
+  return `🌙 أهلاً ${name}`;
+}
+document.getElementById("homeGreeting").textContent = getGreeting(user.name);
+document.getElementById("homeDate").textContent =
+  new Date().toLocaleDateString("ar-IQ", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric"
+  });
+
+/* ── SETTINGS ── */
 const prefs = JSON.parse(localStorage.getItem("prefs") || "{}");
+
 function applyPrefs() {
-  const root = document.documentElement;
-  root.style.setProperty("--accent",       prefs.accent     || "#38bdf8");
-  root.style.setProperty("--accent-btn",   prefs.accentBtn  || "#2563eb");
-  root.style.setProperty("--accent-btn-hover", prefs.accentBtnHover || "#1d4ed8");
-  root.style.setProperty("--font-size",    prefs.fontSize   || "14px");
-  root.style.setProperty("--bubble-radius",prefs.bubbleRadius|| "14px");
+  const r = document.documentElement;
+  r.style.setProperty("--accent",           prefs.accent         || "#38bdf8");
+  r.style.setProperty("--accent-btn",       prefs.accentBtn      || "#2563eb");
+  r.style.setProperty("--accent-btn-hover", prefs.accentBtnHover || "#1d4ed8");
+  r.style.setProperty("--font-size",        prefs.fontSize       || "14px");
+  r.style.setProperty("--bubble-radius",    prefs.bubbleRadius   || "14px");
+  r.style.setProperty("--bg",               prefs.bg             || "#0f172a");
+  r.style.setProperty("--surface",          prefs.surface        || "#1f2937");
+  r.style.setProperty("--surface2",         prefs.surface2       || "#111827");
 
   document.getElementById("toggleTimestamps").checked = prefs.timestamps !== false;
   document.getElementById("toggleCompact").checked    = !!prefs.compact;
+  document.getElementById("toggleShowClass").checked  = prefs.showClass  !== false;
 
-  if (prefs.compact) document.documentElement.style.setProperty("--msg-padding","5px 8px");
-  else               document.documentElement.style.removeProperty("--msg-padding");
-
-  /* mark selected swatches/buttons */
   document.querySelectorAll(".swatch").forEach(s =>
-    s.classList.toggle("selected", s.dataset.accent === (prefs.accent || "#38bdf8"))
-  );
-  document.querySelectorAll(".size-btn").forEach(b =>
-    b.classList.toggle("selected", b.dataset.size === (prefs.fontSize || "14px"))
-  );
-  document.querySelectorAll(".bubble-btn").forEach(b =>
-    b.classList.toggle("selected", b.dataset.radius === (prefs.bubbleRadius || "14px"))
-  );
+    s.classList.toggle("selected", s.dataset.accent === (prefs.accent || "#38bdf8")));
+  document.querySelectorAll("button[data-size]").forEach(b =>
+    b.classList.toggle("selected", b.dataset.size === (prefs.fontSize || "14px")));
+  document.querySelectorAll("button[data-radius]").forEach(b =>
+    b.classList.toggle("selected", b.dataset.radius === (prefs.bubbleRadius || "14px")));
+  document.querySelectorAll("button[data-bg]").forEach(b =>
+    b.classList.toggle("selected", b.dataset.bg === (prefs.bg || "#0f172a")));
 }
 applyPrefs();
 
-/* swatch clicks */
 document.getElementById("swatchRow").addEventListener("click", e => {
   const sw = e.target.closest(".swatch");
   if (!sw) return;
-  prefs.accent          = sw.dataset.accent;
-  prefs.accentBtn       = sw.dataset.btn;
-  prefs.accentBtnHover  = sw.dataset.btnhover;
-  localStorage.setItem("prefs", JSON.stringify(prefs));
-  applyPrefs();
+  prefs.accent = sw.dataset.accent; prefs.accentBtn = sw.dataset.btn;
+  prefs.accentBtnHover = sw.dataset.btnhover;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
 });
-
-/* font size */
-document.querySelectorAll(".size-btn").forEach(b => {
-  b.addEventListener("click", () => {
-    prefs.fontSize = b.dataset.size;
-    localStorage.setItem("prefs", JSON.stringify(prefs));
-    applyPrefs();
-  });
-});
-
-/* bubble style */
-document.querySelectorAll(".bubble-btn").forEach(b => {
-  b.addEventListener("click", () => {
-    prefs.bubbleRadius = b.dataset.radius;
-    localStorage.setItem("prefs", JSON.stringify(prefs));
-    applyPrefs();
-  });
-});
-
-/* toggles */
+document.querySelectorAll("button[data-bg]").forEach(b => b.addEventListener("click", () => {
+  prefs.bg = b.dataset.bg; prefs.surface = b.dataset.surface; prefs.surface2 = b.dataset.surface2;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+}));
+document.querySelectorAll("button[data-size]").forEach(b => b.addEventListener("click", () => {
+  prefs.fontSize = b.dataset.size;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+}));
+document.querySelectorAll("button[data-radius]").forEach(b => b.addEventListener("click", () => {
+  prefs.bubbleRadius = b.dataset.radius;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+}));
 document.getElementById("toggleTimestamps").addEventListener("change", e => {
   prefs.timestamps = e.target.checked;
   localStorage.setItem("prefs", JSON.stringify(prefs));
-  /* hide/show all .time elements */
-  document.querySelectorAll(".msg .time").forEach(t =>
-    t.style.display = prefs.timestamps ? "" : "none"
-  );
+  document.querySelectorAll(".msg-time").forEach(t =>
+    t.style.display = prefs.timestamps ? "" : "none");
 });
-
 document.getElementById("toggleCompact").addEventListener("change", e => {
   prefs.compact = e.target.checked;
   localStorage.setItem("prefs", JSON.stringify(prefs));
-  applyPrefs();
   document.querySelectorAll(".msg").forEach(m =>
-    m.style.padding = prefs.compact ? "5px 8px" : ""
-  );
+    m.style.padding = prefs.compact ? "5px 10px" : "");
+});
+document.getElementById("toggleShowClass").addEventListener("change", e => {
+  prefs.showClass = e.target.checked;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
 });
 
 /* ── PROFILE ── */
 document.getElementById("pfpBox").innerHTML =
-  `<img src="${sanitize(user.pfp || "placeholder.png")}" alt="pfp">`;
-
-document.getElementById("homeGreeting").textContent = `👋 أهلاً ${user.name}`;
+  `<img src="${sanitize(user.pfp || "placeholder.png")}" onerror="this.src='placeholder.png'" alt="pfp">`;
+document.getElementById("profileAvatar").src = user.pfp || "placeholder.png";
 document.getElementById("pName").textContent  = user.name;
 document.getElementById("pUser").textContent  = `@${user.username}`;
 document.getElementById("pClass").textContent = user.class;
@@ -678,50 +729,74 @@ window.openSection = (id) => {
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
   document.getElementById(`nav-${id}`)?.classList.add("active");
 
-  if (id === "chat")     { localStorage.setItem("lastSeenChat", Date.now()); updateBadge("chatBadge", 0); }
-  if (id === "homework") { localStorage.setItem("lastSeenHw",   Date.now()); updateBadge("hwBadge",   0); }
+  if (id === "chat") {
+    localStorage.setItem("lastSeenChat", Date.now());
+    updateBadge("chatBadge", 0);
+  }
+  if (id === "homework") {
+    localStorage.setItem("lastSeenHw", Date.now());
+    updateBadge("hwBadge", 0);
+  }
 };
 
-/* ── ANNOUNCEMENTS ── */
-const annRef = collection(db, "announcements");
-onSnapshot(query(annRef, orderBy("time", "desc")), snap => {
-  const box = document.getElementById("announcementsList");
+/* ── ANNOUNCEMENTS (filtered by class target) ── */
+const lastSeenAnn = parseInt(localStorage.getItem("lastSeenAnn") || "0");
 
-  if (snap.empty) {
-    box.innerHTML = `<div class="empty-state" style="padding:20px 0">لا توجد إعلانات حالياً</div>`;
+onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap => {
+  const box   = document.getElementById("announcementsList");
+  const items = snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .filter(m => !m.target || m.target === user.class);
+
+  if (items.length === 0) {
+    box.innerHTML = `<div style="color:#475569;font-size:13px;text-align:center;padding:20px 0">لا توجد إعلانات حالياً</div>`;
     return;
   }
 
   box.innerHTML = "";
-  snap.forEach(d => {
-    const m  = d.data();
+  items.forEach(m => {
+    const isNew = m.time > lastSeenAnn;
     const el = document.createElement("div");
     el.className = "announcement fade-in";
     el.innerHTML = `
+      ${isNew ? `<span class="ann-new">جديد</span>` : ""}
       ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
       ${sanitize(m.text)}
       <div class="ann-meta">📌 ${sanitize(m.author || "الإدارة")} · ${formatTime(m.time)}</div>
     `;
     box.appendChild(el);
   });
+
+  localStorage.setItem("lastSeenAnn", Date.now().toString());
 });
 
 /* ── SUBJECTS ── */
 const subjects = [
-  "التربية الاسلامية","اللغة العربية","اللغة الانجليزية",
-  "الاحياء","الكيمياء","الفيزياء","الرياضيات",
-  "جرائم حزب البعث","اللغة الفرنسية","التربية الفنية","الحاسوب"
+  { name: "التربية الاسلامية",  icon: "☪️"  },
+  { name: "اللغة العربية",      icon: "📖"  },
+  { name: "اللغة الانجليزية",   icon: "🔤"  },
+  { name: "الاحياء",            icon: "🧬"  },
+  { name: "الكيمياء",           icon: "⚗️"  },
+  { name: "الفيزياء",           icon: "⚡"  },
+  { name: "الرياضيات",          icon: "📐"  },
+  { name: "جرائم حزب البعث",    icon: "📜"  },
+  { name: "اللغة الفرنسية",     icon: "🥐"  },
+  { name: "التربية الفنية",     icon: "🎨"  },
+  { name: "الحاسوب",            icon: "💻"  },
 ];
 
 const subjectList = document.getElementById("subjectList");
-subjects.forEach(sub => {
+subjects.forEach(({ name, icon }) => {
   const el = document.createElement("div");
   el.className = "subject-item";
   el.innerHTML = `
-    <span class="sub-name">${sanitize(sub)}</span>
+    <div class="subject-left">
+      <span class="sub-icon">${icon}</span>
+      <span class="sub-name">${sanitize(name)}</span>
+    </div>
     <span class="sub-arrow">◀</span>
   `;
-  el.addEventListener("click", () => window.openSubject(sub));
+  el.addEventListener("click", () => window.openSubject(name));
   subjectList.appendChild(el);
 });
 
@@ -732,28 +807,32 @@ window.openSubject = (sub) => {
   document.getElementById("subjectScreenTitle").textContent = sub;
   document.getElementById("subjectScreen").classList.add("open");
 
-  const postsPanel = document.getElementById("panelPosts");
-  postsPanel.innerHTML = `<div class="skeleton"></div><div class="skeleton" style="height:50px;width:80%"></div>`;
+  const panel = document.getElementById("panelPosts");
+  panel.innerHTML = `<div class="skeleton"></div><div class="skeleton" style="height:50px;width:75%"></div>`;
 
   if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
 
   const ref = collection(db, "classes", user.class, "homework", sub, "messages");
   activeSubjectUnsub = onSnapshot(query(ref, orderBy("time")), snap => {
     if (snap.empty) {
-      postsPanel.innerHTML = `<div class="empty-state">📭 لا يوجد واجب حالياً</div>`;
+      panel.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          لا يوجد واجب حالياً
+        </div>`;
       return;
     }
-    postsPanel.innerHTML = "";
+    panel.innerHTML = "";
     snap.forEach(d => {
       const m  = d.data();
       const el = document.createElement("div");
       el.className = "teacher-post fade-in";
       el.innerHTML = `
         ${sanitize(m.text)}
-        ${m.due ? `<div class="post-due">⏳ الموعد: ${sanitize(m.due)}</div>` : ""}
-        <div class="post-meta">${formatTime(m.time)}</div>
+        ${m.due ? `<div class="post-due">⏳ الموعد النهائي: ${sanitize(m.due)}</div>` : ""}
+        <div class="post-meta">🕐 ${formatTime(m.time)} · ${sanitize(m.author || "المعلم")}</div>
       `;
-      postsPanel.appendChild(el);
+      panel.appendChild(el);
     });
   });
 };
@@ -769,17 +848,23 @@ const chatQuery = query(chatRef, orderBy("time"));
 let   chatReady = false;
 
 function makeMsg(m) {
-  const isMe     = m.username === user.username;
-  const showTime = document.getElementById("toggleTimestamps").checked;
-  const compact  = document.getElementById("toggleCompact").checked;
+  const isMe      = m.username === user.username;
+  const showTime  = prefs.timestamps !== false;
+  const showClass = prefs.showClass  !== false;
+  const compact   = !!prefs.compact;
 
   const el = document.createElement("div");
   el.className = `msg fade-in ${isMe ? "mine" : "theirs"}`;
-  if (compact) el.style.padding = "5px 8px";
+  if (compact) el.style.padding = "5px 10px";
+
+  const label = showClass
+    ? `${sanitize(m.name)} · ${sanitize(m.class)}`
+    : sanitize(m.name);
+
   el.innerHTML = `
-    ${!isMe ? `<div class="sender">${sanitize(m.name)} · ${sanitize(m.class)}</div>` : ""}
+    ${!isMe ? `<div class="msg-sender">${label}</div>` : ""}
     ${sanitize(m.text)}
-    <div class="time" style="${showTime ? "" : "display:none"}">${formatTime(m.time)}</div>
+    <div class="msg-time" style="${showTime ? "" : "display:none"}">${formatTime(m.time)}</div>
   `;
   return el;
 }
@@ -808,16 +893,15 @@ onSnapshot(chatQuery, snap => {
 window.sendMsg = async () => {
   const input = document.getElementById("msgInput");
   if (!input.value.trim()) return;
-  await addDoc(chatRef, {
-    text:     input.value.trim(),
-    name:     user.name,
-    username: user.username,
-    class:    user.class,
-    time:     Date.now()
-  });
-  input.value = "";
-  clearTimeout(typingTimeout);
-  try { await deleteDoc(doc(db, "classes", user.class, "typing", user.username)); } catch {}
+  try {
+    await addDoc(chatRef, {
+      text: input.value.trim(), name: user.name,
+      username: user.username, class: user.class, time: Date.now()
+    });
+    input.value = "";
+    clearTimeout(typingTimeout);
+    try { await deleteDoc(doc(db, "classes", user.class, "typing", user.username)); } catch {}
+  } catch { toast("⚠️ فشل إرسال الرسالة"); }
 };
 
 document.getElementById("msgInput").addEventListener("keydown", e => {
@@ -828,9 +912,8 @@ document.getElementById("msgInput").addEventListener("keydown", e => {
 let typingTimeout;
 document.getElementById("msgInput").addEventListener("input", async () => {
   try {
-    await setDoc(doc(db, "classes", user.class, "typing", user.username), {
-      name: user.name, ts: Date.now()
-    });
+    await setDoc(doc(db, "classes", user.class, "typing", user.username),
+      { name: user.name, ts: Date.now() });
   } catch {}
   clearTimeout(typingTimeout);
   typingTimeout = setTimeout(async () => {
