@@ -47,11 +47,11 @@ body {
 .nav-item {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  cursor: pointer; font-size: 11px;
+  cursor: pointer; font-size: 10px;
   color: #6b7280; gap: 3px;
   transition: color 0.2s; user-select: none;
 }
-.nav-item .icon { font-size: 20px; line-height: 1; }
+.nav-item .icon { font-size: 18px; line-height: 1; }
 .nav-item.active { color: #38bdf8; }
 .nav-item:hover  { color: #cbd5e1; }
 
@@ -130,6 +130,41 @@ textarea { resize: vertical; min-height: 80px; }
 .search-bar input  { flex: 1; min-width: 120px; }
 .search-bar select { width: 130px; flex-shrink: 0; }
 
+/* ── TAGS ── */
+.tags-wrap {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 8px 0 2px;
+}
+.tag {
+  padding: 5px 12px; border-radius: 20px; font-size: 12px;
+  border: 1px solid #334155; background: #0f172a; color: #6b7280;
+  cursor: pointer; transition: all 0.18s; user-select: none;
+  line-height: 1.4;
+}
+.tag:hover { border-color: #475569; color: #cbd5e1; }
+.tag.selected {
+  background: #1e3a5f; color: #38bdf8;
+  border-color: #38bdf8; font-weight: bold;
+}
+.tag.selected-green {
+  background: #14532d; color: #4ade80;
+  border-color: #4ade80; font-weight: bold;
+}
+
+/* teacher fields slide-in */
+.teacher-only {
+  display: none;
+  animation: fadeIn 0.2s ease;
+  border-top: 1px solid #1f2937;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.teacher-only.visible { display: block; }
+
+/* class field hide for admin */
+.student-only { }
+.student-only.hidden { display: none; }
+
 /* TARGET BADGE on announcements */
 .target-badge {
   display: inline-block;
@@ -193,6 +228,28 @@ textarea { resize: vertical; min-height: 80px; }
 .hw-text    { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
 .hw-meta    { font-size: 11px; color: #475569; margin-top: 6px; }
 .hw-due     { font-size: 12px; color: #fbbf24; margin-top: 3px; }
+
+/* grade subjects section */
+.grade-subjects-grid {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
+}
+.subject-item {
+  background: #0f172a; border: 1px solid #334155;
+  border-radius: 10px; padding: 8px 14px;
+  font-size: 13px; display: flex; align-items: center; gap: 8px;
+}
+.subject-item button {
+  background: none; border: none; color: #ef4444;
+  cursor: pointer; font-size: 14px; padding: 0; line-height: 1;
+}
+.grade-card {
+  background: #111827; border: 1px solid #1f2937;
+  border-radius: 12px; padding: 14px; margin-bottom: 12px;
+}
+.grade-card-title {
+  font-size: 13px; font-weight: bold; color: #38bdf8;
+  margin-bottom: 10px;
+}
 
 .empty {
   text-align: center; color: #475569;
@@ -277,24 +334,12 @@ textarea { resize: vertical; min-height: 80px; }
       <label>الموجه إلى</label>
       <select id="quickTarget">
         <option value="">📣 كل الصفوف</option>
-        <optgroup label="الصف السابع">
-          <option>7A</option><option>7B</option><option>7C</option>
-        </optgroup>
-        <optgroup label="الصف الثامن">
-          <option>8A</option><option>8B</option><option>8C</option>
-        </optgroup>
-        <optgroup label="الصف التاسع">
-          <option>9A</option><option>9B</option><option>9C</option>
-        </optgroup>
-        <optgroup label="الصف العاشر">
-          <option>10A</option><option>10B</option><option>10C</option>
-        </optgroup>
-        <optgroup label="الصف الحادي عشر">
-          <option>11A</option><option>11B</option><option>11C</option>
-        </optgroup>
-        <optgroup label="الصف الثاني عشر">
-          <option>12A</option><option>12B</option><option>12C</option>
-        </optgroup>
+        <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+        <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+        <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+        <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+        <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+        <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
       </select>
     </div>
     <button class="btn btn-primary" onclick="window.postAnnouncement('quick')">📤 نشر الإعلان</button>
@@ -305,6 +350,18 @@ textarea { resize: vertical; min-height: 80px; }
 <div id="users" class="section">
   <div class="card">
     <div class="card-title">➕ إنشاء مستخدم</div>
+
+    <!-- 1. ROLE FIRST -->
+    <div class="field">
+      <label>الدور</label>
+      <select id="newRole" onchange="window.onRoleChange()">
+        <option value="student">طالب</option>
+        <option value="teacher">مدرس</option>
+        <option value="admin">ادمن</option>
+      </select>
+    </div>
+
+    <!-- 2. Basic info -->
     <div class="form-row">
       <div class="field">
         <label>الاسم الظاهر</label>
@@ -325,29 +382,41 @@ textarea { resize: vertical; min-height: 80px; }
         <input type="text" id="newPfp" placeholder="https://...">
       </div>
     </div>
-    <div class="form-row">
-      <div class="field">
-        <label>الصف</label>
-        <select id="newClass">
-          <option value="">— اختر الصف —</option>
-          <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
-          <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
-          <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
-          <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
-          <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
-          <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
-        </select>
-      </div>
-      <div class="field">
-        <label>الدور</label>
-        <select id="newRole">
-          <option value="student">طالب</option>
-          <option value="teacher">مدرس</option>
-          <option value="admin">ادمن</option>
-        </select>
-      </div>
+
+    <!-- 3. Class (student only) -->
+    <div class="field student-only" id="studentClassField">
+      <label>الصف</label>
+      <select id="newClass">
+        <option value="">— اختر الصف —</option>
+        <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+        <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+        <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+        <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+        <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+        <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+      </select>
     </div>
-    <button class="btn btn-primary" onclick="window.createUser()">إنشاء المستخدم</button>
+
+    <!-- 4. Teacher-only: classes + subjects as tags -->
+    <div class="teacher-only" id="teacherFields">
+
+      <div class="field">
+        <label>الصفوف المسندة <span style="color:#475569;font-weight:normal">(اختر صفاً أو أكثر)</span></label>
+        <div class="tags-wrap" id="teacherClassTags">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:6px">
+        <label>المواد <span style="color:#475569;font-weight:normal">(اختر مادة أو أكثر)</span></label>
+        <div class="tags-wrap" id="teacherSubjectTags">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <button class="btn btn-primary" onclick="window.createUser()" style="margin-top:12px">إنشاء المستخدم</button>
   </div>
 
   <div class="search-bar">
@@ -398,7 +467,6 @@ textarea { resize: vertical; min-height: 80px; }
     <button class="btn btn-primary" onclick="window.postAnnouncement('main')">📤 نشر</button>
   </div>
 
-  <!-- Filter posted announcements -->
   <div class="search-bar">
     <select id="annFilterTarget" onchange="window.filterAnnouncements()">
       <option value="">كل الإعلانات</option>
@@ -451,6 +519,9 @@ textarea { resize: vertical; min-height: 80px; }
           <option>اللغة الفرنسية</option>
           <option>التربية الفنية</option>
           <option>الحاسوب</option>
+          <option>التربية الأخلاقية</option>
+          <option>اللغة الكردية</option>
+          <option>الاجتماعيات</option>
         </select>
       </div>
     </div>
@@ -488,9 +559,44 @@ textarea { resize: vertical; min-height: 80px; }
       <option>اللغة الفرنسية</option>
       <option>التربية الفنية</option>
       <option>الحاسوب</option>
+      <option>التربية الأخلاقية</option>
+      <option>اللغة الكردية</option>
+      <option>الاجتماعيات</option>
     </select>
   </div>
   <div id="hwList"><div class="empty">اختر صفاً لعرض الواجبات</div></div>
+</div>
+
+<!-- ══ GRADE SUBJECTS ══ -->
+<div id="gradesubjects" class="section">
+
+  <div class="card">
+    <div class="card-title">🎓 تعيين مواد لصف</div>
+    <div class="field">
+      <label>اختر الصف</label>
+      <select id="gsGrade" onchange="window.loadGradeSubjects()">
+        <option value="">— اختر الصف —</option>
+        <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+        <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+        <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+        <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+        <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+        <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+      </select>
+    </div>
+
+    <div id="gsSubjectsWrap" style="display:none">
+      <div class="field" style="margin-top:4px">
+        <label>المواد المتاحة <span style="color:#475569;font-weight:normal">(اضغط لتفعيل / إلغاء)</span></label>
+        <div class="tags-wrap" id="gsSubjectTags"></div>
+      </div>
+      <button class="btn btn-success" onclick="window.saveGradeSubjects()" style="margin-top:10px">💾 حفظ مواد الصف</button>
+    </div>
+  </div>
+
+  <!-- Preview: all grades -->
+  <div class="card-title" style="padding:0 2px 8px 2px">مواد الصفوف المحفوظة</div>
+  <div id="gsSavedList"><div class="empty">لا توجد بيانات محفوظة بعد</div></div>
 </div>
 
 <!-- CONFIRM MODAL -->
@@ -509,17 +615,20 @@ textarea { resize: vertical; min-height: 80px; }
 
 <!-- BOTTOM NAV -->
 <div class="bottomnav">
-  <div class="nav-item active" id="nav-overview"      onclick="window.openSection('overview')">
+  <div class="nav-item active" id="nav-overview" onclick="window.openSection('overview')">
     <span class="icon">📊</span><span>نظرة عامة</span>
   </div>
-  <div class="nav-item"        id="nav-users"         onclick="window.openSection('users')">
+  <div class="nav-item" id="nav-users" onclick="window.openSection('users')">
     <span class="icon">👥</span><span>المستخدمين</span>
   </div>
-  <div class="nav-item"        id="nav-announcements" onclick="window.openSection('announcements')">
+  <div class="nav-item" id="nav-announcements" onclick="window.openSection('announcements')">
     <span class="icon">📢</span><span>الإعلانات</span>
   </div>
-  <div class="nav-item"        id="nav-homework"      onclick="window.openSection('homework')">
+  <div class="nav-item" id="nav-homework" onclick="window.openSection('homework')">
     <span class="icon">📚</span><span>الواجبات</span>
+  </div>
+  <div class="nav-item" id="nav-gradesubjects" onclick="window.openSection('gradesubjects')">
+    <span class="icon">🎓</span><span>مواد الصفوف</span>
   </div>
 </div>
 
@@ -527,7 +636,8 @@ textarea { resize: vertical; min-height: 80px; }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs,
-  deleteDoc, doc, updateDoc, query, orderBy, onSnapshot
+  deleteDoc, doc, updateDoc, setDoc, getDoc,
+  query, orderBy, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app = initializeApp({
@@ -543,6 +653,29 @@ const db = getFirestore(app);
 /* ── AUTH ── */
 const admin = JSON.parse(localStorage.getItem("user"));
 if (!admin || admin.role !== "admin") location.href = "index.html";
+
+/* ── CONSTANTS ── */
+const ALL_CLASSES = [
+  "7A","7B","7C","8A","8B","8C","9A","9B","9C",
+  "10A","10B","10C","11A","11B","11C","12A","12B","12C"
+];
+
+const ALL_SUBJECTS = [
+  "التربية الاسلامية",
+  "اللغة العربية",
+  "اللغة الإنجليزية",
+  "جرائم حزب البعث",
+  "التربية الأخلاقية",
+  "اللغة الفرنسية",
+  "الحاسوب",
+  "الاحياء",
+  "الفيزياء",
+  "الكيمياء",
+  "الرياضيات",
+  "التربية الفنية",
+  "اللغة الكردية",
+  "الاجتماعيات"
+];
 
 /* ── HELPERS ── */
 function sanitize(str) {
@@ -580,13 +713,65 @@ window.openSection = (id) => {
   document.getElementById(id).classList.add("active");
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
   document.getElementById(`nav-${id}`)?.classList.add("active");
+  if (id === "gradesubjects") loadAllGradeSubjects();
 };
 
-/* ── CLASS OPTIONS helper ── */
-const ALL_CLASSES = [
-  "7A","7B","7C","8A","8B","8C","9A","9B","9C",
-  "10A","10B","10C","11A","11B","11C","12A","12B","12C"
-];
+/* ══════════════════════════════════════════
+   ROLE CHANGE → show/hide teacher fields
+══════════════════════════════════════════ */
+window.onRoleChange = () => {
+  const role = document.getElementById("newRole").value;
+  const teacherFields   = document.getElementById("teacherFields");
+  const studentClassField = document.getElementById("studentClassField");
+
+  if (role === "teacher") {
+    teacherFields.classList.add("visible");
+    studentClassField.classList.add("hidden");
+  } else if (role === "admin") {
+    teacherFields.classList.remove("visible");
+    studentClassField.classList.add("hidden");
+  } else {
+    // student
+    teacherFields.classList.remove("visible");
+    studentClassField.classList.remove("hidden");
+  }
+};
+
+/* Build tag lists once on load */
+function buildTeacherTags() {
+  // Class tags
+  const cWrap = document.getElementById("teacherClassTags");
+  cWrap.innerHTML = "";
+  ALL_CLASSES.forEach(cls => {
+    const t = document.createElement("span");
+    t.className = "tag";
+    t.textContent = cls;
+    t.dataset.value = cls;
+    t.onclick = () => t.classList.toggle("selected");
+    cWrap.appendChild(t);
+  });
+
+  // Subject tags
+  const sWrap = document.getElementById("teacherSubjectTags");
+  sWrap.innerHTML = "";
+  ALL_SUBJECTS.forEach(sub => {
+    const t = document.createElement("span");
+    t.className = "tag";
+    t.textContent = sub;
+    t.dataset.value = sub;
+    t.onclick = () => t.classList.toggle("selected");
+    sWrap.appendChild(t);
+  });
+}
+buildTeacherTags();
+
+function getSelectedTags(containerId) {
+  return [...document.querySelectorAll(`#${containerId} .tag.selected`)]
+    .map(t => t.dataset.value);
+}
+function resetTags(containerId) {
+  document.querySelectorAll(`#${containerId} .tag`).forEach(t => t.classList.remove("selected"));
+}
 
 /* ── STATS (live) ── */
 onSnapshot(collection(db,"users"), snap => {
@@ -607,14 +792,35 @@ window.createUser = async () => {
   const username    = document.getElementById("newUsername").value.trim();
   const password    = document.getElementById("newPassword").value.trim();
   const pfp         = document.getElementById("newPfp").value.trim();
-  const cls         = document.getElementById("newClass").value;
   const role        = document.getElementById("newRole").value;
 
   if (!displayName || !username || !password) { toast("⚠️ يرجى ملء الحقول الإلزامية"); return; }
 
-  await addDoc(collection(db,"users"), { displayName, username, password, pfp, class: cls, role });
+  let userData = { displayName, username, password, pfp, role };
+
+  if (role === "student") {
+    const cls = document.getElementById("newClass").value;
+    userData.class = cls;
+  } else if (role === "teacher") {
+    const classes  = getSelectedTags("teacherClassTags");
+    const subjects = getSelectedTags("teacherSubjectTags");
+    if (classes.length === 0)  { toast("⚠️ اختر صفاً واحداً على الأقل للمدرس");  return; }
+    if (subjects.length === 0) { toast("⚠️ اختر مادة واحدة على الأقل للمدرس"); return; }
+    userData.classes  = classes;
+    userData.subjects = subjects;
+  }
+
+  await addDoc(collection(db,"users"), userData);
+
+  // reset form
   ["newDisplayName","newUsername","newPassword","newPfp"].forEach(id =>
     document.getElementById(id).value = "");
+  document.getElementById("newClass").value = "";
+  resetTags("teacherClassTags");
+  resetTags("teacherSubjectTags");
+  document.getElementById("newRole").value = "student";
+  window.onRoleChange();
+
   toast("✅ تم إنشاء المستخدم");
   loadUsers();
 };
@@ -634,7 +840,14 @@ window.loadUsers = async () => {
   snap.forEach(docSnap => {
     const d  = docSnap.data();
     const id = docSnap.id;
-    if (filter && d.class !== filter) return;
+
+    // filter by class — for teachers check classes array, for students check class field
+    if (filter) {
+      const inClass = d.role === "teacher"
+        ? (d.classes || []).includes(filter)
+        : d.class === filter;
+      if (!inClass) return;
+    }
     if (search && !d.displayName?.toLowerCase().includes(search) &&
                   !d.username?.toLowerCase().includes(search)) return;
     count++;
@@ -647,6 +860,14 @@ window.loadUsers = async () => {
     const roleOpts = ["student","teacher","admin"].map(r =>
       `<option ${r===d.role?"selected":""}>${r}</option>`).join("");
 
+    // Show class info differently per role
+    let classMeta = "";
+    if (d.role === "teacher" && d.classes?.length) {
+      classMeta = d.classes.join("، ");
+    } else {
+      classMeta = d.class || "—";
+    }
+
     div.innerHTML = `
       <div class="user-top">
         <div class="user-info">
@@ -654,7 +875,7 @@ window.loadUsers = async () => {
                onerror="this.src='placeholder.png'">
           <div style="min-width:0">
             <div class="user-name">${sanitize(d.displayName)}</div>
-            <div class="user-meta">@${sanitize(d.username)} · ${sanitize(d.class||"—")}</div>
+            <div class="user-meta">@${sanitize(d.username)} · ${sanitize(classMeta)}</div>
             ${roleBadge(d.role)}
           </div>
         </div>
@@ -717,8 +938,9 @@ window.confirmDeleteUser = (id, name) => {
 document.getElementById("search").addEventListener("input", loadUsers);
 document.getElementById("classFilter").addEventListener("change", loadUsers);
 
-/* ── ANNOUNCEMENTS ── */
-// stores all loaded announcements for client-side filtering
+/* ══════════════════════════════════════════
+   ANNOUNCEMENTS
+══════════════════════════════════════════ */
 let allAnnouncements = [];
 
 window.postAnnouncement = async (source) => {
@@ -729,9 +951,8 @@ window.postAnnouncement = async (source) => {
   if (!text) { toast("⚠️ أدخل نص الإعلان"); return; }
 
   await addDoc(collection(db,"announcements"), {
-    title,
-    text,
-    target: target || "",   // "" = all classes
+    title, text,
+    target: target || "",
     author: admin.displayName || admin.name || "الإدارة",
     time:   Date.now()
   });
@@ -742,11 +963,9 @@ window.postAnnouncement = async (source) => {
   ["quickTarget","annTarget"].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = "";
   });
-
   toast("📢 تم نشر الإعلان");
 };
 
-// live listener
 onSnapshot(query(collection(db,"announcements"), orderBy("time","desc")), snap => {
   allAnnouncements = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderAnnouncements();
@@ -796,7 +1015,9 @@ window.deleteAnn = id => {
   });
 };
 
-/* ── HOMEWORK ── */
+/* ══════════════════════════════════════════
+   HOMEWORK
+══════════════════════════════════════════ */
 window.postHomework = async () => {
   const cls  = document.getElementById("hwClass").value;
   const sub  = document.getElementById("hwSubject").value;
@@ -825,11 +1046,7 @@ window.loadHomework = async () => {
   if (!cls) { box.innerHTML = `<div class="empty">اختر صفاً لعرض الواجبات</div>`; return; }
   box.innerHTML = `<div class="skeleton" style="height:70px"></div>`;
 
-  const subjects = sub ? [sub] : [
-    "التربية الاسلامية","اللغة العربية","اللغة الانجليزية",
-    "الاحياء","الكيمياء","الفيزياء","الرياضيات",
-    "جرائم حزب البعث","اللغة الفرنسية","التربية الفنية","الحاسوب"
-  ];
+  const subjects = sub ? [sub] : ALL_SUBJECTS;
 
   box.innerHTML = ""; let found = 0;
   for (const s of subjects) {
@@ -864,10 +1081,89 @@ window.deleteHw = (cls, sub, id) => {
   });
 };
 
+/* ══════════════════════════════════════════
+   GRADE SUBJECTS
+   Firestore path: gradeSubjects/{grade}  →  { subjects: [...] }
+══════════════════════════════════════════ */
+
+// Build grade subjects tag selector
+function buildGsSubjectTags(selected = []) {
+  const wrap = document.getElementById("gsSubjectTags");
+  wrap.innerHTML = "";
+  ALL_SUBJECTS.forEach(sub => {
+    const t = document.createElement("span");
+    t.className = "tag" + (selected.includes(sub) ? " selected-green" : "");
+    t.textContent = sub;
+    t.dataset.value = sub;
+    t.onclick = () => t.classList.toggle("selected-green");
+    wrap.appendChild(t);
+  });
+}
+
+window.loadGradeSubjects = async () => {
+  const grade = document.getElementById("gsGrade").value;
+  const wrap  = document.getElementById("gsSubjectsWrap");
+  if (!grade) { wrap.style.display = "none"; return; }
+
+  wrap.style.display = "block";
+
+  // Load existing subjects for this grade
+  try {
+    const snap = await getDoc(doc(db,"gradeSubjects",grade));
+    const saved = snap.exists() ? (snap.data().subjects || []) : [];
+    buildGsSubjectTags(saved);
+  } catch(e) {
+    buildGsSubjectTags([]);
+  }
+};
+
+window.saveGradeSubjects = async () => {
+  const grade = document.getElementById("gsGrade").value;
+  if (!grade) { toast("⚠️ اختر الصف أولاً"); return; }
+
+  const selected = [...document.querySelectorAll("#gsSubjectTags .tag.selected-green")]
+    .map(t => t.dataset.value);
+
+  await setDoc(doc(db,"gradeSubjects",grade), { subjects: selected });
+  toast(`✅ تم حفظ مواد الصف ${grade}`);
+  loadAllGradeSubjects();
+};
+
+async function loadAllGradeSubjects() {
+  const box = document.getElementById("gsSavedList");
+  box.innerHTML = `<div class="skeleton" style="height:60px"></div>`;
+
+  const snap = await getDocs(collection(db,"gradeSubjects"));
+  if (snap.empty) {
+    box.innerHTML = `<div class="empty">لا توجد بيانات محفوظة بعد</div>`; return;
+  }
+
+  // Sort by grade
+  const entries = [];
+  snap.forEach(d => entries.push({ grade: d.id, subjects: d.data().subjects || [] }));
+  entries.sort((a,b) => a.grade.localeCompare(b.grade, undefined, { numeric: true }));
+
+  box.innerHTML = "";
+  entries.forEach(({ grade, subjects }) => {
+    const card = document.createElement("div");
+    card.className = "grade-card fade-in";
+    card.innerHTML = `
+      <div class="grade-card-title">📘 الصف ${sanitize(grade)}</div>
+      <div class="grade-subjects-grid">
+        ${subjects.length
+          ? subjects.map(s => `<div class="subject-item">${sanitize(s)}</div>`).join("")
+          : `<div style="color:#475569;font-size:13px">لا توجد مواد</div>`
+        }
+      </div>
+    `;
+    box.appendChild(card);
+  });
+}
+
 /* ── LOGOUT ── */
 window.logout = () => { localStorage.removeItem("user"); location.href = "index.html"; };
 
 loadUsers();
 </script>
 </body>
-        </html>
+</html>
