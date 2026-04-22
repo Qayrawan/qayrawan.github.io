@@ -1,105 +1,944 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الطالب</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 20px; text-align: center; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background-color: #3498db; color: white; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .loading { font-style: italic; color: #7f8c8d; }
-    </style>
+<meta charset="UTF-8">
+<title>لوحة الطالب</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent: #38bdf8;
+  --accent-btn: #2563eb;
+  --accent-btn-hover: #1d4ed8;
+  --font-size: 14px;
+  --bubble-radius: 14px;
+  --bg: #0f172a;
+  --surface: #1f2937;
+  --surface2: #111827;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: white;
+  overflow-x: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 60px;
+  background: var(--surface2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #1f2937;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+}
+.title { font-weight: bold; font-size: 17px; }
+
+.pfp {
+  width: 38px; height: 38px; border-radius: 50%;
+  overflow: hidden; background: #374151; cursor: pointer;
+  border: 2px solid #374151; transition: border-color 0.2s; flex-shrink: 0;
+}
+.pfp:hover { border-color: var(--accent); }
+.pfp img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ── PROFILE DROPDOWN ── */
+.profile {
+  position: fixed;
+  top: 68px; left: 12px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  display: none;
+  z-index: 200;
+  min-width: 220px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+  overflow: hidden;
+  animation: fadeDown 0.15s ease;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.profile-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
+}
+.profile-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  object-fit: cover; border: 2px solid var(--accent); flex-shrink: 0;
+}
+.profile-name  { font-size: 14px; font-weight: bold; }
+.profile-user  { color: #94a3b8; font-size: 12px; margin-top: 2px; }
+.profile-class {
+  color: var(--accent); font-size: 11px; font-weight: bold;
+  background: #1e3a5f; display: inline-block;
+  padding: 2px 8px; border-radius: 20px; margin-top: 5px;
+}
+.profile-logout {
+  background: none; border: none; color: #ef4444;
+  padding: 13px 16px; cursor: pointer; width: 100%;
+  text-align: right; font-size: 13px; font-family: Arial;
+  display: flex; align-items: center; gap: 8px;
+  transition: background 0.2s;
+}
+.profile-logout:hover { background: #1f2937; }
+
+/* ── BOTTOM NAV ── */
+.bottomnav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 64px;
+  background: var(--surface2);
+  border-top: 1px solid #1f2937;
+  display: flex;
+  z-index: 50;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; position: relative;
+  font-size: 11px; color: #6b7280; gap: 3px;
+  transition: color 0.2s; user-select: none;
+}
+.nav-item .icon { font-size: 22px; line-height: 1; }
+.nav-item.active { color: var(--accent); }
+.nav-item:hover  { color: #cbd5e1; }
+.badge {
+  position: absolute; top: 6px; left: 50%; margin-left: 6px;
+  background: #ef4444; color: white; font-size: 10px; font-weight: bold;
+  border-radius: 10px; padding: 1px 5px; min-width: 16px;
+  text-align: center; display: none;
+}
+
+/* ── SECTIONS ── */
+.section {
+  display: none;
+  position: fixed;
+  top: 60px; left: 0; right: 0; bottom: 64px;
+  overflow-y: auto;
+  padding: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+.section.active { display: block; }
+
+/* Chat overrides section scroll */
+#chat {
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px;
+}
+#chat.active { display: flex; }
+
+/* ── HOME ── */
+.home-card {
+  background: var(--surface);
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.home-card::before {
+  content: "";
+  position: absolute; top: -30px; left: -30px;
+  width: 130px; height: 130px;
+  background: var(--accent); opacity: 0.05;
+  border-radius: 50%;
+}
+.home-card h3    { font-size: 19px; margin-bottom: 3px; }
+.home-card .sub  { color: #9ca3af; font-size: 12px; margin-bottom: 10px; }
+.home-date {
+  font-size: 11px; color: #475569;
+  background: #0f172a; display: inline-block;
+  padding: 3px 10px; border-radius: 20px;
+}
+
+.section-label {
+  font-size: 11px; color: #6b7280;
+  margin: 16px 0 8px; text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 6px;
+}
+.section-label::after {
+  content: ""; flex: 1; height: 1px; background: #1f2937;
+}
+
+/* ── ANNOUNCEMENTS ── */
+.announcement {
+  background: var(--surface);
+  border-right: 3px solid var(--accent);
+  border-radius: 0 14px 14px 0;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-size: var(--font-size);
+  line-height: 1.6;
+  animation: fadeIn 0.2s ease;
+  position: relative;
+}
+.ann-title { font-weight: bold; color: var(--accent); font-size: 14px; margin-bottom: 5px; }
+.ann-meta  { font-size: 11px; color: #475569; margin-top: 8px; }
+.ann-new {
+  position: absolute; top: 12px; left: 12px;
+  background: #ef4444; color: white;
+  font-size: 10px; font-weight: bold;
+  padding: 1px 7px; border-radius: 20px;
+}
+
+/* ── SUBJECT LIST ── */
+.subject-item {
+  background: var(--surface);
+  margin: 8px 0; border-radius: 14px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  user-select: none;
+  border: 1px solid transparent;
+}
+.subject-item:hover  { background: #263244; border-color: #334155; }
+.subject-item:active { transform: scale(0.98); }
+.subject-left  { display: flex; align-items: center; gap: 12px; }
+.sub-icon      { font-size: 22px; line-height: 1; }
+.sub-name      { font-size: 14px; font-weight: bold; }
+.sub-arrow     { color: #6b7280; font-size: 12px; }
+
+/* ── SUBJECT SCREEN ── */
+.subject-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg);
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column;
+}
+.subject-screen.open { transform: translateX(0); }
+
+.subject-topbar {
+  height: 60px;
+  background: var(--surface2);
+  display: flex; align-items: center;
+  padding: 0 14px;
+  border-bottom: 1px solid #1f2937;
+  flex-shrink: 0; gap: 12px;
+}
+.back-btn {
+  background: none; border: none; color: var(--accent);
+  font-size: 22px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
+}
+.subject-topbar-title { font-weight: bold; font-size: 16px; flex: 1; }
+
+.tab-panel {
+  flex: 1; overflow-y: auto;
+  padding: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.teacher-post {
+  background: var(--surface);
+  border-right: 3px solid var(--accent);
+  padding: 14px 16px;
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 12px;
+  font-size: var(--font-size);
+  line-height: 1.6;
+  animation: fadeIn 0.2s ease;
+}
+.post-due  { font-size: 12px; color: #fbbf24; margin-top: 6px; }
+.post-meta { font-size: 11px; color: #475569; margin-top: 6px; }
+
+.empty-state {
+  text-align: center; color: #475569;
+  font-size: 14px; padding: 50px 0;
+}
+.empty-icon { font-size: 42px; margin-bottom: 10px; }
+
+/* ── CHAT ── */
+.messages {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column;
+  gap: 3px; padding-bottom: 6px;
+  min-height: 0;
+}
+
+.msg {
+  max-width: 80%; padding: 9px 13px;
+  word-break: break-word;
+  font-size: var(--font-size); line-height: 1.5;
+}
+.msg.mine {
+  background: var(--accent-btn);
+  border-radius: var(--bubble-radius) var(--bubble-radius) 2px var(--bubble-radius);
+  align-self: flex-start;
+}
+.msg.theirs {
+  background: var(--surface);
+  border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 2px;
+  align-self: flex-end;
+}
+.msg-sender { font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
+.msg-time   { font-size: 10px; color: #475569; margin-top: 3px; }
+
+.typing-indicator {
+  font-size: 12px; color: #6b7280;
+  min-height: 20px; font-style: italic;
+  padding: 2px 0; flex-shrink: 0;
+}
+.chat-input-bar {
+  display: flex; gap: 8px;
+  padding-top: 8px; flex-shrink: 0;
+}
+
+input[type=text] {
+  flex: 1; padding: 11px 14px;
+  background: var(--surface); border: 1px solid #374151;
+  color: white; border-radius: 12px; font-size: var(--font-size);
+  outline: none; transition: border-color 0.2s; font-family: Arial;
+}
+input[type=text]:focus { border-color: var(--accent); }
+
+.send-btn {
+  width: 46px; height: 46px;
+  background: var(--accent-btn); border: none;
+  color: white; border-radius: 12px; cursor: pointer;
+  font-size: 18px; transition: background 0.2s; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.send-btn:hover { background: var(--accent-btn-hover); }
+
+/* ── SETTINGS ── */
+.settings-group {
+  background: var(--surface); border-radius: 16px;
+  margin-bottom: 14px; overflow: hidden;
+}
+.settings-group-title {
+  font-size: 11px; color: #6b7280;
+  padding: 12px 16px 6px; letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.setting-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-top: 1px solid #374151;
+  font-size: 14px;
+}
+.setting-row:first-of-type { border-top: none; }
+
+.swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.swatch {
+  width: 30px; height: 30px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.swatch.selected { border-color: white; transform: scale(1.2); }
+
+.btn-group { display: flex; gap: 6px; }
+.opt-btn {
+  padding: 6px 14px; border-radius: 8px;
+  background: #374151; border: 2px solid transparent;
+  color: white; cursor: pointer; font-size: 13px;
+  font-family: Arial; transition: 0.2s;
+}
+.opt-btn.selected { border-color: var(--accent); background: #1e3a5f; }
+
+.toggle { position: relative; width: 44px; height: 24px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0;
+  background: #374151; border-radius: 24px;
+  transition: 0.3s; cursor: pointer;
+}
+.slider:before {
+  content: ""; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  left: 3px; top: 3px; background: white; transition: 0.3s;
+}
+input:checked + .slider { background: var(--accent-btn); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
+  background: #1f2937; border: 1px solid #334155;
+  color: white; padding: 10px 20px; border-radius: 20px;
+  font-size: 13px; z-index: 999;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* ── SKELETON ── */
+.skeleton {
+  background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 10px; height: 72px; margin: 8px 0;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.fade-in { animation: fadeIn 0.2s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1 id="studentName">جاري التحميل...</h1>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>المادة</th>
-                <th>الدرجة</th>
-            </tr>
-        </thead>
-        <tbody id="gradesTable">
-            </tbody>
-    </table>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="title">لوحة الطالب</div>
+  <div class="pfp" onclick="window.toggleProfile()" id="pfpBox">
+    <img src="placeholder.png" alt="pfp">
+  </div>
+</div>
+
+<!-- PROFILE DROPDOWN -->
+<div class="profile" id="profile">
+  <div class="profile-header">
+    <img class="profile-avatar" id="profileAvatar" src="placeholder.png" alt="pfp"
+         onerror="this.src='placeholder.png'">
+    <div>
+      <div class="profile-name"  id="pName"></div>
+      <div class="profile-user"  id="pUser"></div>
+      <div class="profile-class" id="pClass"></div>
+    </div>
+  </div>
+  <button class="profile-logout" onclick="window.logout()">🚪 تسجيل خروج</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="section active">
+  <div class="home-card">
+    <h3 id="homeGreeting">👋 أهلاً</h3>
+    <p class="sub">تابع واجباتك وتواصل مع زملائك</p>
+    <div class="home-date" id="homeDate"></div>
+  </div>
+  <div class="section-label">📢 إعلانات الإدارة</div>
+  <div id="announcementsList">
+    <div class="skeleton" style="height:60px"></div>
+    <div class="skeleton" style="height:48px;width:85%"></div>
+  </div>
+</div>
+
+<!-- HOMEWORK -->
+<div id="homework" class="section">
+  <div class="section-label" style="margin-top:4px">📚 المواد الدراسية</div>
+  <div id="subjectList"></div>
+</div>
+
+<!-- CHAT -->
+<div id="chat" class="section">
+  <div class="messages" id="messages">
+    <div class="skeleton"></div>
+    <div class="skeleton" style="width:55%"></div>
+    <div class="skeleton" style="width:70%"></div>
+  </div>
+  <div class="typing-indicator" id="typingIndicator"></div>
+  <div class="chat-input-bar">
+    <input type="text" id="msgInput" placeholder="اكتب رسالة...">
+    <button class="send-btn" onclick="window.sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="section">
+
+  <div class="settings-group">
+    <div class="settings-group-title">🎨 لون التمييز</div>
+    <div class="setting-row">
+      <span>اللون</span>
+      <div class="swatch-row" id="swatchRow">
+        <div class="swatch selected" data-accent="#38bdf8" data-btn="#2563eb" data-btnhover="#1d4ed8" style="background:#38bdf8"></div>
+        <div class="swatch" data-accent="#34d399" data-btn="#059669" data-btnhover="#047857" style="background:#34d399"></div>
+        <div class="swatch" data-accent="#a78bfa" data-btn="#7c3aed" data-btnhover="#6d28d9" style="background:#a78bfa"></div>
+        <div class="swatch" data-accent="#fb923c" data-btn="#ea580c" data-btnhover="#c2410c" style="background:#fb923c"></div>
+        <div class="swatch" data-accent="#f472b6" data-btn="#db2777" data-btnhover="#be185d" style="background:#f472b6"></div>
+        <div class="swatch" data-accent="#facc15" data-btn="#d97706" data-btnhover="#b45309" style="background:#facc15"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">🌑 خلفية التطبيق</div>
+    <div class="setting-row">
+      <span>السمة</span>
+      <div class="btn-group">
+        <button class="opt-btn selected"
+                data-bg="#0f172a" data-surface="#1f2937" data-surface2="#111827">داكن</button>
+        <button class="opt-btn"
+                data-bg="#020617" data-surface="#0f172a" data-surface2="#080f1a">أكثر داكنة</button>
+        <button class="opt-btn"
+                data-bg="#1a1a2e" data-surface="#16213e" data-surface2="#0f172a">أزرق</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">🔤 حجم الخط</div>
+    <div class="setting-row">
+      <span>الحجم</span>
+      <div class="btn-group">
+        <button class="opt-btn" data-size="12px">ص</button>
+        <button class="opt-btn selected" data-size="14px">م</button>
+        <button class="opt-btn" data-size="16px">ك</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">💬 فقاعات الدردشة</div>
+    <div class="setting-row">
+      <span>الشكل</span>
+      <div class="btn-group">
+        <button class="opt-btn selected" data-radius="14px">مدور</button>
+        <button class="opt-btn" data-radius="6px">مربع</button>
+        <button class="opt-btn" data-radius="20px">بيضاوي</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">⚙️ عام</div>
+    <div class="setting-row">
+      <span>إظهار وقت الرسائل</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggleTimestamps" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <span>رسائل مضغوطة</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggleCompact">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <span>إظهار الفصل في الرسائل</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggleShowClass" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div style="text-align:center;color:#334155;font-size:11px;padding:16px 0 4px">
+    نظام القيروان المدرسي · v1.0
+  </div>
+</div>
+
+<!-- SUBJECT SCREEN -->
+<div class="subject-screen" id="subjectScreen">
+  <div class="subject-topbar">
+    <button class="back-btn" onclick="window.closeSubject()">◀</button>
+    <div class="subject-topbar-title" id="subjectScreenTitle"></div>
+  </div>
+  <div class="tab-panel" id="panelPosts">
+    <div class="skeleton"></div>
+    <div class="skeleton" style="height:50px;width:80%"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <div class="nav-item active" id="nav-home"     onclick="window.openSection('home')">
+    <span class="icon">🏠</span><span>الرئيسية</span>
+  </div>
+  <div class="nav-item"        id="nav-homework" onclick="window.openSection('homework')">
+    <span class="icon">📚</span><span>الواجبات</span>
+    <span class="badge" id="hwBadge"></span>
+  </div>
+  <div class="nav-item"        id="nav-chat"     onclick="window.openSection('chat')">
+    <span class="icon">💬</span><span>الدردشة</span>
+    <span class="badge" id="chatBadge"></span>
+  </div>
+  <div class="nav-item"        id="nav-settings" onclick="window.openSection('settings')">
+    <span class="icon">⚙️</span><span>الإعدادات</span>
+  </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot,
+  query, orderBy, doc, setDoc, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 1. إعدادات Firebase الخاصة بك
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
+const app = initializeApp({
+  apiKey:     "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain: "qayrawan-school-system.firebaseapp.com",
+  projectId:  "qayrawan-school-system"
+});
+const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+/* ── USER ── */
+const raw = JSON.parse(localStorage.getItem("user"));
+if (!raw) location.href = "index.html";
 
-    // 2. ترتيب المواد المطلوب
-    const subjectsOrder = [
-        "الاسلامية", "العربية", "الانكليزية", "الفرنسية", 
-        "الكردية", "جرائم البعث", "الرياضيات", 
-        "الفيزياء", "الكيمياء", "الاحياء", "الحاسوب"
-    ];
+const user = {
+  name:     raw.displayName || raw.name || raw.username || "طالب",
+  username: raw.username || "unknown",
+  class:    raw.class    || "—",
+  pfp:      raw.pfp      || "",
+  role:     raw.role     || "student"
+};
 
-    async function fetchStudentData() {
-        // ملاحظة: استبدل 'STUDENT_ID' بـ ID الطالب الفعلي أو اجلبه من رابط الصفحة
-        const studentId = "replace_with_actual_id"; 
-        const docRef = doc(db, "students", studentId);
-        
-        try {
-            const docSnap = await getDoc(docRef);
+/* ── HELPERS ── */
+function sanitize(str) {
+  const d = document.createElement("div");
+  d.textContent = str ?? ""; return d.innerHTML;
+}
+function formatTime(ts) {
+  const d = new Date(ts);
+  return d.getHours().toString().padStart(2,"0") + ":" +
+         d.getMinutes().toString().padStart(2,"0");
+}
+function updateBadge(id, count) {
+  const b = document.getElementById(id);
+  if (!b) return;
+  b.textContent   = count > 99 ? "99+" : count;
+  b.style.display = count > 0 ? "inline" : "none";
+}
+function toast(msg, dur = 2200) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), dur);
+}
 
-            if (docSnap.exists()) {
-                const data = docSnap.data();
+/* ── GREETING + DATE ── */
+function getGreeting(name) {
+  const h = new Date().getHours();
+  if (h >= 5  && h < 12) return `☀️ صباح الخير ${name}`;
+  if (h >= 12 && h < 17) return `🌤️ مساء الخير ${name}`;
+  if (h >= 17 && h < 21) return `🌆 مساء النور ${name}`;
+  return `🌙 أهلاً ${name}`;
+}
+document.getElementById("homeGreeting").textContent = getGreeting(user.name);
+document.getElementById("homeDate").textContent =
+  new Date().toLocaleDateString("ar-IQ", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric"
+  });
 
-                // تحديث اسم الطالب (استخدام displayName من Firestore)
-                document.getElementById('studentName').innerText = data.displayName || "اسم غير متوفر";
+/* ── SETTINGS ── */
+const prefs = JSON.parse(localStorage.getItem("prefs") || "{}");
 
-                // تحديث الجدول حسب الترتيب المحدد
-                const tableBody = document.getElementById('gradesTable');
-                tableBody.innerHTML = ""; // مسح رسالة التحميل
+function applyPrefs() {
+  const r = document.documentElement;
+  r.style.setProperty("--accent",           prefs.accent         || "#38bdf8");
+  r.style.setProperty("--accent-btn",       prefs.accentBtn      || "#2563eb");
+  r.style.setProperty("--accent-btn-hover", prefs.accentBtnHover || "#1d4ed8");
+  r.style.setProperty("--font-size",        prefs.fontSize       || "14px");
+  r.style.setProperty("--bubble-radius",    prefs.bubbleRadius   || "14px");
+  r.style.setProperty("--bg",               prefs.bg             || "#0f172a");
+  r.style.setProperty("--surface",          prefs.surface        || "#1f2937");
+  r.style.setProperty("--surface2",         prefs.surface2       || "#111827");
 
-                subjectsOrder.forEach(subject => {
-                    // نتحقق إذا كانت المادة موجودة في بيانات الطالب في Firestore
-                    // افترضنا أن الدرجات مخزنة داخل حقل اسمه grades
-                    const grade = (data.grades && data.grades[subject]) ? data.grades[subject] : "-";
-                    
-                    const row = `
-                        <tr>
-                            <td>${subject}</td>
-                            <td>${grade}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
+  document.getElementById("toggleTimestamps").checked = prefs.timestamps !== false;
+  document.getElementById("toggleCompact").checked    = !!prefs.compact;
+  document.getElementById("toggleShowClass").checked  = prefs.showClass  !== false;
 
-            } else {
-                document.getElementById('studentName').innerText = "لم يتم العثور على الطالب";
-            }
-        } catch (error) {
-            console.error("Error fetching document:", error);
-            document.getElementById('studentName').innerText = "خطأ في جلب البيانات";
-        }
+  document.querySelectorAll(".swatch").forEach(s =>
+    s.classList.toggle("selected", s.dataset.accent === (prefs.accent || "#38bdf8")));
+  document.querySelectorAll("button[data-size]").forEach(b =>
+    b.classList.toggle("selected", b.dataset.size === (prefs.fontSize || "14px")));
+  document.querySelectorAll("button[data-radius]").forEach(b =>
+    b.classList.toggle("selected", b.dataset.radius === (prefs.bubbleRadius || "14px")));
+  document.querySelectorAll("button[data-bg]").forEach(b =>
+    b.classList.toggle("selected", b.dataset.bg === (prefs.bg || "#0f172a")));
+}
+applyPrefs();
+
+document.getElementById("swatchRow").addEventListener("click", e => {
+  const sw = e.target.closest(".swatch");
+  if (!sw) return;
+  prefs.accent = sw.dataset.accent; prefs.accentBtn = sw.dataset.btn;
+  prefs.accentBtnHover = sw.dataset.btnhover;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+});
+document.querySelectorAll("button[data-bg]").forEach(b => b.addEventListener("click", () => {
+  prefs.bg = b.dataset.bg; prefs.surface = b.dataset.surface; prefs.surface2 = b.dataset.surface2;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+}));
+document.querySelectorAll("button[data-size]").forEach(b => b.addEventListener("click", () => {
+  prefs.fontSize = b.dataset.size;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+}));
+document.querySelectorAll("button[data-radius]").forEach(b => b.addEventListener("click", () => {
+  prefs.bubbleRadius = b.dataset.radius;
+  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+}));
+document.getElementById("toggleTimestamps").addEventListener("change", e => {
+  prefs.timestamps = e.target.checked;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+  document.querySelectorAll(".msg-time").forEach(t =>
+    t.style.display = prefs.timestamps ? "" : "none");
+});
+document.getElementById("toggleCompact").addEventListener("change", e => {
+  prefs.compact = e.target.checked;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+  document.querySelectorAll(".msg").forEach(m =>
+    m.style.padding = prefs.compact ? "5px 10px" : "");
+});
+document.getElementById("toggleShowClass").addEventListener("change", e => {
+  prefs.showClass = e.target.checked;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+});
+
+/* ── PROFILE ── */
+document.getElementById("pfpBox").innerHTML =
+  `<img src="${sanitize(user.pfp || "placeholder.png")}" onerror="this.src='placeholder.png'" alt="pfp">`;
+document.getElementById("profileAvatar").src = user.pfp || "placeholder.png";
+document.getElementById("pName").textContent  = user.name;
+document.getElementById("pUser").textContent  = `@${user.username}`;
+document.getElementById("pClass").textContent = user.class;
+
+window.toggleProfile = () => {
+  const p = document.getElementById("profile");
+  p.style.display = p.style.display === "block" ? "none" : "block";
+};
+document.addEventListener("click", e => {
+  if (!e.target.closest(".pfp") && !e.target.closest("#profile"))
+    document.getElementById("profile").style.display = "none";
+});
+
+/* ── NAVIGATION ── */
+window.openSection = (id) => {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById(`nav-${id}`)?.classList.add("active");
+
+  if (id === "chat") {
+    localStorage.setItem("lastSeenChat", Date.now());
+    updateBadge("chatBadge", 0);
+  }
+  if (id === "homework") {
+    localStorage.setItem("lastSeenHw", Date.now());
+    updateBadge("hwBadge", 0);
+  }
+};
+
+/* ── ANNOUNCEMENTS (filtered by class target) ── */
+const lastSeenAnn = parseInt(localStorage.getItem("lastSeenAnn") || "0");
+
+onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap => {
+  const box   = document.getElementById("announcementsList");
+  const items = snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .filter(m => !m.target || m.target === user.class);
+
+  if (items.length === 0) {
+    box.innerHTML = `<div style="color:#475569;font-size:13px;text-align:center;padding:20px 0">لا توجد إعلانات حالياً</div>`;
+    return;
+  }
+
+  box.innerHTML = "";
+  items.forEach(m => {
+    const isNew = m.time > lastSeenAnn;
+    const el = document.createElement("div");
+    el.className = "announcement fade-in";
+    el.innerHTML = `
+      ${isNew ? `<span class="ann-new">جديد</span>` : ""}
+      ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
+      ${sanitize(m.text)}
+      <div class="ann-meta">📌 ${sanitize(m.author || "الإدارة")} · ${formatTime(m.time)}</div>
+    `;
+    box.appendChild(el);
+  });
+
+  localStorage.setItem("lastSeenAnn", Date.now().toString());
+});
+
+/* ── SUBJECTS ── */
+const subjects = [
+  { name: "التربية الاسلامية",  icon: "☪️"  },
+  { name: "اللغة العربية",      icon: "📖"  },
+  { name: "اللغة الانجليزية",   icon: "🔤"  },
+  { name: "الاحياء",            icon: "🧬"  },
+  { name: "الكيمياء",           icon: "⚗️"  },
+  { name: "الفيزياء",           icon: "⚡"  },
+  { name: "الرياضيات",          icon: "📐"  },
+  { name: "جرائم حزب البعث",    icon: "📜"  },
+  { name: "اللغة الفرنسية",     icon: "🥐"  },
+  { name: "التربية الفنية",     icon: "🎨"  },
+  { name: "الحاسوب",            icon: "💻"  },
+];
+
+const subjectList = document.getElementById("subjectList");
+subjects.forEach(({ name, icon }) => {
+  const el = document.createElement("div");
+  el.className = "subject-item";
+  el.innerHTML = `
+    <div class="subject-left">
+      <span class="sub-icon">${icon}</span>
+      <span class="sub-name">${sanitize(name)}</span>
+    </div>
+    <span class="sub-arrow">◀</span>
+  `;
+  el.addEventListener("click", () => window.openSubject(name));
+  subjectList.appendChild(el);
+});
+
+/* ── SUBJECT SCREEN ── */
+let activeSubjectUnsub = null;
+
+window.openSubject = (sub) => {
+  document.getElementById("subjectScreenTitle").textContent = sub;
+  document.getElementById("subjectScreen").classList.add("open");
+
+  const panel = document.getElementById("panelPosts");
+  panel.innerHTML = `<div class="skeleton"></div><div class="skeleton" style="height:50px;width:75%"></div>`;
+
+  if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
+
+  const ref = collection(db, "classes", user.class, "homework", sub, "messages");
+  activeSubjectUnsub = onSnapshot(query(ref, orderBy("time")), snap => {
+    if (snap.empty) {
+      panel.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          لا يوجد واجب حالياً
+        </div>`;
+      return;
     }
+    panel.innerHTML = "";
+    snap.forEach(d => {
+      const m  = d.data();
+      const el = document.createElement("div");
+      el.className = "teacher-post fade-in";
+      el.innerHTML = `
+        ${sanitize(m.text)}
+        ${m.due ? `<div class="post-due">⏳ الموعد النهائي: ${sanitize(m.due)}</div>` : ""}
+        <div class="post-meta">🕐 ${formatTime(m.time)} · ${sanitize(m.author || "المعلم")}</div>
+      `;
+      panel.appendChild(el);
+    });
+  });
+};
 
-    // تشغيل الدالة عند تحميل الصفحة
-    fetchStudentData();
+window.closeSubject = () => {
+  document.getElementById("subjectScreen").classList.remove("open");
+  if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
+};
+
+/* ── CHAT ── */
+const chatRef   = collection(db, "classes", user.class, "messages");
+const chatQuery = query(chatRef, orderBy("time"));
+let   chatReady = false;
+
+function makeMsg(m) {
+  const isMe      = m.username === user.username;
+  const showTime  = prefs.timestamps !== false;
+  const showClass = prefs.showClass  !== false;
+  const compact   = !!prefs.compact;
+
+  const el = document.createElement("div");
+  el.className = `msg fade-in ${isMe ? "mine" : "theirs"}`;
+  if (compact) el.style.padding = "5px 10px";
+
+  const label = showClass
+    ? `${sanitize(m.name)} · ${sanitize(m.class)}`
+    : sanitize(m.name);
+
+  el.innerHTML = `
+    ${!isMe ? `<div class="msg-sender">${label}</div>` : ""}
+    ${sanitize(m.text)}
+    <div class="msg-time" style="${showTime ? "" : "display:none"}">${formatTime(m.time)}</div>
+  `;
+  return el;
+}
+
+onSnapshot(chatQuery, snap => {
+  const box        = document.getElementById("messages");
+  const chatActive = document.getElementById("chat").classList.contains("active");
+  const lastSeen   = parseInt(localStorage.getItem("lastSeenChat") || "0");
+
+  if (!chatReady) { box.innerHTML = ""; chatReady = true; }
+
+  box.innerHTML = "";
+  let unread = 0;
+
+  snap.forEach(d => {
+    const m    = d.data();
+    const isMe = m.username === user.username;
+    if (!chatActive && !isMe && m.time > lastSeen) unread++;
+    box.appendChild(makeMsg(m));
+  });
+
+  if (!chatActive && unread > 0) updateBadge("chatBadge", unread);
+  box.scrollTop = box.scrollHeight;
+});
+
+window.sendMsg = async () => {
+  const input = document.getElementById("msgInput");
+  if (!input.value.trim()) return;
+  try {
+    await addDoc(chatRef, {
+      text: input.value.trim(), name: user.name,
+      username: user.username, class: user.class, time: Date.now()
+    });
+    input.value = "";
+    clearTimeout(typingTimeout);
+    try { await deleteDoc(doc(db, "classes", user.class, "typing", user.username)); } catch {}
+  } catch { toast("⚠️ فشل إرسال الرسالة"); }
+};
+
+document.getElementById("msgInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") window.sendMsg();
+});
+
+/* ── TYPING ── */
+let typingTimeout;
+document.getElementById("msgInput").addEventListener("input", async () => {
+  try {
+    await setDoc(doc(db, "classes", user.class, "typing", user.username),
+      { name: user.name, ts: Date.now() });
+  } catch {}
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(async () => {
+    try { await deleteDoc(doc(db, "classes", user.class, "typing", user.username)); } catch {}
+  }, 2500);
+});
+
+onSnapshot(collection(db, "classes", user.class, "typing"), snap => {
+  const now = Date.now();
+  const typers = [];
+  snap.forEach(d => {
+    if (d.id !== user.username && now - d.data().ts < 4000)
+      typers.push(sanitize(d.data().name));
+  });
+  document.getElementById("typingIndicator").textContent =
+    typers.length === 0 ? "" :
+    typers.length === 1 ? `${typers[0]} يكتب...` :
+    `${typers.join("، ")} يكتبون...`;
+});
+
+/* ── LOGOUT ── */
+window.logout = () => {
+  localStorage.removeItem("user");
+  location.href = "index.html";
+};
 </script>
-
 </body>
 </html>
