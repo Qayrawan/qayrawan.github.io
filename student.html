@@ -582,7 +582,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, addDoc, onSnapshot,
-  query, orderBy, doc, setDoc, deleteDoc
+  query, orderBy, doc, setDoc, deleteDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
@@ -771,34 +771,63 @@ onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap
 });
 
 /* ── SUBJECTS ── */
-const subjects = [
-  { name: "التربية الاسلامية", icon: "☪️"  },
-  { name: "اللغة العربية",     icon: "📖"  },
-  { name: "اللغة الانجليزية",  icon: "🔤"  },
-  { name: "اللغة الفرنسية",    icon: "🥐"  },
-  { name: "اللغة الكردية",     icon: "🏔️"  },
-  { name: "جرائم حزب البعث",   icon: "📜"  },
-  { name: "الرياضيات",         icon: "📐"  },
-  { name: "الفيزياء",          icon: "⚡"  },
-  { name: "الكيمياء",          icon: "⚗️"  },
-  { name: "الاحياء",           icon: "🧬"  },
-  { name: "الحاسوب",           icon: "💻"  },
-];
-
 const subjectList = document.getElementById("subjectList");
-subjects.forEach(({ name, icon }) => {
-  const el = document.createElement("div");
-  el.className = "subject-item";
-  el.innerHTML = `
-    <div class="subject-left">
-      <span class="sub-icon">${icon}</span>
-      <span class="sub-name">${sanitize(name)}</span>
-    </div>
-    <span class="sub-arrow">◀</span>
-  `;
-  el.addEventListener("click", () => window.openSubject(name));
-  subjectList.appendChild(el);
-});
+
+function getIcon(name) {
+  const n = String(name || "");
+  if (n.includes("اسلام")) return "☪️";
+  if (n.includes("عربي")) return "📖";
+  if (n.includes("انجليزي")) return "🔤";
+  if (n.includes("فرنسي")) return "🥐";
+  if (n.includes("كردي")) return "🏔️";
+  if (n.includes("رياض")) return "📐";
+  if (n.includes("فيزياء")) return "⚡";
+  if (n.includes("كيمياء")) return "⚗️";
+  if (n.includes("احياء")) return "🧬";
+  if (n.includes("حاسوب")) return "💻";
+  return "📘";
+}
+
+async function loadSubjects() {
+  subjectList.innerHTML = `<div class="skeleton"></div>`;
+
+  try {
+    const ref = doc(db, "gradeSubjects", user.class);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists() || !Array.isArray(snap.data().subjects) || snap.data().subjects.length === 0) {
+      subjectList.innerHTML = `
+        <div style="text-align:center;color:#475569;padding:20px">
+          لا توجد مواد مضافة
+        </div>`;
+      return;
+    }
+
+    const subjects = snap.data().subjects;
+    subjectList.innerHTML = "";
+
+    subjects.forEach(name => {
+      const el = document.createElement("div");
+      el.className = "subject-item";
+      el.innerHTML = `
+        <div class="subject-left">
+          <span class="sub-icon">${getIcon(name)}</span>
+          <span class="sub-name">${sanitize(name)}</span>
+        </div>
+        <span class="sub-arrow">◀</span>
+      `;
+      el.addEventListener("click", () => window.openSubject(name));
+      subjectList.appendChild(el);
+    });
+  } catch {
+    subjectList.innerHTML = `
+      <div style="text-align:center;color:#ef4444;padding:20px">
+        فشل تحميل المواد
+      </div>`;
+  }
+}
+
+loadSubjects();
 
 /* ── SUBJECT SCREEN ── */
 let activeSubjectUnsub = null;
