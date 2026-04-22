@@ -1,334 +1,873 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <title>لوحة الادمن</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>لوحة الادمن</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <style>
-    * { box-sizing: border-box; }
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  overflow-x: hidden;
+  padding-bottom: 70px;
+}
 
-    body {
-      font-family: monospace;
-      background: #0f172a;
-      color: #e2e8f0;
-      margin: 0;
-      padding: 15px;
-    }
+.topbar {
+  height: 60px;
+  background: #111827;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #1f2937;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+}
+.topbar-title { font-weight: bold; font-size: 17px; color: #38bdf8; }
+.logout-btn {
+  background: #ef4444; border: none; color: white;
+  padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; transition: background 0.2s;
+}
+.logout-btn:hover { background: #dc2626; }
 
-    h2 {
-      text-align: center;
-      color: #38bdf8;
-    }
+.bottomnav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 64px;
+  background: #111827;
+  border-top: 1px solid #1f2937;
+  display: flex;
+  z-index: 50;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; font-size: 11px;
+  color: #6b7280; gap: 3px;
+  transition: color 0.2s; user-select: none;
+}
+.nav-item .icon { font-size: 20px; line-height: 1; }
+.nav-item.active { color: #38bdf8; }
+.nav-item:hover  { color: #cbd5e1; }
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
+.section {
+  display: none;
+  position: fixed;
+  top: 60px; left: 0; right: 0; bottom: 64px;
+  overflow-y: auto;
+  padding: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+.section.active { display: block; }
 
-    .card {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-      border: 1px solid #334155;
-    }
+.card {
+  background: #1f2937;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid #334155;
+}
+.card-title {
+  font-size: 13px; font-weight: bold;
+  color: #94a3b8; margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
 
-    .form-grid {
-      display: grid;
-      gap: 10px;
-    }
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid #334155;
+}
+.stat-num   { font-size: 30px; font-weight: bold; color: #38bdf8; }
+.stat-label { font-size: 12px; color: #9ca3af; margin-top: 4px; }
 
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: white;
-    }
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.field label { font-size: 12px; color: #94a3b8; }
 
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #38bdf8;
-      color: black;
-      cursor: pointer;
-    }
+input[type=text], input[type=password], select, textarea {
+  width: 100%; padding: 10px 12px;
+  background: #0f172a; border: 1px solid #334155;
+  border-radius: 8px; color: white;
+  font-size: 14px; font-family: Arial;
+  outline: none; transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
+textarea { resize: vertical; min-height: 80px; }
 
-    button:hover {
-      background: #0ea5e9;
-    }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .user {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-    }
+.btn {
+  padding: 10px 16px; border: none; border-radius: 8px;
+  cursor: pointer; font-size: 14px; font-weight: bold;
+  transition: 0.2s; width: 100%; margin-top: 4px;
+}
+.btn-primary { background: #2563eb; color: white; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-danger  { background: #ef4444; color: white; }
+.btn-danger:hover  { background: #dc2626; }
+.btn-ghost {
+  background: #374151; color: #cbd5e1;
+  padding: 6px 12px; width: auto; font-size: 12px;
+}
+.btn-ghost:hover { background: #4b5563; }
+.btn-success { background: #059669; color: white; }
+.btn-success:hover { background: #047857; }
 
-    .user-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.search-bar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.search-bar input  { flex: 1; min-width: 120px; }
+.search-bar select { width: 130px; flex-shrink: 0; }
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+/* TARGET BADGE on announcements */
+.target-badge {
+  display: inline-block;
+  font-size: 11px; font-weight: bold;
+  padding: 2px 10px; border-radius: 20px;
+  margin-bottom: 6px;
+}
+.target-all   { background: #1e3a5f; color: #38bdf8; }
+.target-class { background: #14532d; color: #4ade80; }
 
-    img {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-    }
+.user-card {
+  background: #111827; border: 1px solid #1f2937;
+  border-radius: 12px; padding: 12px 14px;
+  margin-bottom: 10px; transition: border-color 0.2s;
+}
+.user-card:hover { border-color: #334155; }
+.user-top {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px;
+}
+.user-info {
+  display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
+}
+.user-pfp {
+  width: 42px; height: 42px; border-radius: 50%;
+  object-fit: cover; flex-shrink: 0; border: 2px solid #334155;
+}
+.user-name { font-size: 14px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
+.user-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.role-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 20px;
+  font-weight: bold; display: inline-block; margin-top: 3px;
+}
+.role-student { background: #1e3a5f; color: #38bdf8; }
+.role-teacher { background: #14532d; color: #4ade80; }
+.role-admin   { background: #4c0519; color: #f87171; }
+.user-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-    .edit-box {
-      display: none;
-      margin-top: 10px;
-      border-top: 1px solid #334155;
-      padding-top: 10px;
-    }
+.edit-panel {
+  display: none; margin-top: 12px;
+  padding-top: 12px; border-top: 1px solid #1f2937;
+}
+.edit-panel.open { display: block; }
 
-    .edit-box.active {
-      display: block;
-    }
+.ann-card {
+  background: #111827; border: 1px solid #1f2937;
+  border-right: 3px solid #38bdf8;
+  border-radius: 0 12px 12px 0;
+  padding: 12px 14px; margin-bottom: 10px;
+}
+.ann-title { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.ann-text  { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+.ann-meta  { font-size: 11px; color: #475569; margin-top: 6px; }
+.ann-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
 
-    .actions button {
-      margin-left: 5px;
-    }
+.hw-card {
+  background: #111827; border: 1px solid #1f2937;
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+}
+.hw-subject { font-size: 12px; color: #38bdf8; font-weight: bold; margin-bottom: 4px; }
+.hw-text    { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+.hw-meta    { font-size: 11px; color: #475569; margin-top: 6px; }
+.hw-due     { font-size: 12px; color: #fbbf24; margin-top: 3px; }
 
-    .top-bar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+.empty {
+  text-align: center; color: #475569;
+  font-size: 14px; padding: 32px 0;
+}
+.counter { font-size: 12px; color: #6b7280; margin-bottom: 10px; }
 
-    .counter {
-      text-align: center;
-      color: #94a3b8;
-      margin-top: 10px;
-    }
-  </style>
+.skeleton {
+  background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px; height: 64px; margin: 8px 0;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.toast {
+  position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
+  background: #1f2937; border: 1px solid #334155;
+  color: white; padding: 10px 20px; border-radius: 20px;
+  font-size: 13px; z-index: 999;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 300; display: none;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #1e293b; border: 1px solid #334155;
+  border-radius: 16px; padding: 24px; width: 280px; text-align: center;
+}
+.modal h3 { margin-bottom: 10px; font-size: 16px; }
+.modal p  { color: #9ca3af; font-size: 13px; margin-bottom: 20px; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-btns button { flex: 1; }
+
+.fade-in { animation: fadeIn 0.2s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; }
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+</style>
 </head>
-
 <body>
 
-<div class="container">
-
-<h2>⚡ لوحة تحكم الادمن</h2>
-
-<!-- 🔍 البحث -->
-<div class="card top-bar">
-  <input id="search" placeholder="بحث..." oninput="loadUsers()">
-
-  <select id="classFilter" onchange="loadUsers()">
-    <option value="">كل الصفوف</option>
-    <option>7A</option><option>7B</option><option>7C</option>
-    <option>8A</option><option>8B</option><option>8C</option>
-    <option>9A</option><option>9B</option><option>9C</option>
-    <option>10A</option><option>10B</option><option>10C</option>
-    <option>11A</option><option>11B</option><option>11C</option>
-    <option>12A</option><option>12B</option><option>12C</option>
-  </select>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-title">⚡ لوحة الادمن</div>
+  <button class="logout-btn" onclick="window.logout()">🚪 خروج</button>
 </div>
 
-<!-- ➕ انشاء -->
-<div class="card">
-  <h3>انشاء مستخدم</h3>
+<!-- ══ OVERVIEW ══ -->
+<div id="overview" class="section active">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-label">إجمالي المستخدمين</div></div>
+    <div class="stat-card"><div class="stat-num" id="statStudents">—</div><div class="stat-label">طلاب</div></div>
+    <div class="stat-card"><div class="stat-num" id="statTeachers">—</div><div class="stat-label">مدرسين</div></div>
+    <div class="stat-card"><div class="stat-num" id="statAdmins">—</div><div class="stat-label">ادمن</div></div>
+  </div>
 
-  <div class="form-grid">
-    <input id="displayName" placeholder="الاسم الظاهر">
-    <input id="username" placeholder="اسم المستخدم">
-    <input id="password" placeholder="كلمة المرور">
-    <input id="pfp" placeholder="رابط الصورة">
-
-    <select id="class">
-      <option value="">الصف</option>
-      <option>7A</option><option>7B</option><option>7C</option>
-      <option>8A</option><option>8B</option><option>8C</option>
-      <option>9A</option><option>9B</option><option>9C</option>
-      <option>10A</option><option>10B</option><option>10C</option>
-      <option>11A</option><option>11B</option><option>11C</option>
-      <option>12A</option><option>12B</option><option>12C</option>
-    </select>
-
-    <select id="role">
-      <option value="student">طالب</option>
-      <option value="teacher">مدرس</option>
-      <option value="admin">ادمن</option>
-    </select>
-
-    <button onclick="createUser()">انشاء</button>
+  <div class="card">
+    <div class="card-title">📢 إعلان سريع</div>
+    <div class="field">
+      <label>العنوان</label>
+      <input type="text" id="quickTitle" placeholder="عنوان الإعلان">
+    </div>
+    <div class="field">
+      <label>النص</label>
+      <textarea id="quickText" placeholder="نص الإعلان..."></textarea>
+    </div>
+    <div class="field">
+      <label>الموجه إلى</label>
+      <select id="quickTarget">
+        <option value="">📣 كل الصفوف</option>
+        <optgroup label="الصف السابع">
+          <option>7A</option><option>7B</option><option>7C</option>
+        </optgroup>
+        <optgroup label="الصف الثامن">
+          <option>8A</option><option>8B</option><option>8C</option>
+        </optgroup>
+        <optgroup label="الصف التاسع">
+          <option>9A</option><option>9B</option><option>9C</option>
+        </optgroup>
+        <optgroup label="الصف العاشر">
+          <option>10A</option><option>10B</option><option>10C</option>
+        </optgroup>
+        <optgroup label="الصف الحادي عشر">
+          <option>11A</option><option>11B</option><option>11C</option>
+        </optgroup>
+        <optgroup label="الصف الثاني عشر">
+          <option>12A</option><option>12B</option><option>12C</option>
+        </optgroup>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="window.postAnnouncement('quick')">📤 نشر الإعلان</button>
   </div>
 </div>
 
-<!-- 👥 المستخدمين -->
-<div class="card">
-  <h3>المستخدمين</h3>
+<!-- ══ USERS ══ -->
+<div id="users" class="section">
+  <div class="card">
+    <div class="card-title">➕ إنشاء مستخدم</div>
+    <div class="form-row">
+      <div class="field">
+        <label>الاسم الظاهر</label>
+        <input type="text" id="newDisplayName" placeholder="الاسم الكامل">
+      </div>
+      <div class="field">
+        <label>اسم المستخدم</label>
+        <input type="text" id="newUsername" placeholder="username">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>كلمة المرور</label>
+        <input type="text" id="newPassword" placeholder="••••••">
+      </div>
+      <div class="field">
+        <label>رابط الصورة</label>
+        <input type="text" id="newPfp" placeholder="https://...">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>الصف</label>
+        <select id="newClass">
+          <option value="">— اختر الصف —</option>
+          <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+          <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+          <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+          <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+          <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+          <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label>الدور</label>
+        <select id="newRole">
+          <option value="student">طالب</option>
+          <option value="teacher">مدرس</option>
+          <option value="admin">ادمن</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="window.createUser()">إنشاء المستخدم</button>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="🔍 بحث باسم أو يوزر...">
+    <select id="classFilter">
+      <option value="">كل الصفوف</option>
+      <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+      <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+      <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+      <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+      <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+      <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+    </select>
+  </div>
+
   <div class="counter" id="counter"></div>
-  <div id="usersList"></div>
+  <div id="usersList">
+    <div class="skeleton"></div>
+    <div class="skeleton" style="height:52px;width:85%"></div>
+    <div class="skeleton" style="height:52px;width:70%"></div>
+  </div>
 </div>
 
-<button onclick="logout()">تسجيل خروج</button>
+<!-- ══ ANNOUNCEMENTS ══ -->
+<div id="announcements" class="section">
+  <div class="card">
+    <div class="card-title">📢 إعلان جديد</div>
+    <div class="field">
+      <label>العنوان</label>
+      <input type="text" id="annTitle" placeholder="عنوان الإعلان">
+    </div>
+    <div class="field">
+      <label>النص</label>
+      <textarea id="annText" placeholder="نص الإعلان..."></textarea>
+    </div>
+    <div class="field">
+      <label>الموجه إلى</label>
+      <select id="annTarget">
+        <option value="">📣 كل الصفوف</option>
+        <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+        <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+        <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+        <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+        <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+        <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="window.postAnnouncement('main')">📤 نشر</button>
+  </div>
 
+  <!-- Filter posted announcements -->
+  <div class="search-bar">
+    <select id="annFilterTarget" onchange="window.filterAnnouncements()">
+      <option value="">كل الإعلانات</option>
+      <option value="__global__">للكل فقط</option>
+      <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+      <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+      <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+      <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+      <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+      <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+    </select>
+  </div>
+
+  <div class="card-title" style="padding:0 2px 8px">الإعلانات المنشورة</div>
+  <div id="annList">
+    <div class="skeleton" style="height:80px"></div>
+    <div class="skeleton" style="height:60px;width:80%"></div>
+  </div>
+</div>
+
+<!-- ══ HOMEWORK ══ -->
+<div id="homework" class="section">
+  <div class="card">
+    <div class="card-title">📚 نشر واجب</div>
+    <div class="form-row">
+      <div class="field">
+        <label>الصف</label>
+        <select id="hwClass">
+          <option value="">— الصف —</option>
+          <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+          <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+          <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+          <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+          <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+          <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label>المادة</label>
+        <select id="hwSubject">
+          <option value="">— المادة —</option>
+          <option>التربية الاسلامية</option>
+          <option>اللغة العربية</option>
+          <option>اللغة الانجليزية</option>
+          <option>الاحياء</option>
+          <option>الكيمياء</option>
+          <option>الفيزياء</option>
+          <option>الرياضيات</option>
+          <option>جرائم حزب البعث</option>
+          <option>اللغة الفرنسية</option>
+          <option>التربية الفنية</option>
+          <option>الحاسوب</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>نص الواجب</label>
+      <textarea id="hwText" placeholder="اكتب الواجب هنا..."></textarea>
+    </div>
+    <div class="field">
+      <label>الموعد النهائي (اختياري)</label>
+      <input type="text" id="hwDue" placeholder="مثال: الأحد 15/6">
+    </div>
+    <button class="btn btn-primary" onclick="window.postHomework()">📤 نشر الواجب</button>
+  </div>
+
+  <div class="search-bar">
+    <select id="hwViewClass" onchange="window.loadHomework()">
+      <option value="">— اختر الصف —</option>
+      <optgroup label="الصف السابع"><option>7A</option><option>7B</option><option>7C</option></optgroup>
+      <optgroup label="الصف الثامن"><option>8A</option><option>8B</option><option>8C</option></optgroup>
+      <optgroup label="الصف التاسع"><option>9A</option><option>9B</option><option>9C</option></optgroup>
+      <optgroup label="الصف العاشر"><option>10A</option><option>10B</option><option>10C</option></optgroup>
+      <optgroup label="الصف الحادي عشر"><option>11A</option><option>11B</option><option>11C</option></optgroup>
+      <optgroup label="الصف الثاني عشر"><option>12A</option><option>12B</option><option>12C</option></optgroup>
+    </select>
+    <select id="hwViewSubject" onchange="window.loadHomework()">
+      <option value="">— كل المواد —</option>
+      <option>التربية الاسلامية</option>
+      <option>اللغة العربية</option>
+      <option>اللغة الانجليزية</option>
+      <option>الاحياء</option>
+      <option>الكيمياء</option>
+      <option>الفيزياء</option>
+      <option>الرياضيات</option>
+      <option>جرائم حزب البعث</option>
+      <option>اللغة الفرنسية</option>
+      <option>التربية الفنية</option>
+      <option>الحاسوب</option>
+    </select>
+  </div>
+  <div id="hwList"><div class="empty">اختر صفاً لعرض الواجبات</div></div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <h3 id="modalTitle">تأكيد</h3>
+    <p id="modalMsg">هل أنت متأكد؟</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="window.closeModal()">إلغاء</button>
+      <button class="btn btn-danger" id="modalConfirmBtn">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <div class="nav-item active" id="nav-overview"      onclick="window.openSection('overview')">
+    <span class="icon">📊</span><span>نظرة عامة</span>
+  </div>
+  <div class="nav-item"        id="nav-users"         onclick="window.openSection('users')">
+    <span class="icon">👥</span><span>المستخدمين</span>
+  </div>
+  <div class="nav-item"        id="nav-announcements" onclick="window.openSection('announcements')">
+    <span class="icon">📢</span><span>الإعلانات</span>
+  </div>
+  <div class="nav-item"        id="nav-homework"      onclick="window.openSection('homework')">
+    <span class="icon">📚</span><span>الواجبات</span>
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore, collection, addDoc, getDocs,
+  deleteDoc, doc, updateDoc, query, orderBy, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
-  authDomain: "qayrawan-school-system.firebaseapp.com",
-  projectId: "qayrawan-school-system",
-  storageBucket: "qayrawan-school-system.firebasestorage.app",
+const app = initializeApp({
+  apiKey:            "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
+  authDomain:        "qayrawan-school-system.firebaseapp.com",
+  projectId:         "qayrawan-school-system",
+  storageBucket:     "qayrawan-school-system.firebasestorage.app",
   messagingSenderId: "785321248181",
-  appId: "1:785321248181:web:643e6d29cdca556218c5fc"
-};
-
-const app = initializeApp(firebaseConfig);
+  appId:             "1:785321248181:web:643e6d29cdca556218c5fc"
+});
 const db = getFirestore(app);
 
-// 🛡️ CHECK
-const user = JSON.parse(localStorage.getItem("user"));
-if (!user || user.role !== "admin") {
-  location.href = "index.html";
+/* ── AUTH ── */
+const admin = JSON.parse(localStorage.getItem("user"));
+if (!admin || admin.role !== "admin") location.href = "index.html";
+
+/* ── HELPERS ── */
+function sanitize(str) {
+  const d = document.createElement("div");
+  d.textContent = str ?? ""; return d.innerHTML;
+}
+function formatTime(ts) {
+  return new Date(ts).toLocaleString("ar-IQ");
+}
+function roleBadge(role) {
+  const map = { student:["role-student","طالب"], teacher:["role-teacher","مدرس"], admin:["role-admin","ادمن"] };
+  const [cls, label] = map[role] || ["role-student", role];
+  return `<span class="role-badge ${cls}">${label}</span>`;
 }
 
-// ➕ CREATE
-window.createUser = async () => {
-  if (!displayName.value || !username.value || !password.value) {
-    alert("املأ الحقول");
-    return;
-  }
+/* ── TOAST ── */
+function toast(msg, dur=2200) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), dur);
+}
 
-  await addDoc(collection(db, "users"), {
-    displayName: displayName.value,
-    username: username.value,
-    password: password.value,
-    role: role.value,
-    class: document.getElementById("class").value,
-    pfp: pfp.value
+/* ── MODAL ── */
+window.closeModal = () => document.getElementById("confirmModal").classList.remove("open");
+function confirmAction(title, msg, cb) {
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalMsg").textContent   = msg;
+  document.getElementById("confirmModal").classList.add("open");
+  document.getElementById("modalConfirmBtn").onclick = () => { cb(); window.closeModal(); };
+}
+
+/* ── NAV ── */
+window.openSection = (id) => {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById(`nav-${id}`)?.classList.add("active");
+};
+
+/* ── CLASS OPTIONS helper ── */
+const ALL_CLASSES = [
+  "7A","7B","7C","8A","8B","8C","9A","9B","9C",
+  "10A","10B","10C","11A","11B","11C","12A","12B","12C"
+];
+
+/* ── STATS (live) ── */
+onSnapshot(collection(db,"users"), snap => {
+  let s=0, t=0, a=0;
+  snap.forEach(d => {
+    const r = d.data().role;
+    if(r==="student") s++; else if(r==="teacher") t++; else if(r==="admin") a++;
   });
+  document.getElementById("statTotal").textContent    = snap.size;
+  document.getElementById("statStudents").textContent = s;
+  document.getElementById("statTeachers").textContent = t;
+  document.getElementById("statAdmins").textContent   = a;
+});
 
+/* ── CREATE USER ── */
+window.createUser = async () => {
+  const displayName = document.getElementById("newDisplayName").value.trim();
+  const username    = document.getElementById("newUsername").value.trim();
+  const password    = document.getElementById("newPassword").value.trim();
+  const pfp         = document.getElementById("newPfp").value.trim();
+  const cls         = document.getElementById("newClass").value;
+  const role        = document.getElementById("newRole").value;
+
+  if (!displayName || !username || !password) { toast("⚠️ يرجى ملء الحقول الإلزامية"); return; }
+
+  await addDoc(collection(db,"users"), { displayName, username, password, pfp, class: cls, role });
+  ["newDisplayName","newUsername","newPassword","newPfp"].forEach(id =>
+    document.getElementById(id).value = "");
+  toast("✅ تم إنشاء المستخدم");
   loadUsers();
 };
 
-// 📋 LOAD
+/* ── LOAD USERS ── */
 window.loadUsers = async () => {
-  const list = document.getElementById("usersList");
+  const list   = document.getElementById("usersList");
   const search = document.getElementById("search").value.toLowerCase();
   const filter = document.getElementById("classFilter").value;
 
-  list.innerHTML = "جاري التحميل...";
+  list.innerHTML = `<div class="skeleton"></div><div class="skeleton" style="height:52px;width:80%"></div>`;
 
-  const snap = await getDocs(collection(db, "users"));
-
+  const snap = await getDocs(collection(db,"users"));
   list.innerHTML = "";
-
   let count = 0;
 
   snap.forEach(docSnap => {
-    const d = docSnap.data();
-
+    const d  = docSnap.data();
+    const id = docSnap.id;
     if (filter && d.class !== filter) return;
-
-    if (search &&
-      !d.displayName?.toLowerCase().includes(search) &&
-      !d.username?.toLowerCase().includes(search)
-    ) return;
-
+    if (search && !d.displayName?.toLowerCase().includes(search) &&
+                  !d.username?.toLowerCase().includes(search)) return;
     count++;
 
     const div = document.createElement("div");
-    div.className = "user card";
+    div.className = "user-card fade-in";
+
+    const classOpts = ALL_CLASSES.map(c =>
+      `<option ${c===d.class?"selected":""}>${c}</option>`).join("");
+    const roleOpts = ["student","teacher","admin"].map(r =>
+      `<option ${r===d.role?"selected":""}>${r}</option>`).join("");
 
     div.innerHTML = `
       <div class="user-top">
         <div class="user-info">
-          <img src="${d.pfp || 'https://via.placeholder.com/45'}">
-          <div>
-            <b>${d.displayName}</b><br>
-            <small>@${d.username}</small><br>
-            <small>${d.role} | ${d.class || "-"}</small>
+          <img class="user-pfp" src="${sanitize(d.pfp||"placeholder.png")}"
+               onerror="this.src='placeholder.png'">
+          <div style="min-width:0">
+            <div class="user-name">${sanitize(d.displayName)}</div>
+            <div class="user-meta">@${sanitize(d.username)} · ${sanitize(d.class||"—")}</div>
+            ${roleBadge(d.role)}
           </div>
         </div>
-
-        <div class="actions">
-          <button onclick="toggleEdit('${docSnap.id}')">تعديل</button>
-          <button onclick="deleteUser('${docSnap.id}')">حذف</button>
+        <div class="user-actions">
+          <button class="btn btn-ghost" onclick="window.toggleEdit('${id}')">✏️</button>
+          <button class="btn btn-danger" style="width:auto;padding:6px 10px"
+                  onclick="window.confirmDeleteUser('${id}','${sanitize(d.displayName)}')">🗑️</button>
         </div>
       </div>
-
-      <div class="edit-box" id="edit-${docSnap.id}">
-        <div class="form-grid">
-          <input id="dn-${docSnap.id}" value="${d.displayName}">
-          <input id="un-${docSnap.id}" value="${d.username}">
-          <input id="pw-${docSnap.id}" value="${d.password}">
-          <input id="pf-${docSnap.id}" value="${d.pfp || ''}">
-
-          <select id="cl-${docSnap.id}">
-            <option>${d.class || ""}</option>
-            <option>7A</option><option>7B</option><option>7C</option>
-            <option>8A</option><option>8B</option><option>8C</option>
-            <option>9A</option><option>9B</option><option>9C</option>
-          </select>
-
-          <select id="rl-${docSnap.id}">
-            <option>${d.role}</option>
-            <option>student</option>
-            <option>teacher</option>
-            <option>admin</option>
-          </select>
-
-          <button onclick="saveEdit('${docSnap.id}')">حفظ</button>
+      <div class="edit-panel" id="edit-${id}">
+        <div class="form-row">
+          <div class="field"><label>الاسم</label>
+            <input type="text" id="dn-${id}" value="${sanitize(d.displayName)}"></div>
+          <div class="field"><label>اليوزر</label>
+            <input type="text" id="un-${id}" value="${sanitize(d.username)}"></div>
         </div>
+        <div class="form-row">
+          <div class="field"><label>كلمة المرور</label>
+            <input type="text" id="pw-${id}" value="${sanitize(d.password)}"></div>
+          <div class="field"><label>رابط الصورة</label>
+            <input type="text" id="pf-${id}" value="${sanitize(d.pfp||'')}"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>الصف</label>
+            <select id="cl-${id}"><option value=""></option>${classOpts}</select></div>
+          <div class="field"><label>الدور</label>
+            <select id="rl-${id}">${roleOpts}</select></div>
+        </div>
+        <button class="btn btn-success" onclick="window.saveEdit('${id}')">💾 حفظ</button>
       </div>
     `;
-
     list.appendChild(div);
   });
 
-  document.getElementById("counter").innerText = `عدد المستخدمين: ${count}`;
+  document.getElementById("counter").textContent = `${count} مستخدم`;
 };
 
-// ✏️ EDIT
-window.toggleEdit = id => {
-  document.getElementById("edit-" + id).classList.toggle("active");
-};
+window.toggleEdit = id =>
+  document.getElementById(`edit-${id}`).classList.toggle("open");
 
-// 💾 SAVE
 window.saveEdit = async id => {
-  await updateDoc(doc(db, "users", id), {
-    displayName: document.getElementById("dn-" + id).value,
-    username: document.getElementById("un-" + id).value,
-    password: document.getElementById("pw-" + id).value,
-    pfp: document.getElementById("pf-" + id).value,
-    class: document.getElementById("cl-" + id).value,
-    role: document.getElementById("rl-" + id).value
+  await updateDoc(doc(db,"users",id), {
+    displayName: document.getElementById(`dn-${id}`).value,
+    username:    document.getElementById(`un-${id}`).value,
+    password:    document.getElementById(`pw-${id}`).value,
+    pfp:         document.getElementById(`pf-${id}`).value,
+    class:       document.getElementById(`cl-${id}`).value,
+    role:        document.getElementById(`rl-${id}`).value
+  });
+  toast("✅ تم الحفظ"); loadUsers();
+};
+
+window.confirmDeleteUser = (id, name) => {
+  confirmAction("حذف المستخدم", `حذف "${name}"؟ لا يمكن التراجع.`, async () => {
+    await deleteDoc(doc(db,"users",id));
+    toast("🗑️ تم الحذف"); loadUsers();
+  });
+};
+
+document.getElementById("search").addEventListener("input", loadUsers);
+document.getElementById("classFilter").addEventListener("change", loadUsers);
+
+/* ── ANNOUNCEMENTS ── */
+// stores all loaded announcements for client-side filtering
+let allAnnouncements = [];
+
+window.postAnnouncement = async (source) => {
+  const title  = document.getElementById(source==="quick" ? "quickTitle" : "annTitle").value.trim();
+  const text   = document.getElementById(source==="quick" ? "quickText"  : "annText").value.trim();
+  const target = document.getElementById(source==="quick" ? "quickTarget": "annTarget").value;
+
+  if (!text) { toast("⚠️ أدخل نص الإعلان"); return; }
+
+  await addDoc(collection(db,"announcements"), {
+    title,
+    text,
+    target: target || "",   // "" = all classes
+    author: admin.displayName || admin.name || "الإدارة",
+    time:   Date.now()
   });
 
-  loadUsers();
+  ["quickTitle","quickText","annTitle","annText"].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = "";
+  });
+  ["quickTarget","annTarget"].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = "";
+  });
+
+  toast("📢 تم نشر الإعلان");
 };
 
-// 🗑️ DELETE
-window.deleteUser = async id => {
-  await deleteDoc(doc(db, "users", id));
-  loadUsers();
+// live listener
+onSnapshot(query(collection(db,"announcements"), orderBy("time","desc")), snap => {
+  allAnnouncements = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderAnnouncements();
+});
+
+window.filterAnnouncements = () => renderAnnouncements();
+
+function renderAnnouncements() {
+  const box    = document.getElementById("annList");
+  if (!box) return;
+  const filter = document.getElementById("annFilterTarget")?.value || "";
+
+  const filtered = allAnnouncements.filter(m => {
+    if (filter === "")           return true;
+    if (filter === "__global__") return !m.target;
+    return m.target === filter;
+  });
+
+  if (filtered.length === 0) {
+    box.innerHTML = `<div class="empty">لا توجد إعلانات</div>`; return;
+  }
+
+  box.innerHTML = "";
+  filtered.forEach(m => {
+    const el = document.createElement("div");
+    el.className = "ann-card fade-in";
+    el.innerHTML = `
+      ${m.target
+        ? `<span class="target-badge target-class">🎯 ${sanitize(m.target)}</span>`
+        : `<span class="target-badge target-all">📣 كل الصفوف</span>`}
+      ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
+      <div class="ann-text">${sanitize(m.text)}</div>
+      <div class="ann-meta">📌 ${sanitize(m.author)} · ${formatTime(m.time)}</div>
+      <div class="ann-actions">
+        <button class="btn btn-danger" style="width:auto;padding:5px 12px;font-size:12px"
+                onclick="window.deleteAnn('${m.id}')">🗑️ حذف</button>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+window.deleteAnn = id => {
+  confirmAction("حذف الإعلان", "هل تريد حذف هذا الإعلان؟", async () => {
+    await deleteDoc(doc(db,"announcements",id));
+    toast("🗑️ تم حذف الإعلان");
+  });
 };
 
-// 🚪 LOGOUT
-window.logout = () => {
-  localStorage.removeItem("user");
-  location.href = "index.html";
+/* ── HOMEWORK ── */
+window.postHomework = async () => {
+  const cls  = document.getElementById("hwClass").value;
+  const sub  = document.getElementById("hwSubject").value;
+  const text = document.getElementById("hwText").value.trim();
+  const due  = document.getElementById("hwDue").value.trim();
+
+  if (!cls || !sub || !text) { toast("⚠️ أكمل الحقول المطلوبة"); return; }
+
+  await addDoc(collection(db,"classes",cls,"homework",sub,"messages"), {
+    text, due: due || null,
+    author: admin.displayName || "الإدارة",
+    time: Date.now()
+  });
+
+  document.getElementById("hwText").value = "";
+  document.getElementById("hwDue").value  = "";
+  toast("✅ تم نشر الواجب");
+  loadHomework();
 };
+
+window.loadHomework = async () => {
+  const cls = document.getElementById("hwViewClass").value;
+  const sub = document.getElementById("hwViewSubject").value;
+  const box = document.getElementById("hwList");
+
+  if (!cls) { box.innerHTML = `<div class="empty">اختر صفاً لعرض الواجبات</div>`; return; }
+  box.innerHTML = `<div class="skeleton" style="height:70px"></div>`;
+
+  const subjects = sub ? [sub] : [
+    "التربية الاسلامية","اللغة العربية","اللغة الانجليزية",
+    "الاحياء","الكيمياء","الفيزياء","الرياضيات",
+    "جرائم حزب البعث","اللغة الفرنسية","التربية الفنية","الحاسوب"
+  ];
+
+  box.innerHTML = ""; let found = 0;
+  for (const s of subjects) {
+    const snap = await getDocs(
+      query(collection(db,"classes",cls,"homework",s,"messages"), orderBy("time","desc"))
+    );
+    snap.forEach(d => {
+      found++;
+      const m  = d.data();
+      const el = document.createElement("div");
+      el.className = "hw-card fade-in";
+      el.innerHTML = `
+        <div class="hw-subject">📚 ${sanitize(s)} — ${sanitize(cls)}</div>
+        <div class="hw-text">${sanitize(m.text)}</div>
+        ${m.due ? `<div class="hw-due">⏳ ${sanitize(m.due)}</div>` : ""}
+        <div class="hw-meta">${sanitize(m.author||"الإدارة")} · ${formatTime(m.time)}</div>
+        <div class="ann-actions">
+          <button class="btn btn-danger" style="width:auto;padding:5px 12px;font-size:12px"
+                  onclick="window.deleteHw('${cls}','${s}','${d.id}')">🗑️ حذف</button>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+  }
+  if (found===0) box.innerHTML = `<div class="empty">لا يوجد واجب منشور</div>`;
+};
+
+window.deleteHw = (cls, sub, id) => {
+  confirmAction("حذف الواجب", "هل تريد حذف هذا الواجب؟", async () => {
+    await deleteDoc(doc(db,"classes",cls,"homework",sub,"messages",id));
+    toast("🗑️ تم حذف الواجب"); loadHomework();
+  });
+};
+
+/* ── LOGOUT ── */
+window.logout = () => { localStorage.removeItem("user"); location.href = "index.html"; };
 
 loadUsers();
 </script>
-
 </body>
-</html>
+        </html>
