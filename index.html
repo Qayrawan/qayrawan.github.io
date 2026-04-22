@@ -6,39 +6,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
+  background: #0f172a; color: white;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   padding: 20px;
 }
-
 .login-box {
-  background: #1f2937;
-  border: 1px solid #334155;
-  border-radius: 20px;
-  padding: 32px 24px;
-  width: 100%;
-  max-width: 360px;
+  background: #1f2937; border: 1px solid #334155;
+  border-radius: 20px; padding: 32px 24px;
+  width: 100%; max-width: 360px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
-
-.logo {
-  text-align: center;
-  margin-bottom: 28px;
-}
+.logo { text-align: center; margin-bottom: 28px; }
 .logo-icon  { font-size: 48px; line-height: 1; margin-bottom: 10px; }
 .logo-title { font-size: 20px; font-weight: bold; color: #38bdf8; }
 .logo-sub   { font-size: 12px; color: #6b7280; margin-top: 4px; }
-
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .field label { font-size: 12px; color: #94a3b8; letter-spacing: 0.04em; }
-
 input {
   width: 100%; padding: 12px 14px;
   background: #0f172a; border: 1px solid #334155;
@@ -47,48 +33,30 @@ input {
   outline: none; transition: border-color 0.2s;
 }
 input:focus { border-color: #38bdf8; }
-
 .btn {
-  width: 100%; padding: 13px;
-  background: #2563eb; border: none;
-  border-radius: 10px; color: white;
-  font-size: 15px; font-weight: bold;
-  cursor: pointer; transition: background 0.2s;
-  font-family: Arial; margin-top: 6px;
+  width: 100%; padding: 13px; background: #2563eb;
+  border: none; border-radius: 10px; color: white;
+  font-size: 15px; font-weight: bold; cursor: pointer;
+  transition: background 0.2s; font-family: Arial; margin-top: 6px;
 }
 .btn:hover    { background: #1d4ed8; }
 .btn:disabled { background: #374151; cursor: not-allowed; }
-
 .error {
-  background: #4c0519;
-  border: 1px solid #ef4444;
-  color: #fca5a5;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-top: 12px;
-  display: none;
+  background: #4c0519; border: 1px solid #ef4444;
+  color: #fca5a5; padding: 10px 14px;
+  border-radius: 8px; font-size: 13px;
+  margin-top: 12px; display: none;
 }
 .error.show { display: block; }
-
 .spinner {
-  display: inline-block;
-  width: 16px; height: 16px;
+  display: inline-block; width: 16px; height: 16px;
   border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
+  border-top-color: white; border-radius: 50%;
   animation: spin 0.7s linear infinite;
-  vertical-align: middle;
-  margin-left: 6px;
+  vertical-align: middle; margin-left: 6px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-.footer {
-  text-align: center;
-  color: #334155;
-  font-size: 11px;
-  margin-top: 24px;
-}
+.footer { text-align: center; color: #334155; font-size: 11px; margin-top: 24px; }
 </style>
 </head>
 <body>
@@ -104,16 +72,13 @@ input:focus { border-color: #38bdf8; }
     <label>اسم المستخدم</label>
     <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off">
   </div>
-
   <div class="field">
     <label>كلمة المرور</label>
     <input type="password" id="password" placeholder="••••••••">
   </div>
 
   <button class="btn" id="loginBtn" onclick="window.login()">تسجيل الدخول</button>
-
   <div class="error" id="errorMsg"></div>
-
   <div class="footer">نظام القيروان المدرسي · v1.0</div>
 </div>
 
@@ -135,8 +100,7 @@ const db = getFirestore(app);
 
 function showError(msg) {
   const el = document.getElementById("errorMsg");
-  el.textContent = msg;
-  el.classList.add("show");
+  el.textContent = msg; el.classList.add("show");
 }
 function hideError() {
   document.getElementById("errorMsg").classList.remove("show");
@@ -149,61 +113,58 @@ function setLoading(on) {
     : "تسجيل الدخول";
 }
 
-/* Enter key support */
-document.getElementById("password").addEventListener("keydown", e => {
+document.getElementById("username").addEventListener("keydown", e => {
   if (e.key === "Enter") window.login();
 });
-document.getElementById("username").addEventListener("keydown", e => {
+document.getElementById("password").addEventListener("keydown", e => {
   if (e.key === "Enter") window.login();
 });
 
 window.login = async () => {
   hideError();
-
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
 
   if (!username || !password) {
-    showError("يرجى إدخال اسم المستخدم وكلمة المرور");
-    return;
+    showError("يرجى إدخال اسم المستخدم وكلمة المرور"); return;
   }
 
   setLoading(true);
 
   try {
-    /* Query Firestore for matching username */
     const q    = query(collection(db, "users"), where("username", "==", username));
     const snap = await getDocs(q);
 
     if (snap.empty) {
       showError("اسم المستخدم غير موجود");
-      setLoading(false);
-      return;
+      setLoading(false); return;
     }
 
-    const userDoc  = snap.docs[0];
-    const userData = userDoc.data();
+    const userDoc = snap.docs[0];
+    const d       = userDoc.data();
 
-    if (userData.password !== password) {
+    if (d.password !== password) {
       showError("كلمة المرور غير صحيحة");
-      setLoading(false);
-      return;
+      setLoading(false); return;
     }
 
-    /* ── Save to localStorage using EXACT Firestore field names ── */
+    /* Save everything from Firestore to localStorage */
     localStorage.setItem("user", JSON.stringify({
-      displayName: userData.displayName || "",   // ← exact Firestore field
-      username:    userData.username    || "",
-      class:       userData.class       || "",
-      pfp:         userData.pfp         || "",
-      role:        userData.role        || "student",
-      uid:         userDoc.id
+      displayName: d.displayName || "",
+      username:    d.username    || "",
+      pfp:         d.pfp         || "",
+      role:        d.role        || "student",
+      docId:       userDoc.id,
+      /* student */
+      class:       d.class    || "",
+      /* teacher (empty arrays for student/admin — harmless) */
+      classes:     Array.isArray(d.classes)  ? d.classes  : [],
+      subjects:    Array.isArray(d.subjects) ? d.subjects : [],
     }));
 
-    /* Role-based redirect */
-    if      (userData.role === "admin")   location.href = "admin.html";
-    else if (userData.role === "teacher") location.href = "teacher.html";
-    else                                  location.href = "student.html";
+    if      (d.role === "admin")   location.href = "admin.html";
+    else if (d.role === "teacher") location.href = "teacher.html";
+    else                           location.href = "student.html";
 
   } catch (err) {
     console.error(err);
