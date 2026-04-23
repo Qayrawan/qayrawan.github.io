@@ -12,20 +12,80 @@
   --bg: #0f172a; --surface: #1f2937; --surface2: #111827;
 }
 body { font-family: Arial, sans-serif; background: var(--bg); color: white; overflow-x: hidden; }
+
+/* ── TOPBAR ── */
 .topbar {
   height: 60px; background: var(--surface2);
   display: flex; justify-content: space-between; align-items: center;
-  padding: 0 16px; border-bottom: 1px solid #1f2937;
-  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  padding: 0 14px; border-bottom: 1px solid #1f2937;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50; gap: 10px;
 }
-.title { font-weight: bold; font-size: 17px; }
+.title { font-weight: bold; font-size: 16px; flex: 1; }
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.notif-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: none; border: none; cursor: pointer;
+  font-size: 20px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.notif-btn:hover { background: #1f2937; }
+.notif-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #ef4444; display: none;
+  border: 1px solid var(--surface2);
+}
+.notif-dot.show { display: block; }
+
 .pfp {
-  width: 38px; height: 38px; border-radius: 50%;
+  width: 36px; height: 36px; border-radius: 50%;
   overflow: hidden; background: #374151; cursor: pointer;
   border: 2px solid #374151; transition: border-color 0.2s; flex-shrink: 0;
 }
 .pfp:hover { border-color: var(--accent); }
 .pfp img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ── NOTIFICATION PANEL ── */
+.notif-panel {
+  position: fixed; top: 0; right: -100%; width: 88%; max-width: 340px;
+  height: 100%; background: var(--surface2); z-index: 150;
+  transition: right 0.3s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.4);
+}
+.notif-panel.open { right: 0; }
+.notif-panel-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 140; display: none;
+}
+.notif-panel-overlay.open { display: block; }
+.notif-panel-header {
+  height: 60px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 16px;
+  border-bottom: 1px solid #1f2937; flex-shrink: 0;
+}
+.notif-panel-title { font-weight: bold; font-size: 16px; }
+.notif-close-btn {
+  background: none; border: none; color: #6b7280;
+  font-size: 22px; cursor: pointer; line-height: 1;
+}
+.notif-list { flex: 1; overflow-y: auto; padding: 10px; }
+.notif-item {
+  background: var(--surface); border-radius: 12px;
+  padding: 12px 14px; margin-bottom: 8px;
+  border-right: 3px solid var(--accent);
+  font-size: 13px; line-height: 1.5;
+  animation: fadeIn 0.2s ease;
+}
+.notif-item.unread { background: #1e3a5f22; border-color: var(--accent); }
+.notif-item-title { font-weight: bold; margin-bottom: 3px; }
+.notif-item-body  { color: #94a3b8; font-size: 12px; }
+.notif-item-time  { color: #475569; font-size: 11px; margin-top: 4px; }
+.notif-empty { text-align: center; color: #475569; padding: 40px 0; font-size: 13px; }
+
+/* ── PROFILE DROPDOWN ── */
 .profile {
   position: fixed; top: 68px; left: 12px;
   background: #1e293b; border: 1px solid #334155;
@@ -34,25 +94,15 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   overflow: hidden; animation: fadeDown 0.15s ease;
 }
 @keyframes fadeDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-.profile-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px; background: #0f172a; border-bottom: 1px solid #334155;
-}
+.profile-header { display: flex; align-items: center; gap: 12px; padding: 16px; background: #0f172a; border-bottom: 1px solid #334155; }
 .profile-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); flex-shrink: 0; }
 .profile-name  { font-size: 14px; font-weight: bold; }
 .profile-user  { color: #94a3b8; font-size: 12px; margin-top: 2px; }
-.profile-class {
-  color: var(--accent); font-size: 11px; font-weight: bold;
-  background: #1e3a5f; display: inline-block;
-  padding: 2px 8px; border-radius: 20px; margin-top: 5px;
-}
-.profile-logout {
-  background: none; border: none; color: #ef4444;
-  padding: 13px 16px; cursor: pointer; width: 100%;
-  text-align: right; font-size: 13px; font-family: Arial;
-  display: flex; align-items: center; gap: 8px; transition: background 0.2s;
-}
+.profile-class { color: var(--accent); font-size: 11px; font-weight: bold; background: #1e3a5f; display: inline-block; padding: 2px 8px; border-radius: 20px; margin-top: 5px; }
+.profile-logout { background: none; border: none; color: #ef4444; padding: 13px 16px; cursor: pointer; width: 100%; text-align: right; font-size: 13px; font-family: Arial; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
 .profile-logout:hover { background: #1f2937; }
+
+/* ── BOTTOM NAV ── */
 .bottomnav {
   position: fixed; bottom: 0; left: 0; right: 0;
   height: 64px; background: var(--surface2);
@@ -74,6 +124,8 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   border-radius: 10px; padding: 1px 5px; min-width: 16px;
   text-align: center; display: none;
 }
+
+/* ── SECTIONS ── */
 .section {
   display: none; position: fixed;
   top: 60px; left: 0; right: 0; bottom: 64px;
@@ -83,6 +135,8 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
 .section.active { display: block; }
 #chat { display: none; flex-direction: column; overflow: hidden; padding: 12px; }
 #chat.active { display: flex; }
+
+/* ── HOME ── */
 .home-card {
   background: var(--surface); padding: 18px;
   border-radius: 16px; margin-bottom: 12px;
@@ -90,51 +144,59 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
 }
 .home-card::before {
   content: ""; position: absolute; top: -30px; left: -30px;
-  width: 130px; height: 130px;
-  background: var(--accent); opacity: 0.05; border-radius: 50%;
+  width: 130px; height: 130px; background: var(--accent); opacity: 0.05; border-radius: 50%;
 }
 .home-card h3   { font-size: 19px; margin-bottom: 3px; }
 .home-card .sub { color: #9ca3af; font-size: 12px; margin-bottom: 10px; }
-.home-date {
-  font-size: 11px; color: #475569;
-  background: #0f172a; display: inline-block;
-  padding: 3px 10px; border-radius: 20px;
-}
+.home-date { font-size: 11px; color: #475569; background: #0f172a; display: inline-block; padding: 3px 10px; border-radius: 20px; }
+
 .section-label {
   font-size: 11px; color: #6b7280;
-  margin: 16px 0 8px; text-transform: uppercase;
-  letter-spacing: 0.06em;
+  margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.06em;
   display: flex; align-items: center; gap: 6px;
 }
 .section-label::after { content: ""; flex: 1; height: 1px; background: #1f2937; }
+
+/* ── ANNOUNCEMENTS ── */
 .announcement {
   background: var(--surface); border-right: 3px solid var(--accent);
   border-radius: 0 14px 14px 0; padding: 14px 16px;
-  margin-bottom: 10px; font-size: var(--font-size);
-  line-height: 1.6; animation: fadeIn 0.2s ease; position: relative;
+  margin-bottom: 10px; line-height: 1.6; animation: fadeIn 0.2s ease;
+  position: relative; font-size: var(--font-size);
 }
 .ann-title { font-weight: bold; color: var(--accent); font-size: 14px; margin-bottom: 5px; }
 .ann-meta  { font-size: 11px; color: #475569; margin-top: 8px; }
-.ann-img   { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; cursor: zoom-in; }
-.ann-new {
-  position: absolute; top: 12px; left: 12px;
-  background: #ef4444; color: white;
-  font-size: 10px; font-weight: bold;
-  padding: 1px 7px; border-radius: 20px;
-}
+.ann-new   { position: absolute; top: 12px; left: 12px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 1px 7px; border-radius: 20px; }
+
+/* Announcement images grid */
+.ann-images { display: grid; gap: 4px; margin-top: 8px; }
+.ann-images.c1 { grid-template-columns: 1fr; }
+.ann-images.c2 { grid-template-columns: 1fr 1fr; }
+.ann-images.c3 { grid-template-columns: 1fr 1fr; }
+.ann-images.c3 img:first-child { grid-column: span 2; }
+.ann-images.c4 { grid-template-columns: 1fr 1fr; }
+.ann-images img { width: 100%; border-radius: 8px; cursor: zoom-in; aspect-ratio: 4/3; object-fit: cover; }
+
+/* ── SUBJECTS ── */
 .subject-item {
   background: var(--surface); margin: 8px 0; border-radius: 14px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; cursor: pointer;
+  padding: 16px 18px; cursor: pointer;
   transition: background 0.15s, transform 0.1s;
   user-select: none; border: 1px solid transparent;
 }
 .subject-item:hover  { background: #263244; border-color: #334155; }
 .subject-item:active { transform: scale(0.98); }
-.subject-left { display: flex; align-items: center; gap: 12px; }
-.sub-icon     { font-size: 22px; line-height: 1; }
-.sub-name     { font-size: 14px; font-weight: bold; }
-.sub-arrow    { color: #6b7280; font-size: 12px; }
+.subject-name  { font-size: 15px; font-weight: bold; }
+.subject-right { display: flex; align-items: center; gap: 8px; }
+.subject-hw-badge {
+  background: #ef4444; color: white; font-size: 10px; font-weight: bold;
+  padding: 1px 7px; border-radius: 20px; display: none;
+}
+.subject-hw-badge.show { display: inline; }
+.subject-arrow { color: #6b7280; font-size: 12px; }
+
+/* ── SUBJECT SCREEN ── */
 .subject-screen {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: var(--bg); z-index: 100;
@@ -148,22 +210,57 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   display: flex; align-items: center; padding: 0 14px;
   border-bottom: 1px solid #1f2937; flex-shrink: 0; gap: 12px;
 }
-.back-btn {
-  background: none; border: none; color: var(--accent);
-  font-size: 22px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
-}
+.back-btn { background: none; border: none; color: var(--accent); font-size: 22px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0; }
 .subject-topbar-title { font-weight: bold; font-size: 16px; flex: 1; }
 .tab-panel { flex: 1; overflow-y: auto; padding: 12px; -webkit-overflow-scrolling: touch; }
+
+/* Teacher posts in subject */
 .teacher-post {
   background: var(--surface); border-right: 3px solid var(--accent);
   padding: 14px 16px; border-radius: 0 12px 12px 0;
-  margin-bottom: 12px; font-size: var(--font-size);
-  line-height: 1.6; animation: fadeIn 0.2s ease;
+  margin-bottom: 12px; line-height: 1.6; animation: fadeIn 0.2s ease;
+  font-size: var(--font-size);
 }
-.post-due  { font-size: 12px; color: #fbbf24; margin-top: 6px; }
-.post-meta { font-size: 11px; color: #475569; margin-top: 6px; }
-.empty-state { text-align: center; color: #475569; font-size: 14px; padding: 50px 0; }
-.empty-icon  { font-size: 42px; margin-bottom: 10px; }
+.post-due     { font-size: 12px; color: #fbbf24; margin-top: 6px; }
+.post-meta    { font-size: 11px; color: #475569; margin-top: 6px; }
+.post-images  { display: grid; gap: 4px; margin-top: 8px; }
+.post-images.c1 { grid-template-columns: 1fr; }
+.post-images.c2 { grid-template-columns: 1fr 1fr; }
+.post-images.c3 { grid-template-columns: 1fr 1fr; }
+.post-images.c3 img:first-child { grid-column: span 2; }
+.post-images img { width: 100%; border-radius: 8px; cursor: zoom-in; aspect-ratio: 4/3; object-fit: cover; }
+
+/* PDF card */
+.pdf-card {
+  display: flex; align-items: center; gap: 10px;
+  background: #0f172a; border: 1px solid #334155;
+  border-radius: 10px; padding: 10px 14px; margin-top: 8px;
+  text-decoration: none; color: white; transition: border-color 0.2s;
+}
+.pdf-card:hover { border-color: var(--accent); }
+.pdf-icon { font-size: 26px; flex-shrink: 0; }
+.pdf-info { flex: 1; min-width: 0; }
+.pdf-name { font-size: 13px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pdf-size { font-size: 11px; color: #6b7280; }
+
+/* Collapsible content */
+.collapsible-wrap { position: relative; }
+.collapsible-body { overflow: hidden; transition: max-height 0.3s ease; }
+.collapsible-body.collapsed { max-height: 130px; }
+.collapsible-fade {
+  position: absolute; bottom: 28px; left: 0; right: 0;
+  height: 50px;
+  background: linear-gradient(transparent, var(--surface));
+  pointer-events: none; display: none;
+}
+.teacher-post .collapsible-fade { background: linear-gradient(transparent, var(--surface)); }
+.collapsible-body.collapsed + .collapsible-fade { display: block; }
+.collapse-btn {
+  width: 100%; background: none; border: none;
+  color: var(--accent); font-size: 13px; cursor: pointer;
+  padding: 4px 0 0; text-align: center; font-family: Arial;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+}
 
 /* ── CHAT ── */
 .messages {
@@ -171,42 +268,66 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   display: flex; flex-direction: column;
   gap: 4px; padding-bottom: 6px; min-height: 0;
 }
-/* Message rows with avatar */
-.msg-row {
-  display: flex; align-items: flex-end; gap: 8px; width: 100%;
-}
+.msg-row { display: flex; align-items: flex-end; gap: 6px; }
 .msg-row.mine   { justify-content: flex-start; }
 .msg-row.theirs { justify-content: flex-end; }
+
 .msg-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 30px; height: 30px; border-radius: 50%;
   object-fit: cover; flex-shrink: 0; cursor: pointer;
-  border: 2px solid var(--surface2);
-  transition: border-color 0.2s; order: 1;
+  border: 2px solid var(--surface2); transition: border-color 0.2s;
+  order: 1; align-self: flex-end;
 }
 .msg-row.theirs .msg-avatar { order: 2; }
 .msg-avatar:hover { border-color: var(--accent); }
 
 .msg {
-  max-width: 72%; padding: 9px 13px;
-  word-break: break-word;
+  max-width: 74%; word-break: break-word;
   font-size: var(--font-size); line-height: 1.5;
 }
-.msg.mine {
+.msg-bubble {
+  padding: 9px 13px;
+  border-radius: var(--bubble-radius);
+}
+.msg-row.mine .msg-bubble {
   background: var(--accent-btn);
   border-radius: var(--bubble-radius) var(--bubble-radius) 2px var(--bubble-radius);
 }
-.msg.theirs {
+.msg-row.theirs .msg-bubble {
   background: var(--surface);
   border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 2px;
 }
+
+/* Chat collapsible */
+.msg-bubble.collapsible-body.collapsed { max-height: 100px; border-radius: inherit; }
+.msg-row.mine .collapsible-fade   { background: linear-gradient(transparent, var(--accent-btn)); }
+.msg-row.theirs .collapsible-fade { background: linear-gradient(transparent, var(--surface)); }
+
 .msg-sender { font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
 .msg-time   { font-size: 10px; color: #475569; margin-top: 3px; }
+
+/* Chat images */
+.msg-images { display: grid; gap: 3px; margin-top: 6px; }
+.msg-images.c1 { grid-template-columns: 1fr; }
+.msg-images.c2 { grid-template-columns: 1fr 1fr; }
+.msg-images.c3 img:first-child { grid-column: span 2; }
+.msg-images.c4 { grid-template-columns: 1fr 1fr; }
+.msg-images img { width: 100%; border-radius: 6px; cursor: zoom-in; aspect-ratio: 1; object-fit: cover; }
 
 .typing-indicator {
   font-size: 12px; color: #6b7280;
   min-height: 20px; font-style: italic;
   padding: 2px 0; flex-shrink: 0;
 }
+.typing-dots span {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: #6b7280; margin: 0 1px;
+  animation: typingBounce 1.2s ease infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
 .chat-input-bar { display: flex; gap: 8px; padding-top: 8px; flex-shrink: 0; align-items: center; }
 input[type=text] {
   flex: 1; padding: 11px 14px;
@@ -216,8 +337,7 @@ input[type=text] {
 }
 input[type=text]:focus { border-color: var(--accent); }
 .send-btn {
-  width: 46px; height: 46px;
-  background: var(--accent-btn); border: none;
+  width: 46px; height: 46px; background: var(--accent-btn); border: none;
   color: white; border-radius: 12px; cursor: pointer;
   font-size: 18px; transition: background 0.2s; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
@@ -233,12 +353,7 @@ input[type=text]:focus { border-color: var(--accent); }
 .swatch { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, transform 0.15s; }
 .swatch.selected { border-color: white; transform: scale(1.2); }
 .btn-group { display: flex; gap: 6px; }
-.opt-btn {
-  padding: 6px 14px; border-radius: 8px;
-  background: #374151; border: 2px solid transparent;
-  color: white; cursor: pointer; font-size: 13px;
-  font-family: Arial; transition: 0.2s;
-}
+.opt-btn { padding: 6px 14px; border-radius: 8px; background: #374151; border: 2px solid transparent; color: white; cursor: pointer; font-size: 13px; font-family: Arial; transition: 0.2s; }
 .opt-btn.selected { border-color: var(--accent); background: #1e3a5f; }
 .toggle { position: relative; width: 44px; height: 24px; }
 .toggle input { opacity: 0; width: 0; height: 0; }
@@ -247,46 +362,31 @@ input[type=text]:focus { border-color: var(--accent); }
 input:checked + .slider { background: var(--accent-btn); }
 input:checked + .slider:before { transform: translateX(20px); }
 
-/* ── LIGHTBOX ── */
-.lightbox {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-  z-index: 500; display: none;
-  align-items: center; justify-content: center; cursor: zoom-out;
-}
-.lightbox.open { display: flex; }
-.lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 10px; }
-
 /* ── USER INFO MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-  z-index: 300; display: none;
-  align-items: center; justify-content: center;
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; display: none; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal {
-  background: #1e293b; border: 1px solid #334155;
-  border-radius: 20px; padding: 28px 24px;
-  width: 260px; text-align: center;
-}
+.modal { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 28px 24px; width: 260px; text-align: center; }
+
+/* ── LIGHTBOX ── */
+.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; display: none; align-items: center; justify-content: center; cursor: zoom-out; flex-direction: column; }
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 95vw; max-height: 85vh; border-radius: 8px; object-fit: contain; }
+.lightbox-nav { display: flex; gap: 16px; margin-top: 16px; }
+.lightbox-nav button { background: #1f2937; border: 1px solid #334155; color: white; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.lightbox-counter { color: #6b7280; font-size: 12px; margin-top: 6px; }
 
 /* ── TOAST ── */
-.toast {
-  position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
-  background: #1f2937; border: 1px solid #334155;
-  color: white; padding: 10px 20px; border-radius: 20px;
-  font-size: 13px; z-index: 999;
-  opacity: 0; transition: opacity 0.3s;
-  pointer-events: none; white-space: nowrap;
-}
+.toast { position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%); background: #1f2937; border: 1px solid #334155; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
 .toast.show { opacity: 1; }
 
 /* ── SKELETON ── */
-.skeleton {
-  background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%);
-  background-size: 200% 100%; animation: shimmer 1.4s infinite;
-  border-radius: 10px; height: 72px; margin: 8px 0;
-}
+.skeleton { background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 10px; height: 60px; margin: 8px 0; }
+.skeleton.subj { height: 54px; border-radius: 14px; }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.empty-state { text-align: center; color: #475569; font-size: 14px; padding: 50px 0; }
+.empty-icon  { font-size: 42px; margin-bottom: 10px; }
+
 .fade-in { animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 ::-webkit-scrollbar { width: 4px; }
@@ -296,17 +396,35 @@ input:checked + .slider:before { transform: translateX(20px); }
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="title">لوحة الطالب</div>
-  <div class="pfp" onclick="window.toggleProfile()" id="pfpBox">
-    <img src="placeholder.png" alt="pfp">
+  <div class="topbar-actions">
+    <button class="notif-btn" id="notifBtn" onclick="window.toggleNotifPanel()">
+      🔔<div class="notif-dot" id="notifDot"></div>
+    </button>
+    <div class="pfp" onclick="window.toggleProfile()" id="pfpBox">
+      <img src="placeholder.png" alt="pfp">
+    </div>
   </div>
 </div>
 
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel-overlay" id="notifOverlay" onclick="window.closeNotifPanel()"></div>
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">🔔 الإشعارات</span>
+    <button class="notif-close-btn" onclick="window.closeNotifPanel()">✕</button>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty">لا توجد إشعارات بعد</div>
+  </div>
+</div>
+
+<!-- PROFILE DROPDOWN -->
 <div class="profile" id="profile">
   <div class="profile-header">
-    <img class="profile-avatar" id="profileAvatar" src="placeholder.png"
-         onerror="this.src='placeholder.png'" alt="pfp">
+    <img class="profile-avatar" id="profileAvatar" src="placeholder.png" onerror="this.src='placeholder.png'" alt="pfp">
     <div>
       <div class="profile-name"  id="pName"></div>
       <div class="profile-user"  id="pUser"></div>
@@ -325,7 +443,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
   <div class="section-label">📢 إعلانات الإدارة</div>
   <div id="announcementsList">
-    <div class="skeleton" style="height:60px"></div>
+    <div class="skeleton"></div>
     <div class="skeleton" style="height:48px;width:85%"></div>
   </div>
 </div>
@@ -333,15 +451,19 @@ input:checked + .slider:before { transform: translateX(20px); }
 <!-- HOMEWORK -->
 <div id="homework" class="section">
   <div class="section-label" style="margin-top:4px">📚 المواد الدراسية</div>
-  <div id="subjectList"></div>
+  <div id="subjectList">
+    <div class="skeleton subj"></div>
+    <div class="skeleton subj"></div>
+    <div class="skeleton subj" style="width:80%"></div>
+  </div>
 </div>
 
 <!-- CHAT -->
 <div id="chat" class="section">
   <div class="messages" id="messages">
-    <div class="skeleton"></div>
-    <div class="skeleton" style="width:55%"></div>
-    <div class="skeleton" style="width:70%"></div>
+    <div class="skeleton" style="height:50px"></div>
+    <div class="skeleton" style="height:50px;width:55%"></div>
+    <div class="skeleton" style="height:50px;width:70%"></div>
   </div>
   <div class="typing-indicator" id="typingIndicator"></div>
   <div class="chat-input-bar">
@@ -413,6 +535,10 @@ input:checked + .slider:before { transform: translateX(20px); }
       <span>إظهار الفصل في الرسائل</span>
       <label class="toggle"><input type="checkbox" id="toggleShowClass" checked><span class="slider"></span></label>
     </div>
+    <div class="setting-row">
+      <span>إشعارات المتصفح</span>
+      <label class="toggle"><input type="checkbox" id="toggleNotifications"><span class="slider"></span></label>
+    </div>
   </div>
   <div style="text-align:center;color:#334155;font-size:11px;padding:16px 0 4px">نظام القيروان المدرسي · v1.0</div>
 </div>
@@ -425,7 +551,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
   <div class="tab-panel" id="panelPosts">
     <div class="skeleton"></div>
-    <div class="skeleton" style="height:50px;width:80%"></div>
+    <div class="skeleton" style="height:50px;width:75%"></div>
   </div>
 </div>
 
@@ -433,28 +559,29 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div class="modal-overlay" id="userInfoModal">
   <div class="modal">
     <img id="uiAvatar" src="placeholder.png"
-         style="width:76px;height:76px;border-radius:50%;object-fit:cover;
-                border:3px solid var(--accent);margin-bottom:12px"
+         style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);margin-bottom:12px"
          onerror="this.src='placeholder.png'">
     <div id="uiName"  style="font-size:17px;font-weight:bold;margin-bottom:4px"></div>
     <div id="uiUser"  style="font-size:13px;color:#94a3b8;margin-bottom:8px"></div>
-    <div id="uiClass" style="font-size:12px;color:var(--accent);background:#1e3a5f;
-                              display:inline-block;padding:3px 14px;border-radius:20px;
-                              margin-bottom:20px"></div>
+    <div id="uiClass" style="font-size:12px;color:var(--accent);background:#1e3a5f;display:inline-block;padding:3px 14px;border-radius:20px;margin-bottom:20px"></div>
     <button onclick="document.getElementById('userInfoModal').classList.remove('open')"
-            style="background:#374151;border:none;color:white;padding:10px;
-                   border-radius:10px;cursor:pointer;font-size:14px;
-                   font-family:Arial;width:100%">إغلاق</button>
+            style="background:#374151;border:none;color:white;padding:10px;border-radius:10px;cursor:pointer;font-size:14px;font-family:Arial;width:100%">إغلاق</button>
   </div>
 </div>
 
 <!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')">
-  <img id="lightboxImg" src="" alt="">
+<div class="lightbox" id="lightbox">
+  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
+  <div class="lightbox-nav" id="lightboxNav" style="display:none">
+    <button onclick="window.lightboxPrev()">◀ السابق</button>
+    <button onclick="window.lightboxNext()">التالي ▶</button>
+  </div>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- BOTTOM NAV -->
 <div class="bottomnav">
   <div class="nav-item active" id="nav-home"     onclick="window.openSection('home')"><span class="icon">🏠</span><span>الرئيسية</span></div>
   <div class="nav-item"        id="nav-homework" onclick="window.openSection('homework')"><span class="icon">📚</span><span>الواجبات</span><span class="badge" id="hwBadge"></span></div>
@@ -466,7 +593,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, addDoc, onSnapshot,
-  query, orderBy, doc, setDoc, deleteDoc
+  query, orderBy, doc, setDoc, deleteDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
@@ -493,6 +620,10 @@ function formatTime(ts) {
   const d = new Date(ts);
   return d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
 }
+function formatDue(due) {
+  if (!due) return null;
+  return due;
+}
 function updateBadge(id, count) {
   const b = document.getElementById(id); if (!b) return;
   b.textContent = count > 99 ? "99+" : count;
@@ -515,6 +646,78 @@ function getGreeting(name) {
 document.getElementById("homeGreeting").textContent = getGreeting(user.name);
 document.getElementById("homeDate").textContent =
   new Date().toLocaleDateString("ar-IQ", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+
+/* ── NOTIFICATIONS ── */
+const notifLog = JSON.parse(localStorage.getItem("notifLog") || "[]");
+let notifUnread = 0;
+
+function saveNotifLog() { localStorage.setItem("notifLog", JSON.stringify(notifLog.slice(0,50))); }
+
+function addNotification(title, body, type="info") {
+  const n = { title, body, time: Date.now(), type, read: false };
+  notifLog.unshift(n);
+  saveNotifLog();
+  notifUnread++;
+  document.getElementById("notifDot").classList.add("show");
+  renderNotifList();
+
+  /* Browser notification */
+  if (Notification.permission === "granted" && document.hidden) {
+    new Notification(title, {
+      body,
+      icon: user.pfp || "placeholder.png",
+      badge: "placeholder.png"
+    });
+  }
+}
+
+function renderNotifList() {
+  const box = document.getElementById("notifList");
+  if (!notifLog.length) { box.innerHTML = `<div class="notif-empty">لا توجد إشعارات</div>`; return; }
+  box.innerHTML = "";
+  notifLog.forEach(n => {
+    const el = document.createElement("div");
+    el.className = `notif-item${n.read ? "" : " unread"}`;
+    el.innerHTML = `
+      <div class="notif-item-title">${sanitize(n.title)}</div>
+      <div class="notif-item-body">${sanitize(n.body)}</div>
+      <div class="notif-item-time">${formatTime(n.time)}</div>
+    `;
+    box.appendChild(el);
+  });
+}
+renderNotifList();
+
+window.toggleNotifPanel = () => {
+  document.getElementById("notifPanel").classList.add("open");
+  document.getElementById("notifOverlay").classList.add("open");
+  /* Mark all read */
+  notifLog.forEach(n => n.read = true);
+  saveNotifLog();
+  notifUnread = 0;
+  document.getElementById("notifDot").classList.remove("show");
+  renderNotifList();
+};
+window.closeNotifPanel = () => {
+  document.getElementById("notifPanel").classList.remove("open");
+  document.getElementById("notifOverlay").classList.remove("open");
+};
+
+/* Notification permission toggle */
+document.getElementById("toggleNotifications").addEventListener("change", async e => {
+  if (e.target.checked) {
+    const perm = await Notification.requestPermission();
+    if (perm === "granted") {
+      toast("🔔 تم تفعيل الإشعارات");
+    } else {
+      e.target.checked = false;
+      toast("⚠️ لم يتم منح إذن الإشعارات");
+    }
+  }
+});
+
+/* Set initial toggle state */
+document.getElementById("toggleNotifications").checked = Notification.permission === "granted";
 
 /* ── SETTINGS ── */
 const prefs = JSON.parse(localStorage.getItem("prefs") || "{}");
@@ -563,7 +766,7 @@ document.getElementById("toggleTimestamps").addEventListener("change", e => {
 });
 document.getElementById("toggleCompact").addEventListener("change", e => {
   prefs.compact = e.target.checked; localStorage.setItem("prefs", JSON.stringify(prefs));
-  document.querySelectorAll(".msg").forEach(m => m.style.padding = prefs.compact ? "5px 10px" : "");
+  document.querySelectorAll(".msg-bubble").forEach(m => m.style.padding = prefs.compact ? "5px 10px" : "");
 });
 document.getElementById("toggleShowClass").addEventListener("change", e => {
   prefs.showClass = e.target.checked; localStorage.setItem("prefs", JSON.stringify(prefs));
@@ -584,6 +787,8 @@ window.toggleProfile = () => {
 document.addEventListener("click", e => {
   if (!e.target.closest(".pfp") && !e.target.closest("#profile"))
     document.getElementById("profile").style.display = "none";
+  if (!e.target.closest(".notif-btn") && !e.target.closest(".notif-panel"))
+    window.closeNotifPanel();
 });
 
 /* ── USER INFO MODAL ── */
@@ -599,7 +804,95 @@ document.getElementById("userInfoModal").addEventListener("click", e => {
     document.getElementById("userInfoModal").classList.remove("open");
 });
 
-/* ── NAV ── */
+/* ── LIGHTBOX ── */
+let lbImages = [], lbIdx = 0;
+
+window.openLightbox = (urls, idx=0) => {
+  lbImages = Array.isArray(urls) ? urls : [urls];
+  lbIdx    = idx;
+  updateLightbox();
+  document.getElementById("lightbox").classList.add("open");
+};
+document.getElementById("lightbox").addEventListener("click", e => {
+  if (e.target === document.getElementById("lightbox"))
+    document.getElementById("lightbox").classList.remove("open");
+});
+window.lightboxPrev = () => { lbIdx = (lbIdx - 1 + lbImages.length) % lbImages.length; updateLightbox(); };
+window.lightboxNext = () => { lbIdx = (lbIdx + 1) % lbImages.length; updateLightbox(); };
+function updateLightbox() {
+  document.getElementById("lightboxImg").src = lbImages[lbIdx];
+  const nav = document.getElementById("lightboxNav");
+  const ctr = document.getElementById("lightboxCounter");
+  nav.style.display = lbImages.length > 1 ? "flex" : "none";
+  ctr.textContent   = lbImages.length > 1 ? `${lbIdx + 1} / ${lbImages.length}` : "";
+}
+
+/* ── COLLAPSIBLE HELPER ── */
+const COLLAPSE_THRESHOLD = 140;
+function makeCollapsible(el, bgVar) {
+  requestAnimationFrame(() => {
+    if (el.scrollHeight <= COLLAPSE_THRESHOLD + 20) return;
+    el.classList.add("collapsible-body", "collapsed");
+    const fade = document.createElement("div");
+    fade.className = "collapsible-fade";
+    const btn = document.createElement("button");
+    btn.className = "collapse-btn";
+    btn.innerHTML = "▼ عرض المزيد";
+    let open = false;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      open = !open;
+      el.style.maxHeight = open ? el.scrollHeight + "px" : "";
+      el.classList.toggle("collapsed", !open);
+      btn.innerHTML = open ? "▲ عرض أقل" : "▼ عرض المزيد";
+    });
+    el.parentNode.insertBefore(fade, btn);
+    el.parentNode.appendChild(btn);
+  });
+}
+
+/* ── IMAGES GRID HELPER ── */
+function buildImagesGrid(images, cls="post-images") {
+  if (!images?.length) return "";
+  const count = Math.min(images.length, 4);
+  const urlsJson = JSON.stringify(images.slice(0,4));
+  let html = `<div class="${cls} c${count}">`;
+  images.slice(0,4).forEach((url, i) => {
+    html += `<img src="${sanitize(url)}" loading="lazy"
+                 onclick="event.stopPropagation();window.openLightbox(${sanitize(urlsJson)},${i})"
+                 onerror="this.style.display='none'">`;
+  });
+  if (images.length > 4) {
+    html = html.slice(0, -(`<img src="${sanitize(images[3])}"`.length + 200));
+    html += `<div style="position:relative">
+      <img src="${sanitize(images[3])}" onclick="window.openLightbox(${sanitize(JSON.stringify(images))},3)">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);border-radius:6px;
+                  display:flex;align-items:center;justify-content:center;font-size:22px;
+                  font-weight:bold;cursor:pointer"
+           onclick="window.openLightbox(${sanitize(JSON.stringify(images))},3)">
+        +${images.length - 4}
+      </div></div>`;
+  }
+  html += "</div>";
+  return html;
+}
+
+/* ── PDF CARD HELPER ── */
+function buildPdfCards(pdfs) {
+  if (!pdfs?.length) return "";
+  return pdfs.map(p => `
+    <a class="pdf-card" href="${sanitize(p.url)}" target="_blank" rel="noopener noreferrer">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <div class="pdf-name">${sanitize(p.name || "ملف PDF")}</div>
+        <div class="pdf-size">PDF · انقر للفتح</div>
+      </div>
+      <div style="color:var(--accent);font-size:18px">↗</div>
+    </a>
+  `).join("");
+}
+
+/* ── NAVIGATION ── */
 window.openSection = (id) => {
   document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -609,77 +902,119 @@ window.openSection = (id) => {
   if (id === "homework") { localStorage.setItem("lastSeenHw",   Date.now()); updateBadge("hwBadge",   0); }
 };
 
-/* ── LIGHTBOX ── */
-window.openLightbox = (url) => {
-  document.getElementById("lightboxImg").src = url;
-  document.getElementById("lightbox").classList.add("open");
-};
-
 /* ── ANNOUNCEMENTS ── */
 const lastSeenAnn = parseInt(localStorage.getItem("lastSeenAnn") || "0");
+let firstAnnLoad  = true;
+
 onSnapshot(query(collection(db,"announcements"), orderBy("time","desc")), snap => {
   const box   = document.getElementById("announcementsList");
   const items = snap.docs.map(d => ({id:d.id,...d.data()}))
     .filter(m => !m.target || m.target === user.class);
+
   if (!items.length) {
     box.innerHTML = `<div style="color:#475569;font-size:13px;text-align:center;padding:20px 0">لا توجد إعلانات حالياً</div>`;
     return;
   }
+
+  /* Detect new announcements for notifications */
+  if (!firstAnnLoad) {
+    items.forEach(m => {
+      if (m.time > lastSeenAnn) {
+        addNotification(
+          m.title || "إعلان جديد",
+          m.text?.slice(0, 80) || ""
+        );
+      }
+    });
+  }
+  firstAnnLoad = false;
+
   box.innerHTML = "";
   items.forEach(m => {
     const isNew = m.time > lastSeenAnn;
+    const images = m.images || (m.imageUrl ? [m.imageUrl] : []);
     const el = document.createElement("div");
     el.className = "announcement fade-in";
     el.innerHTML = `
       ${isNew ? `<span class="ann-new">جديد</span>` : ""}
       ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
-      ${sanitize(m.text)}
-      ${m.imageUrl ? `<img class="ann-img" src="${sanitize(m.imageUrl)}" alt="صورة" onclick="window.openLightbox('${sanitize(m.imageUrl)}')">` : ""}
+      <div class="ann-body">${sanitize(m.text || "")}</div>
+      ${buildImagesGrid(images, "ann-images")}
+      ${buildPdfCards(m.pdfs)}
       <div class="ann-meta">📌 ${sanitize(m.author||"الإدارة")} · ${formatTime(m.time)}</div>
     `;
+    /* Make text collapsible if long */
+    const body = el.querySelector(".ann-body");
+    if (body) makeCollapsible(body);
     box.appendChild(el);
   });
+
   localStorage.setItem("lastSeenAnn", Date.now().toString());
 });
 
-/* ── SUBJECTS ── */
-const subjects = [
-  { name: "التربية الاسلامية", icon: "☪️"  },
-  { name: "اللغة العربية",     icon: "📖"  },
-  { name: "اللغة الانجليزية",  icon: "🔤"  },
-  { name: "اللغة الفرنسية",    icon: "🥐"  },
-  { name: "اللغة الكردية",     icon: "🏔️"  },
-  { name: "جرائم حزب البعث",   icon: "📜"  },
-  { name: "الرياضيات",         icon: "📐"  },
-  { name: "الفيزياء",          icon: "⚡"  },
-  { name: "الكيمياء",          icon: "⚗️"  },
-  { name: "الاحياء",           icon: "🧬"  },
-  { name: "الحاسوب",           icon: "💻"  },
-];
+/* ── SUBJECTS FROM FIRESTORE ── */
+async function loadSubjects() {
+  const list = document.getElementById("subjectList");
+  try {
+    const snap = await getDoc(doc(db, "gradeSubjects", user.class));
+    const subjects = snap.exists() ? (snap.data().subjects || []) : [];
 
-const subjectList = document.getElementById("subjectList");
-subjects.forEach(({ name, icon }) => {
-  const el = document.createElement("div");
-  el.className = "subject-item";
-  el.innerHTML = `
-    <div class="subject-left">
-      <span class="sub-icon">${icon}</span>
-      <span class="sub-name">${sanitize(name)}</span>
-    </div>
-    <span class="sub-arrow">◀</span>
-  `;
-  el.addEventListener("click", () => window.openSubject(name));
-  subjectList.appendChild(el);
-});
+    if (!subjects.length) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div>لا توجد مواد مسجلة لصفك</div>`;
+      return;
+    }
+
+    list.innerHTML = "";
+    subjects.forEach(name => {
+      const el = document.createElement("div");
+      el.className = "subject-item fade-in";
+      el.innerHTML = `
+        <span class="subject-name">${sanitize(name)}</span>
+        <div class="subject-right">
+          <span class="subject-hw-badge" id="hwbadge-${btoa(encodeURIComponent(name)).replace(/[^a-zA-Z0-9]/g,'')}"></span>
+          <span class="subject-arrow">◀</span>
+        </div>
+      `;
+      el.addEventListener("click", () => window.openSubject(name));
+      list.appendChild(el);
+
+      /* Live listener for unread homework on this subject */
+      const lastSeen = parseInt(localStorage.getItem(`lastSeenHw_${name}`) || "0");
+      onSnapshot(
+        query(collection(db,"classes",user.class,"homework",name,"messages"), orderBy("time","desc")),
+        snap => {
+          const newCount = snap.docs.filter(d => d.data().time > lastSeen).length;
+          const badge = document.getElementById(`hwbadge-${btoa(encodeURIComponent(name)).replace(/[^a-zA-Z0-9]/g,'')}`);
+          if (badge) {
+            badge.textContent = newCount > 0 ? newCount : "";
+            badge.classList.toggle("show", newCount > 0);
+          }
+          if (newCount > 0 && !firstAnnLoad) {
+            addNotification(`واجب جديد · ${name}`, snap.docs[0]?.data().text?.slice(0,60) || "");
+          }
+        }
+      );
+    });
+  } catch(e) {
+    console.error(e);
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>فشل تحميل المواد</div>`;
+  }
+}
+loadSubjects();
 
 /* ── SUBJECT SCREEN ── */
 let activeSubjectUnsub = null;
+
 window.openSubject = (sub) => {
   document.getElementById("subjectScreenTitle").textContent = sub;
   document.getElementById("subjectScreen").classList.add("open");
+  localStorage.setItem(`lastSeenHw_${sub}`, Date.now().toString());
+
   const panel = document.getElementById("panelPosts");
   panel.innerHTML = `<div class="skeleton"></div><div class="skeleton" style="height:50px;width:75%"></div>`;
+
   if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
+
   const ref = collection(db,"classes",user.class,"homework",sub,"messages");
   activeSubjectUnsub = onSnapshot(query(ref, orderBy("time")), snap => {
     if (snap.empty) {
@@ -688,22 +1023,45 @@ window.openSubject = (sub) => {
     }
     panel.innerHTML = "";
     snap.forEach(d => {
-      const m = d.data();
+      const m      = d.data();
+      const images = m.images || (m.imageUrl ? [m.imageUrl] : []);
       const el = document.createElement("div");
       el.className = "teacher-post fade-in";
-      el.innerHTML = `
-        ${sanitize(m.text)}
+
+      const wrap = document.createElement("div");
+      wrap.className = "collapsible-wrap";
+
+      const body = document.createElement("div");
+      body.className = "collapsible-body";
+      body.innerHTML = `
+        ${sanitize(m.text || "")}
+        ${buildImagesGrid(images)}
+        ${buildPdfCards(m.pdfs)}
         ${m.due ? `<div class="post-due">⏳ الموعد النهائي: ${sanitize(m.due)}</div>` : ""}
         <div class="post-meta">🕐 ${formatTime(m.time)} · ${sanitize(m.author||"المعلم")}</div>
       `;
+
+      wrap.appendChild(body);
+      el.appendChild(wrap);
       panel.appendChild(el);
+      makeCollapsible(body);
     });
   });
 };
+
 window.closeSubject = () => {
   document.getElementById("subjectScreen").classList.remove("open");
   if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
 };
+
+/* Swipe to close subject screen */
+let touchStartX = 0;
+document.getElementById("subjectScreen").addEventListener("touchstart", e => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+document.getElementById("subjectScreen").addEventListener("touchend", e => {
+  if (e.changedTouches[0].clientX - touchStartX > 80) window.closeSubject();
+});
 
 /* ── CHAT ── */
 const chatRef   = collection(db,"classes",user.class,"messages");
@@ -715,15 +1073,14 @@ function makeMsg(m) {
   const showTime  = prefs.timestamps !== false;
   const showClass = prefs.showClass  !== false;
   const compact   = !!prefs.compact;
+  const images    = m.images || (m.imageUrl ? [m.imageUrl] : []);
 
-  /* Row wrapper */
   const row = document.createElement("div");
   row.className = `msg-row ${isMe ? "mine" : "theirs"}`;
 
-  /* Avatar for others only */
   if (!isMe) {
     const av = document.createElement("img");
-    av.className = "msg-avatar fade-in";
+    av.className = "msg-avatar";
     av.src = m.pfp || "placeholder.png";
     av.onerror = () => { av.src = "placeholder.png"; };
     av.title = m.name;
@@ -731,28 +1088,62 @@ function makeMsg(m) {
     row.appendChild(av);
   }
 
-  const el = document.createElement("div");
-  el.className = `msg fade-in ${isMe ? "mine" : "theirs"}`;
-  if (compact) el.style.padding = "5px 10px";
+  const msgWrap = document.createElement("div");
+  msgWrap.className = "msg";
+
+  const bubble = document.createElement("div");
+  bubble.className = "msg-bubble collapsible-wrap";
+  if (compact) bubble.style.padding = "5px 10px";
 
   const label = showClass
     ? `${sanitize(m.name)} · ${sanitize(m.class)}`
     : sanitize(m.name);
 
-  el.innerHTML = `
+  const body = document.createElement("div");
+  body.className = "collapsible-body";
+  body.innerHTML = `
     ${!isMe ? `<div class="msg-sender">${label}</div>` : ""}
-    ${sanitize(m.text)}
+    ${m.text ? sanitize(m.text) : ""}
+    ${buildImagesGrid(images, "msg-images")}
+    ${buildPdfCards(m.pdfs)}
     <div class="msg-time" style="${showTime ? "" : "display:none"}">${formatTime(m.time)}</div>
   `;
-  row.appendChild(el);
+
+  bubble.appendChild(body);
+  msgWrap.appendChild(bubble);
+  row.appendChild(msgWrap);
+
+  /* Check collapsible after paint */
+  requestAnimationFrame(() => makeCollapsible(body));
+
   return row;
 }
 
+let firstChatLoad = true;
 onSnapshot(chatQuery, snap => {
   const box        = document.getElementById("messages");
   const chatActive = document.getElementById("chat").classList.contains("active");
   const lastSeen   = parseInt(localStorage.getItem("lastSeenChat") || "0");
+
   if (!chatReady) { box.innerHTML = ""; chatReady = true; }
+
+  /* Find new messages for notification */
+  if (!firstChatLoad) {
+    snap.docChanges().forEach(change => {
+      if (change.type === "added") {
+        const m = change.doc.data();
+        const isMe = m.username === user.username;
+        if (!isMe && m.time > lastSeen && !chatActive) {
+          addNotification(
+            `رسالة من ${m.name}`,
+            m.text?.slice(0,60) || "📷 صورة"
+          );
+        }
+      }
+    });
+  }
+  firstChatLoad = false;
+
   box.innerHTML = "";
   let unread = 0;
   snap.forEach(d => {
@@ -774,7 +1165,7 @@ window.sendMsg = async () => {
       name:     user.name,
       username: user.username,
       class:    user.class,
-      pfp:      user.pfp,       // ← stored so avatar shows for others
+      pfp:      user.pfp,
       time:     Date.now()
     });
     input.value = "";
@@ -804,10 +1195,10 @@ onSnapshot(collection(db,"classes",user.class,"typing"), snap => {
     if (d.id !== user.username && now - d.data().ts < 4000)
       typers.push(sanitize(d.data().name));
   });
-  document.getElementById("typingIndicator").textContent =
-    typers.length === 0 ? "" :
-    typers.length === 1 ? `${typers[0]} يكتب...` :
-    `${typers.join("، ")} يكتبون...`;
+  const el = document.getElementById("typingIndicator");
+  if (!typers.length) { el.textContent = ""; return; }
+  el.innerHTML = `${typers.join("، ")} ${typers.length === 1 ? "يكتب" : "يكتبون"}
+    <span class="typing-dots"><span></span><span></span><span></span></span>`;
 });
 
 /* ── LOGOUT ── */
