@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#111827">
 <meta charset="UTF-8">
 <title>لوحة المدرس</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -300,7 +298,7 @@ input[type=text]:focus { border-color: var(--accent); }
 .btn-primary { background: var(--accent-btn); color: white; }
 .btn-primary:hover { background: var(--accent-btn-hover); }
 .btn-danger  { background: #ef4444; color: white; }
-.btn-danger:hover  { background: #dc2626; }
+.btn-danger:hover { background: #dc2626; }
 
 .hw-post {
   background: var(--surface);
@@ -326,16 +324,19 @@ input[type=text]:focus { border-color: var(--accent); }
 }
 .empty-icon { font-size: 42px; margin-bottom: 10px; }
 
+/* ── CHAT ── */
 .messages {
   flex: 1; overflow-y: auto;
   display: flex; flex-direction: column;
   gap: 3px; padding-bottom: 6px;
   min-height: 0;
 }
+
 .msg {
   max-width: 80%; padding: 9px 13px;
   word-break: break-word;
   font-size: var(--font-size); line-height: 1.5;
+  position: relative;
 }
 .msg.mine {
   background: var(--accent-btn);
@@ -349,6 +350,57 @@ input[type=text]:focus { border-color: var(--accent); }
 }
 .msg-sender { font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
 .msg-time   { font-size: 10px; color: #475569; margin-top: 3px; }
+.msg-edited { font-size: 10px; color: #475569; font-style: italic; }
+
+/* Image in chat */
+.msg-img {
+  max-width: 100%; border-radius: 8px;
+  margin-top: 6px; display: block; cursor: zoom-in;
+}
+
+/* Message action buttons (edit/delete) */
+.msg-actions {
+  display: flex; gap: 4px;
+  margin-top: 5px; justify-content: flex-end;
+  opacity: 0; transition: opacity 0.2s;
+}
+.msg:hover .msg-actions { opacity: 1; }
+.msg-action-btn {
+  background: rgba(0,0,0,0.25); border: none;
+  color: rgba(255,255,255,0.6); font-size: 11px;
+  cursor: pointer; padding: 2px 7px; border-radius: 6px;
+  transition: 0.2s; font-family: Arial;
+}
+.msg-action-btn:hover { background: rgba(0,0,0,0.45); color: white; }
+.msg-action-btn.del:hover { color: #f87171; }
+
+/* Inline edit input */
+.msg-edit-wrap {
+  display: none; margin-top: 4px; gap: 4px; flex-direction: column;
+}
+.msg-edit-wrap.open { display: flex; }
+.msg-edit-input {
+  width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--accent);
+  border-radius: 8px; color: white; padding: 6px 8px;
+  font-size: var(--font-size); font-family: Arial; outline: none;
+}
+.msg-edit-btns { display: flex; gap: 5px; }
+.msg-edit-save {
+  padding: 4px 12px; border-radius: 6px; border: none;
+  background: var(--accent-btn); color: white;
+  font-size: 12px; cursor: pointer; font-family: Arial;
+}
+.msg-edit-cancel {
+  padding: 4px 12px; border-radius: 6px; border: none;
+  background: #374151; color: #cbd5e1;
+  font-size: 12px; cursor: pointer; font-family: Arial;
+}
+
+/* Upload progress */
+.upload-bar {
+  height: 3px; background: var(--accent); border-radius: 2px;
+  width: 0%; transition: width 0.3s; margin-top: 4px;
+}
 
 .chat-date-sep {
   text-align: center; font-size: 11px; color: #475569;
@@ -368,7 +420,7 @@ input[type=text]:focus { border-color: var(--accent); }
 }
 .chat-input-bar {
   display: flex; gap: 8px;
-  padding-top: 8px; flex-shrink: 0;
+  padding-top: 8px; flex-shrink: 0; align-items: center;
 }
 .chat-input-bar input[type=text] {
   border-radius: 12px; padding: 11px 14px;
@@ -383,6 +435,31 @@ input[type=text]:focus { border-color: var(--accent); }
 }
 .send-btn:hover { background: var(--accent-btn-hover); }
 
+/* Attach button */
+.attach-btn {
+  width: 46px; height: 46px;
+  background: var(--surface); border: 1px solid #374151;
+  color: #6b7280; border-radius: 12px; cursor: pointer;
+  font-size: 20px; transition: 0.2s; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.attach-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Image lightbox */
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 500; display: none;
+  align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 95vw; max-height: 90vh;
+  border-radius: 10px; object-fit: contain;
+}
+
+/* ── SETTINGS ── */
 .settings-group {
   background: var(--surface); border-radius: 16px;
   margin-bottom: 14px; overflow: hidden;
@@ -407,8 +484,7 @@ input[type=text]:focus { border-color: var(--accent); }
 .setting-col label { font-size: 12px; color: #94a3b8; }
 .setting-col input[type=text] {
   width: 100%; padding: 9px 12px; font-size: 13px;
-  border-radius: 8px; background: #0f172a;
-  border: 1px solid #334155;
+  border-radius: 8px; background: #0f172a; border: 1px solid #334155;
 }
 
 .swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -512,11 +588,11 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- PROFILE DROPDOWN -->
+<!-- PROFILE -->
 <div class="profile" id="profile">
   <div class="profile-header">
-    <img class="profile-avatar" id="profileAvatar" src="placeholder.png" alt="pfp"
-         onerror="this.src='placeholder.png'">
+    <img class="profile-avatar" id="profileAvatar" src="placeholder.png"
+         onerror="this.src='placeholder.png'" alt="pfp">
     <div>
       <div class="profile-name" id="pName"></div>
       <div class="profile-user" id="pUser"></div>
@@ -567,13 +643,15 @@ input:checked + .slider:before { transform: translateX(20px); }
   <div class="typing-indicator" id="typingIndicator"></div>
   <div class="chat-input-bar">
     <input type="text" id="msgInput" placeholder="رسالة للمدرسين...">
+    <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="إرسال صورة أو ملف">📎</button>
+    <input type="file" id="fileInput" accept="image/*,application/pdf" style="display:none">
     <button class="send-btn" onclick="window.sendMsg()">➤</button>
   </div>
+  <div class="upload-bar" id="uploadBar"></div>
 </div>
 
 <!-- SETTINGS -->
 <div id="settings" class="section">
-
   <div class="settings-group">
     <div class="settings-group-title">👤 الملف الشخصي</div>
     <div class="setting-row">
@@ -619,12 +697,9 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div class="setting-row">
       <span>السمة</span>
       <div class="btn-group">
-        <button class="opt-btn selected"
-                data-bg="#0f172a" data-surface="#1f2937" data-surface2="#111827">داكن</button>
-        <button class="opt-btn"
-                data-bg="#020617" data-surface="#0f172a" data-surface2="#080f1a">أكثر داكنة</button>
-        <button class="opt-btn"
-                data-bg="#1a1a2e" data-surface="#16213e" data-surface2="#0f172a">أزرق</button>
+        <button class="opt-btn selected" data-bg="#0f172a" data-surface="#1f2937" data-surface2="#111827">داكن</button>
+        <button class="opt-btn" data-bg="#020617" data-surface="#0f172a" data-surface2="#080f1a">أكثر داكنة</button>
+        <button class="opt-btn" data-bg="#1a1a2e" data-surface="#16213e" data-surface2="#0f172a">أزرق</button>
       </div>
     </div>
   </div>
@@ -685,6 +760,11 @@ input:checked + .slider:before { transform: translateX(20px); }
   <div class="class-panel" id="classPanel"></div>
 </div>
 
+<!-- IMAGE LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal">
@@ -723,16 +803,21 @@ import {
   doc, setDoc, updateDoc, getDoc, onSnapshot,
   query, orderBy, where, serverTimestamp, limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getStorage, ref as storageRef,
+  uploadBytesResumable, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const app = initializeApp({
   apiKey:            "AIzaSyD3vUPTVJoa3-CUvscE9rq4gGOg-SAko2k",
   authDomain:        "qayrawan-school-system.firebaseapp.com",
   projectId:         "qayrawan-school-system",
-  storageBucket:     "qayrawan-school-system.firebasestorage.app",
+  storageBucket:     "qayrawan-school-system.appspot.com",
   messagingSenderId: "785321248181",
   appId:             "1:785321248181:web:643e6d29cdca556218c5fc"
 });
-const db = getFirestore(app);
+const db      = getFirestore(app);
+const storage = getStorage(app);
 
 /* ── AUTH ── */
 const raw = JSON.parse(localStorage.getItem("user"));
@@ -785,7 +870,7 @@ function confirmAction(title, msg, cb) {
   document.getElementById("modalConfirmBtn").onclick = () => { cb(); window.closeModal(); };
 }
 
-/* ── GREETING + DATE ── */
+/* ── GREETING ── */
 function getGreeting(name) {
   const h = new Date().getHours();
   if (h >= 5  && h < 12) return `☀️ صباح الخير أستاذ ${name}`;
@@ -796,62 +881,40 @@ function getGreeting(name) {
 document.getElementById("homeGreeting").textContent = getGreeting(user.name);
 document.getElementById("homeDate").textContent =
   new Date().toLocaleDateString("ar-IQ", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric"
+    weekday:"long", year:"numeric", month:"long", day:"numeric"
   });
 
-/* ── FETCH TEACHER DATA FROM FIRESTORE IF MISSING ── */
+/* ── FETCH TEACHER DATA IF MISSING ── */
 async function ensureTeacherData() {
-  /* If both arrays already have data we're good */
   if (user.classes.length > 0 && user.subjects.length > 0) {
-    updateStatsUI();
-    buildClassList();
-    return;
+    updateStatsUI(); buildClassList(); return;
   }
-
   try {
     let data = null;
-
     if (teacherDocId) {
       const snap = await getDoc(doc(db, "users", teacherDocId));
       if (snap.exists()) data = snap.data();
     }
-
-    /* Fallback: query by username */
     if (!data) {
       const snap = await getDocs(
         query(collection(db, "users"), where("username", "==", user.username))
       );
-      if (!snap.empty) {
-        teacherDocId  = snap.docs[0].id;
-        data          = snap.docs[0].data();
-      }
+      if (!snap.empty) { teacherDocId = snap.docs[0].id; data = snap.docs[0].data(); }
     }
-
     if (data) {
       user.classes  = Array.isArray(data.classes)  ? data.classes  : [];
       user.subjects = Array.isArray(data.subjects) ? data.subjects : [];
-
-      /* Persist so next session is instant */
       const cur = JSON.parse(localStorage.getItem("user"));
-      cur.classes  = user.classes;
-      cur.subjects = user.subjects;
-      cur.docId    = teacherDocId;
+      cur.classes = user.classes; cur.subjects = user.subjects; cur.docId = teacherDocId;
       localStorage.setItem("user", JSON.stringify(cur));
     }
-  } catch (e) {
-    console.error("ensureTeacherData:", e);
-  }
-
-  updateStatsUI();
-  buildClassList();
+  } catch(e) { console.error(e); }
+  updateStatsUI(); buildClassList();
 }
-
 function updateStatsUI() {
   document.getElementById("statClasses").textContent  = user.classes.length  || "0";
   document.getElementById("statSubjects").textContent = user.subjects.length || "0";
 }
-
-/* Show immediate counts from localStorage, then correct after fetch */
 updateStatsUI();
 ensureTeacherData();
 
@@ -862,15 +925,13 @@ function refreshProfileUI() {
   document.getElementById("pfpBox").innerHTML =
     `<img src="${sanitize(pfp||"placeholder.png")}" onerror="this.src='placeholder.png'" alt="pfp">`;
   document.getElementById("profileAvatar").src = pfp || "placeholder.png";
-  document.getElementById("pName").textContent  = cur.displayName || user.name;
-  document.getElementById("pUser").textContent  = `@${user.username}`;
-
-  const sBox   = document.getElementById("profileSubjects");
-  const shown  = user.subjects.slice(0, 6);
-  sBox.innerHTML = shown.map(s => `<span class="profile-sub-tag">${sanitize(s)}</span>`).join("")
+  document.getElementById("pName").textContent = cur.displayName || user.name;
+  document.getElementById("pUser").textContent = `@${user.username}`;
+  const sBox = document.getElementById("profileSubjects");
+  sBox.innerHTML = user.subjects.slice(0,6).map(s =>
+    `<span class="profile-sub-tag">${sanitize(s)}</span>`).join("")
     + (user.subjects.length > 6
-      ? `<span class="profile-sub-tag">+${user.subjects.length - 6}</span>`
-      : "");
+      ? `<span class="profile-sub-tag">+${user.subjects.length-6}</span>` : "");
 }
 refreshProfileUI();
 
@@ -883,9 +944,8 @@ document.addEventListener("click", e => {
     document.getElementById("profile").style.display = "none";
 });
 
-/* ── SETTINGS PREFS ── */
+/* ── PREFS ── */
 const prefs = JSON.parse(localStorage.getItem("teacherPrefs") || "{}");
-
 function applyPrefs() {
   const r = document.documentElement;
   r.style.setProperty("--accent",           prefs.accent         || "#4ade80");
@@ -896,18 +956,16 @@ function applyPrefs() {
   r.style.setProperty("--bg",               prefs.bg             || "#0f172a");
   r.style.setProperty("--surface",          prefs.surface        || "#1f2937");
   r.style.setProperty("--surface2",         prefs.surface2       || "#111827");
-
   document.getElementById("toggleTimestamps").checked = prefs.timestamps !== false;
   document.getElementById("toggleCompact").checked    = !!prefs.compact;
-
   document.querySelectorAll(".swatch").forEach(s =>
-    s.classList.toggle("selected", s.dataset.accent === (prefs.accent || "#4ade80")));
+    s.classList.toggle("selected", s.dataset.accent === (prefs.accent||"#4ade80")));
   document.querySelectorAll("button[data-size]").forEach(b =>
-    b.classList.toggle("selected", b.dataset.size === (prefs.fontSize || "14px")));
+    b.classList.toggle("selected", b.dataset.size === (prefs.fontSize||"14px")));
   document.querySelectorAll("button[data-radius]").forEach(b =>
-    b.classList.toggle("selected", b.dataset.radius === (prefs.bubbleRadius || "14px")));
+    b.classList.toggle("selected", b.dataset.radius === (prefs.bubbleRadius||"14px")));
   document.querySelectorAll("button[data-bg]").forEach(b =>
-    b.classList.toggle("selected", b.dataset.bg === (prefs.bg || "#0f172a")));
+    b.classList.toggle("selected", b.dataset.bg === (prefs.bg||"#0f172a")));
 }
 applyPrefs();
 
@@ -960,26 +1018,18 @@ window.saveProfile = async () => {
   const newName = document.getElementById("settingsName").value.trim();
   const newPass = document.getElementById("settingsPassword").value.trim();
   const newPfp  = document.getElementById("settingsPfp").value.trim();
-
   if (!newName) { toast("⚠️ الاسم لا يمكن أن يكون فارغاً"); return; }
-
   if (!teacherDocId) {
-    const snap = await getDocs(
-      query(collection(db, "users"), where("username", "==", user.username))
-    );
+    const snap = await getDocs(query(collection(db,"users"), where("username","==",user.username)));
     if (!snap.empty) teacherDocId = snap.docs[0].id;
   }
   if (!teacherDocId) { toast("❌ تعذّر العثور على حسابك"); return; }
-
   const updates = { displayName: newName, pfp: newPfp };
   if (newPass) updates.password = newPass;
-
-  await updateDoc(doc(db, "users", teacherDocId), updates);
-
+  await updateDoc(doc(db,"users",teacherDocId), updates);
   const cur = JSON.parse(localStorage.getItem("user"));
   Object.assign(cur, updates);
   localStorage.setItem("user", JSON.stringify(cur));
-
   user.name = newName; user.pfp = newPfp;
   document.getElementById("homeGreeting").textContent = getGreeting(newName);
   refreshProfileUI();
@@ -992,7 +1042,6 @@ window.openSection = (id) => {
   document.getElementById(id).classList.add("active");
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
   document.getElementById(`nav-${id}`)?.classList.add("active");
-
   if (id === "chat") {
     localStorage.setItem("lastSeenChat", Date.now());
     updateBadge("chatBadge", 0);
@@ -1006,13 +1055,10 @@ window.openSection = (id) => {
 
 /* ── ANNOUNCEMENTS ── */
 const lastSeenAnn = parseInt(localStorage.getItem("lastSeenAnn") || "0");
-
-onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap => {
+onSnapshot(query(collection(db,"announcements"), orderBy("time","desc")), snap => {
   const box   = document.getElementById("announcementsList");
-  const items = snap.docs
-    .map(d => ({ id: d.id, ...d.data() }))
+  const items = snap.docs.map(d => ({id:d.id,...d.data()}))
     .filter(m => !m.target || m.target === "" || m.target === "__teachers__");
-
   if (items.length === 0) {
     box.innerHTML = `<div style="color:#475569;font-size:13px;text-align:center;padding:20px 0">لا توجد إعلانات حالياً</div>`;
     return;
@@ -1020,13 +1066,13 @@ onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap
   box.innerHTML = "";
   items.forEach(m => {
     const isNew = m.time > lastSeenAnn;
-    const el    = document.createElement("div");
+    const el = document.createElement("div");
     el.className = "announcement fade-in";
     el.innerHTML = `
       ${isNew ? `<span class="ann-new">جديد</span>` : ""}
       ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
       ${sanitize(m.text)}
-      <div class="ann-meta">📌 ${sanitize(m.author || "الإدارة")} · ${formatTime(m.time)}</div>
+      <div class="ann-meta">📌 ${sanitize(m.author||"الإدارة")} · ${formatTime(m.time)}</div>
     `;
     box.appendChild(el);
   });
@@ -1036,23 +1082,14 @@ onSnapshot(query(collection(db, "announcements"), orderBy("time", "desc")), snap
 /* ── CLASS LIST ── */
 function getClassIcon(cls) {
   const n = parseInt(cls);
-  if (n <= 8)  return "🌱";
-  if (n <= 10) return "📗";
-  return "🎓";
+  if (n <= 8) return "🌱"; if (n <= 10) return "📗"; return "🎓";
 }
-
 function buildClassList() {
   const list = document.getElementById("classList");
-
   if (user.classes.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🏫</div>
-        لا توجد صفوف مسندة إليك
-      </div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🏫</div>لا توجد صفوف مسندة إليك</div>`;
     return;
   }
-
   list.innerHTML = "";
   user.classes.forEach(cls => {
     const el = document.createElement("div");
@@ -1079,18 +1116,15 @@ window.openClass = (cls) => {
   activeClass = cls;
   document.getElementById("classScreenTitle").textContent = `الصف ${cls}`;
   document.getElementById("classScreen").classList.add("open");
-
   const subOpts = user.subjects.map(s =>
     `<option value="${sanitize(s)}">${sanitize(s)}</option>`).join("");
-
   document.getElementById("classPanel").innerHTML = `
     <div class="post-card">
       <div class="post-card-title">📤 نشر واجب جديد</div>
       <div class="field">
         <label>المادة</label>
         <select id="csSubject">
-          <option value="">— اختر المادة —</option>
-          ${subOpts}
+          <option value="">— اختر المادة —</option>${subOpts}
         </select>
       </div>
       <div class="field">
@@ -1112,7 +1146,6 @@ window.openClass = (cls) => {
       <div class="skeleton" style="height:52px;width:80%"></div>
     </div>
   `;
-
   loadClassHw(cls);
 };
 
@@ -1123,14 +1156,10 @@ window.closeClass = () => {
 
 async function loadClassHw(cls) {
   const allItems = [];
-
   for (const sub of user.subjects) {
     try {
       const snap = await getDocs(
-        query(
-          collection(db, "classes", cls, "homework", sub, "messages"),
-          orderBy("time", "desc")
-        )
+        query(collection(db,"classes",cls,"homework",sub,"messages"), orderBy("time","desc"))
       );
       snap.forEach(d => {
         const m = d.data();
@@ -1139,22 +1168,14 @@ async function loadClassHw(cls) {
       });
     } catch {}
   }
-
-  allItems.sort((a, b) => b.time - a.time);
-
+  allItems.sort((a,b) => b.time - a.time);
   const box = document.getElementById("csHwList");
   if (!box) return;
   box.innerHTML = "";
-
   if (allItems.length === 0) {
-    box.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        لم تنشر أي واجب لهذا الصف بعد
-      </div>`;
+    box.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>لم تنشر أي واجب لهذا الصف بعد</div>`;
     return;
   }
-
   allItems.forEach(m => {
     const el = document.createElement("div");
     el.className = "hw-post fade-in";
@@ -1164,11 +1185,8 @@ async function loadClassHw(cls) {
       ${m.due ? `<div class="hw-due">⏳ ${sanitize(m.due)}</div>` : ""}
       <div class="hw-meta">🕐 ${formatTime(m.time)}</div>
       <div class="hw-actions">
-        <button class="btn btn-danger"
-                style="width:auto;padding:5px 12px;font-size:12px"
-                onclick="window.deleteHw('${cls}','${m.sub}','${m.id}')">
-          🗑️ حذف
-        </button>
+        <button class="btn btn-danger" style="width:auto;padding:5px 12px;font-size:12px"
+                onclick="window.deleteHw('${cls}','${m.sub}','${m.id}')">🗑️ حذف</button>
       </div>
     `;
     box.appendChild(el);
@@ -1179,16 +1197,11 @@ window.postHw = async (cls) => {
   const sub  = document.getElementById("csSubject").value;
   const text = document.getElementById("csText").value.trim();
   const due  = document.getElementById("csDue").value.trim();
-
   if (!sub || !text) { toast("⚠️ اختر المادة واكتب الواجب"); return; }
   if (!user.classes.includes(cls))  { toast("⛔ هذا الصف غير مسند إليك");   return; }
   if (!user.subjects.includes(sub)) { toast("⛔ هذه المادة غير مسندة إليك"); return; }
-
-  await addDoc(
-    collection(db, "classes", cls, "homework", sub, "messages"),
-    { text, due: due || null, author: user.name, time: Date.now() }
-  );
-
+  await addDoc(collection(db,"classes",cls,"homework",sub,"messages"),
+    { text, due: due||null, author: user.name, time: Date.now() });
   document.getElementById("csText").value    = "";
   document.getElementById("csDue").value     = "";
   document.getElementById("csSubject").value = "";
@@ -1198,19 +1211,78 @@ window.postHw = async (cls) => {
 
 window.deleteHw = (cls, sub, id) => {
   confirmAction("حذف الواجب", "هل تريد حذف هذا الواجب؟", async () => {
-    await deleteDoc(doc(db, "classes", cls, "homework", sub, "messages", id));
-    toast("🗑️ تم حذف الواجب");
-    loadClassHw(cls);
+    await deleteDoc(doc(db,"classes",cls,"homework",sub,"messages",id));
+    toast("🗑️ تم حذف الواجب"); loadClassHw(cls);
   });
 };
 
-/* ── TEACHER CHAT ── */
+/* ══════════════════════════════════════════
+   CHAT — with send, attachment, edit, delete
+══════════════════════════════════════════ */
 let chatReady   = false;
 let lastChatDay = null;
 let typingTimer;
 
+function buildMsgEl(d) {
+  const m    = d.data();
+  const id   = d.id;
+  const isMe = m.authorId === user.username;
+  const ts   = m.time?.toDate ? m.time.toDate() : new Date(m.time || 0);
+
+  const el = document.createElement("div");
+  el.className = `msg fade-in ${isMe ? "mine" : "theirs"}`;
+  el.dataset.id = id;
+  if (prefs.compact) el.style.padding = "5px 10px";
+
+  /* sender label (others only) */
+  const senderHtml = !isMe
+    ? `<div class="msg-sender">${sanitize(m.author)}</div>` : "";
+
+  /* text content */
+  const textHtml = m.text
+    ? `<div class="msg-text">${sanitize(m.text)}${m.edited ? ' <span class="msg-edited">(تم التعديل)</span>' : ""}</div>`
+    : "";
+
+  /* image attachment */
+  const imgHtml = m.imageUrl
+    ? `<img class="msg-img" src="${sanitize(m.imageUrl)}" alt="صورة"
+            onclick="window.openLightbox('${sanitize(m.imageUrl)}')">`
+    : "";
+
+  /* file attachment (non-image) */
+  const fileHtml = m.fileUrl && !m.imageUrl
+    ? `<a href="${sanitize(m.fileUrl)}" target="_blank"
+          style="color:var(--accent);font-size:12px;display:block;margin-top:5px">
+         📎 ${sanitize(m.fileName || "ملف مرفق")}
+       </a>`
+    : "";
+
+  /* timestamp */
+  const timeHtml = `<div class="msg-time"
+    style="${prefs.timestamps === false ? "display:none" : ""}">${formatTime(m.time)}</div>`;
+
+  /* edit / delete — only for own messages */
+  const actionsHtml = isMe ? `
+    <div class="msg-actions">
+      <button class="msg-action-btn" onclick="window.startEdit('${id}')">✏️ تعديل</button>
+      <button class="msg-action-btn del" onclick="window.deleteMsg('${id}')">🗑️ حذف</button>
+    </div>
+    <div class="msg-edit-wrap" id="editWrap-${id}">
+      <input class="msg-edit-input" id="editInput-${id}"
+             value="${sanitize(m.text||"")}" placeholder="عدّل رسالتك...">
+      <div class="msg-edit-btns">
+        <button class="msg-edit-save"   onclick="window.saveEdit('${id}')">حفظ</button>
+        <button class="msg-edit-cancel" onclick="window.cancelEdit('${id}')">إلغاء</button>
+      </div>
+    </div>
+  ` : "";
+
+  el.innerHTML = senderHtml + textHtml + imgHtml + fileHtml + timeHtml + actionsHtml;
+  return el;
+}
+
 onSnapshot(
-  query(collection(db, "teacherChat"), orderBy("time", "asc"), limit(200)),
+  query(collection(db,"teacherChat"), orderBy("time","asc"), limit(200)),
   snap => {
     const box        = document.getElementById("messages");
     const chatActive = document.getElementById("chat").classList.contains("active");
@@ -1238,18 +1310,7 @@ onSnapshot(
       const msec = m.time?.seconds ? m.time.seconds * 1000 : (m.time || 0);
       if (!chatActive && !isMe && msec > lastSeen) unread++;
 
-      const el = document.createElement("div");
-      el.className = `msg fade-in ${isMe ? "mine" : "theirs"}`;
-      if (prefs.compact) el.style.padding = "5px 10px";
-      el.innerHTML = `
-        ${!isMe ? `<div class="msg-sender">${sanitize(m.author)}</div>` : ""}
-        ${sanitize(m.text)}
-        <div class="msg-time"
-             style="${prefs.timestamps === false ? "display:none" : ""}">
-          ${formatTime(m.time)}
-        </div>
-      `;
-      box.appendChild(el);
+      box.appendChild(buildMsgEl(d));
     });
 
     if (!chatActive && unread > 0) updateBadge("chatBadge", unread);
@@ -1257,19 +1318,18 @@ onSnapshot(
   }
 );
 
+/* ── SEND TEXT ── */
 window.sendMsg = async () => {
   const input = document.getElementById("msgInput");
   const text  = input.value.trim();
   if (!text) return;
   input.value = "";
   clearTimeout(typingTimer);
-  try { await deleteDoc(doc(db, "teacherTyping", user.username)); } catch {}
+  try { await deleteDoc(doc(db,"teacherTyping",user.username)); } catch {}
   try {
-    await addDoc(collection(db, "teacherChat"), {
-      text,
-      author:   user.name,
-      authorId: user.username,
-      time:     serverTimestamp()
+    await addDoc(collection(db,"teacherChat"), {
+      text, author: user.name, authorId: user.username,
+      time: serverTimestamp()
     });
   } catch { toast("⚠️ فشل إرسال الرسالة"); }
 };
@@ -1278,19 +1338,107 @@ document.getElementById("msgInput").addEventListener("keydown", e => {
   if (e.key === "Enter") window.sendMsg();
 });
 
+/* ── SEND FILE / IMAGE ── */
+document.getElementById("fileInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const isImage = file.type.startsWith("image/");
+  const bar     = document.getElementById("uploadBar");
+  bar.style.width = "0%";
+
+  toast("⏳ جاري الرفع...");
+
+  try {
+    const path    = `teacherChat/${Date.now()}_${file.name}`;
+    const sRef    = storageRef(storage, path);
+    const task    = uploadBytesResumable(sRef, file);
+
+    task.on("state_changed", snap => {
+      const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
+      bar.style.width = pct + "%";
+    });
+
+    await task;
+    const url = await getDownloadURL(sRef);
+    bar.style.width = "0%";
+
+    const msgData = {
+      author:   user.name,
+      authorId: user.username,
+      time:     serverTimestamp(),
+      text:     "",
+    };
+
+    if (isImage) {
+      msgData.imageUrl = url;
+    } else {
+      msgData.fileUrl  = url;
+      msgData.fileName = file.name;
+    }
+
+    await addDoc(collection(db,"teacherChat"), msgData);
+    toast("✅ تم الإرسال");
+  } catch(err) {
+    console.error(err);
+    bar.style.width = "0%";
+    toast("❌ فشل الرفع");
+  }
+
+  e.target.value = ""; // reset so same file can be re-selected
+});
+
+/* ── LIGHTBOX ── */
+window.openLightbox = (url) => {
+  document.getElementById("lightboxImg").src = url;
+  document.getElementById("lightbox").classList.add("open");
+};
+
+/* ── DELETE MESSAGE ── */
+window.deleteMsg = (id) => {
+  confirmAction("حذف الرسالة", "هل تريد حذف هذه الرسالة؟", async () => {
+    try {
+      await deleteDoc(doc(db,"teacherChat",id));
+    } catch { toast("❌ فشل الحذف"); }
+  });
+};
+
+/* ── EDIT MESSAGE ── */
+window.startEdit = (id) => {
+  const wrap = document.getElementById(`editWrap-${id}`);
+  if (!wrap) return;
+  wrap.classList.add("open");
+  document.getElementById(`editInput-${id}`)?.focus();
+};
+
+window.cancelEdit = (id) => {
+  document.getElementById(`editWrap-${id}`)?.classList.remove("open");
+};
+
+window.saveEdit = async (id) => {
+  const input   = document.getElementById(`editInput-${id}`);
+  const newText = input?.value.trim();
+  if (!newText) { toast("⚠️ الرسالة لا يمكن أن تكون فارغة"); return; }
+  try {
+    await updateDoc(doc(db,"teacherChat",id), { text: newText, edited: true });
+    document.getElementById(`editWrap-${id}`)?.classList.remove("open");
+  } catch { toast("❌ فشل التعديل"); }
+};
+
+/* ── TYPING ── */
 document.getElementById("msgInput").addEventListener("input", async () => {
   try {
-    await setDoc(doc(db, "teacherTyping", user.username),
+    await setDoc(doc(db,"teacherTyping",user.username),
       { name: user.name, ts: Date.now() });
   } catch {}
   clearTimeout(typingTimer);
   typingTimer = setTimeout(async () => {
-    try { await deleteDoc(doc(db, "teacherTyping", user.username)); } catch {}
+    try { await deleteDoc(doc(db,"teacherTyping",user.username)); } catch {}
   }, 2500);
 });
 
-onSnapshot(collection(db, "teacherTyping"), snap => {
-  const now    = Date.now();
+onSnapshot(collection(db,"teacherTyping"), snap => {
+  const now = Date.now();
   const typers = [];
   snap.forEach(d => {
     if (d.id !== user.username && now - d.data().ts < 4000)
@@ -1303,10 +1451,7 @@ onSnapshot(collection(db, "teacherTyping"), snap => {
 });
 
 /* ── LOGOUT ── */
-window.logout = () => {
-  localStorage.removeItem("user");
-  location.href = "index.html";
-};
+window.logout = () => { localStorage.removeItem("user"); location.href = "index.html"; };
 </script>
 </body>
 </html>
