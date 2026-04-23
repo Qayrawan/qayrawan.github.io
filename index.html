@@ -99,6 +99,22 @@ const app = initializeApp({
   appId:             "1:785321248181:web:643e6d29cdca556218c5fc"
 });
 const db = getFirestore(app);
+  // Auto-login if user already exists
+const savedUser = localStorage.getItem("user");
+
+if (savedUser) {
+  try {
+    const u = JSON.parse(savedUser);
+
+    if (u.role === "admin") {
+      location.href = "admin.html";
+    } else if (u.role === "teacher") {
+      location.href = "teacher.html";
+    } else {
+      location.href = "student.html";
+    }
+  } catch {}
+}
 
 function showError(msg) {
   const el = document.getElementById("errorMsg");
