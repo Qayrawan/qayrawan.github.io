@@ -4,14 +4,21 @@
 <meta charset="UTF-8">
 <title>لوحة الطالب</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --accent: #38bdf8; --accent-btn: #2563eb; --accent-btn-hover: #1d4ed8;
   --font-size: 14px; --bubble-radius: 14px;
   --bg: #0f172a; --surface: #1f2937; --surface2: #111827;
+  --chat-bg: transparent; --anim: 0.2s;
 }
-body { font-family: Arial, sans-serif; background: var(--bg); color: white; overflow-x: hidden; }
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg); color: white;
+  overflow-x: hidden;
+  transition: background var(--anim);
+}
 
 /* ── TOPBAR ── */
 .topbar {
@@ -21,7 +28,7 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   position: fixed; top: 0; left: 0; right: 0; z-index: 50; gap: 10px;
 }
 .title { font-weight: bold; font-size: 16px; flex: 1; }
-.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
 
 .notif-btn {
   width: 36px; height: 36px; border-radius: 50%;
@@ -35,7 +42,7 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   position: absolute; top: 4px; right: 4px;
   width: 8px; height: 8px; border-radius: 50%;
   background: #ef4444; display: none;
-  border: 1px solid var(--surface2);
+  border: 1.5px solid var(--surface2);
 }
 .notif-dot.show { display: block; }
 
@@ -48,39 +55,43 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
 .pfp img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ── NOTIFICATION PANEL ── */
+.notif-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 140; display: none;
+}
+.notif-overlay.open { display: block; }
 .notif-panel {
   position: fixed; top: 0; right: -100%; width: 88%; max-width: 340px;
   height: 100%; background: var(--surface2); z-index: 150;
   transition: right 0.3s cubic-bezier(.4,0,.2,1);
   display: flex; flex-direction: column;
-  box-shadow: -8px 0 32px rgba(0,0,0,0.4);
+  box-shadow: -6px 0 24px rgba(0,0,0,0.5);
 }
 .notif-panel.open { right: 0; }
-.notif-panel-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  z-index: 140; display: none;
-}
-.notif-panel-overlay.open { display: block; }
 .notif-panel-header {
   height: 60px; display: flex; align-items: center;
   justify-content: space-between; padding: 0 16px;
   border-bottom: 1px solid #1f2937; flex-shrink: 0;
 }
-.notif-panel-title { font-weight: bold; font-size: 16px; }
-.notif-close-btn {
+.notif-panel-title { font-weight: bold; font-size: 15px; }
+.notif-clear {
   background: none; border: none; color: #6b7280;
-  font-size: 22px; cursor: pointer; line-height: 1;
+  font-size: 12px; cursor: pointer; font-family: Arial;
+}
+.notif-close {
+  background: none; border: none; color: #6b7280;
+  font-size: 22px; cursor: pointer; line-height: 1; margin-right: 8px;
 }
 .notif-list { flex: 1; overflow-y: auto; padding: 10px; }
 .notif-item {
-  background: var(--surface); border-radius: 12px;
-  padding: 12px 14px; margin-bottom: 8px;
-  border-right: 3px solid var(--accent);
-  font-size: 13px; line-height: 1.5;
-  animation: fadeIn 0.2s ease;
+  background: var(--surface); border-radius: 12px; padding: 12px 14px;
+  margin-bottom: 8px; border-right: 3px solid var(--accent);
+  font-size: 13px; line-height: 1.5; cursor: pointer;
+  transition: background 0.15s; animation: fadeIn var(--anim) ease;
 }
-.notif-item.unread { background: #1e3a5f22; border-color: var(--accent); }
-.notif-item-title { font-weight: bold; margin-bottom: 3px; }
+.notif-item:hover { background: #263244; }
+.notif-item.unread { border-color: #ef4444; }
+.notif-item-title { font-weight: bold; margin-bottom: 2px; }
 .notif-item-body  { color: #94a3b8; font-size: 12px; }
 .notif-item-time  { color: #475569; font-size: 11px; margin-top: 4px; }
 .notif-empty { text-align: center; color: #475569; padding: 40px 0; font-size: 13px; }
@@ -91,15 +102,33 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   background: #1e293b; border: 1px solid #334155;
   border-radius: 16px; display: none; z-index: 200;
   min-width: 220px; box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-  overflow: hidden; animation: fadeDown 0.15s ease;
+  overflow: hidden; animation: fadeDown var(--anim) ease;
 }
-@keyframes fadeDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-.profile-header { display: flex; align-items: center; gap: 12px; padding: 16px; background: #0f172a; border-bottom: 1px solid #334155; }
-.profile-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); flex-shrink: 0; }
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.profile-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px; background: #0f172a; border-bottom: 1px solid #334155;
+}
+.profile-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  object-fit: cover; border: 2px solid var(--accent); flex-shrink: 0;
+}
 .profile-name  { font-size: 14px; font-weight: bold; }
 .profile-user  { color: #94a3b8; font-size: 12px; margin-top: 2px; }
-.profile-class { color: var(--accent); font-size: 11px; font-weight: bold; background: #1e3a5f; display: inline-block; padding: 2px 8px; border-radius: 20px; margin-top: 5px; }
-.profile-logout { background: none; border: none; color: #ef4444; padding: 13px 16px; cursor: pointer; width: 100%; text-align: right; font-size: 13px; font-family: Arial; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+.profile-class {
+  color: var(--accent); font-size: 11px; font-weight: bold;
+  background: #1e3a5f; display: inline-block;
+  padding: 2px 8px; border-radius: 20px; margin-top: 5px;
+}
+.profile-logout {
+  background: none; border: none; color: #ef4444;
+  padding: 13px 16px; cursor: pointer; width: 100%;
+  text-align: right; font-size: 13px; font-family: Arial;
+  display: flex; align-items: center; gap: 8px; transition: background 0.2s;
+}
 .profile-logout:hover { background: #1f2937; }
 
 /* ── BOTTOM NAV ── */
@@ -133,7 +162,11 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   -webkit-overflow-scrolling: touch;
 }
 .section.active { display: block; }
-#chat { display: none; flex-direction: column; overflow: hidden; padding: 12px; }
+#chat {
+  display: none; flex-direction: column;
+  overflow: hidden; padding: 12px;
+  background: var(--chat-bg);
+}
 #chat.active { display: flex; }
 
 /* ── HOME ── */
@@ -144,11 +177,16 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
 }
 .home-card::before {
   content: ""; position: absolute; top: -30px; left: -30px;
-  width: 130px; height: 130px; background: var(--accent); opacity: 0.05; border-radius: 50%;
+  width: 130px; height: 130px;
+  background: var(--accent); opacity: 0.05; border-radius: 50%;
 }
 .home-card h3   { font-size: 19px; margin-bottom: 3px; }
 .home-card .sub { color: #9ca3af; font-size: 12px; margin-bottom: 10px; }
-.home-date { font-size: 11px; color: #475569; background: #0f172a; display: inline-block; padding: 3px 10px; border-radius: 20px; }
+.home-date {
+  font-size: 11px; color: #475569;
+  background: #0f172a; display: inline-block;
+  padding: 3px 10px; border-radius: 20px;
+}
 
 .section-label {
   font-size: 11px; color: #6b7280;
@@ -161,21 +199,72 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
 .announcement {
   background: var(--surface); border-right: 3px solid var(--accent);
   border-radius: 0 14px 14px 0; padding: 14px 16px;
-  margin-bottom: 10px; line-height: 1.6; animation: fadeIn 0.2s ease;
-  position: relative; font-size: var(--font-size);
+  margin-bottom: 10px; line-height: 1.6;
+  animation: fadeIn var(--anim) ease; position: relative;
+  font-size: var(--font-size);
 }
 .ann-title { font-weight: bold; color: var(--accent); font-size: 14px; margin-bottom: 5px; }
 .ann-meta  { font-size: 11px; color: #475569; margin-top: 8px; }
-.ann-new   { position: absolute; top: 12px; left: 12px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 1px 7px; border-radius: 20px; }
+.ann-new {
+  position: absolute; top: 12px; left: 12px;
+  background: #ef4444; color: white; font-size: 10px; font-weight: bold;
+  padding: 1px 7px; border-radius: 20px;
+}
 
-/* Announcement images grid */
-.ann-images { display: grid; gap: 4px; margin-top: 8px; }
-.ann-images.c1 { grid-template-columns: 1fr; }
-.ann-images.c2 { grid-template-columns: 1fr 1fr; }
-.ann-images.c3 { grid-template-columns: 1fr 1fr; }
-.ann-images.c3 img:first-child { grid-column: span 2; }
-.ann-images.c4 { grid-template-columns: 1fr 1fr; }
-.ann-images img { width: 100%; border-radius: 8px; cursor: zoom-in; aspect-ratio: 4/3; object-fit: cover; }
+/* ── IMAGE GRIDS ── */
+.img-grid { display: grid; gap: 4px; margin-top: 8px; border-radius: 10px; overflow: hidden; }
+.img-grid.c1 { grid-template-columns: 1fr; }
+.img-grid.c2 { grid-template-columns: 1fr 1fr; }
+.img-grid.c3 img:first-child { grid-column: span 2; }
+.img-grid.c3,.img-grid.c4 { grid-template-columns: 1fr 1fr; }
+.img-grid img {
+  width: 100%; aspect-ratio: 4/3; object-fit: cover;
+  cursor: zoom-in; display: block;
+  transition: opacity 0.2s;
+}
+.img-grid img:hover { opacity: 0.9; }
+.img-more {
+  position: relative; background: #0f172a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: bold; color: white;
+  aspect-ratio: 4/3;
+}
+.img-more img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
+.img-more span { position: relative; z-index: 1; }
+
+/* ── PDF CARD ── */
+.pdf-card {
+  display: flex; align-items: center; gap: 10px;
+  background: #0f172a; border: 1px solid #334155;
+  border-radius: 10px; padding: 10px 14px; margin-top: 8px;
+  text-decoration: none; color: white; transition: border-color 0.2s;
+}
+.pdf-card:hover { border-color: var(--accent); }
+.pdf-icon { font-size: 26px; flex-shrink: 0; }
+.pdf-info { flex: 1; min-width: 0; }
+.pdf-name { font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pdf-hint { font-size: 11px; color: #6b7280; }
+
+/* ── COLLAPSIBLE ── */
+.collapse-wrap { position: relative; }
+.collapse-body { overflow: hidden; }
+.collapse-body.coll { max-height: 130px; }
+.collapse-fade {
+  position: absolute; bottom: 28px; left: 0; right: 0;
+  height: 50px; pointer-events: none; display: none;
+  background: linear-gradient(transparent, var(--surface));
+}
+.announcement .collapse-fade { background: linear-gradient(transparent, var(--surface)); }
+.teacher-post .collapse-fade { background: linear-gradient(transparent, var(--surface)); }
+.collapse-body.coll + .collapse-fade { display: block; }
+.collapse-btn {
+  width: 100%; background: none; border: none;
+  color: var(--accent); font-size: 12px; cursor: pointer;
+  padding: 4px 0 0; text-align: center; font-family: Arial;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  transition: opacity 0.2s;
+}
+.collapse-btn:hover { opacity: 0.8; }
 
 /* ── SUBJECTS ── */
 .subject-item {
@@ -184,16 +273,17 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   padding: 16px 18px; cursor: pointer;
   transition: background 0.15s, transform 0.1s;
   user-select: none; border: 1px solid transparent;
+  animation: fadeIn var(--anim) ease;
 }
 .subject-item:hover  { background: #263244; border-color: #334155; }
 .subject-item:active { transform: scale(0.98); }
 .subject-name  { font-size: 15px; font-weight: bold; }
 .subject-right { display: flex; align-items: center; gap: 8px; }
-.subject-hw-badge {
-  background: #ef4444; color: white; font-size: 10px; font-weight: bold;
-  padding: 1px 7px; border-radius: 20px; display: none;
+.subject-hw-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #ef4444; display: none;
 }
-.subject-hw-badge.show { display: inline; }
+.subject-hw-dot.show { display: block; }
 .subject-arrow { color: #6b7280; font-size: 12px; }
 
 /* ── SUBJECT SCREEN ── */
@@ -210,64 +300,44 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   display: flex; align-items: center; padding: 0 14px;
   border-bottom: 1px solid #1f2937; flex-shrink: 0; gap: 12px;
 }
-.back-btn { background: none; border: none; color: var(--accent); font-size: 22px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0; }
+.back-btn {
+  background: none; border: none; color: var(--accent);
+  font-size: 22px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
+}
 .subject-topbar-title { font-weight: bold; font-size: 16px; flex: 1; }
 .tab-panel { flex: 1; overflow-y: auto; padding: 12px; -webkit-overflow-scrolling: touch; }
 
-/* Teacher posts in subject */
 .teacher-post {
   background: var(--surface); border-right: 3px solid var(--accent);
   padding: 14px 16px; border-radius: 0 12px 12px 0;
-  margin-bottom: 12px; line-height: 1.6; animation: fadeIn 0.2s ease;
-  font-size: var(--font-size);
+  margin-bottom: 12px; line-height: 1.6;
+  animation: fadeIn var(--anim) ease; font-size: var(--font-size);
 }
-.post-due     { font-size: 12px; color: #fbbf24; margin-top: 6px; }
-.post-meta    { font-size: 11px; color: #475569; margin-top: 6px; }
-.post-images  { display: grid; gap: 4px; margin-top: 8px; }
-.post-images.c1 { grid-template-columns: 1fr; }
-.post-images.c2 { grid-template-columns: 1fr 1fr; }
-.post-images.c3 { grid-template-columns: 1fr 1fr; }
-.post-images.c3 img:first-child { grid-column: span 2; }
-.post-images img { width: 100%; border-radius: 8px; cursor: zoom-in; aspect-ratio: 4/3; object-fit: cover; }
-
-/* PDF card */
-.pdf-card {
-  display: flex; align-items: center; gap: 10px;
-  background: #0f172a; border: 1px solid #334155;
-  border-radius: 10px; padding: 10px 14px; margin-top: 8px;
-  text-decoration: none; color: white; transition: border-color 0.2s;
-}
-.pdf-card:hover { border-color: var(--accent); }
-.pdf-icon { font-size: 26px; flex-shrink: 0; }
-.pdf-info { flex: 1; min-width: 0; }
-.pdf-name { font-size: 13px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pdf-size { font-size: 11px; color: #6b7280; }
-
-/* Collapsible content */
-.collapsible-wrap { position: relative; }
-.collapsible-body { overflow: hidden; transition: max-height 0.3s ease; }
-.collapsible-body.collapsed { max-height: 130px; }
-.collapsible-fade {
-  position: absolute; bottom: 28px; left: 0; right: 0;
-  height: 50px;
-  background: linear-gradient(transparent, var(--surface));
-  pointer-events: none; display: none;
-}
-.teacher-post .collapsible-fade { background: linear-gradient(transparent, var(--surface)); }
-.collapsible-body.collapsed + .collapsible-fade { display: block; }
-.collapse-btn {
-  width: 100%; background: none; border: none;
-  color: var(--accent); font-size: 13px; cursor: pointer;
-  padding: 4px 0 0; text-align: center; font-family: Arial;
-  display: flex; align-items: center; justify-content: center; gap: 4px;
+.post-due  { font-size: 12px; color: #fbbf24; margin-top: 6px; }
+.post-meta { font-size: 11px; color: #475569; margin-top: 6px; }
+.post-author {
+  font-size: 11px; font-weight: bold; color: var(--accent);
+  margin-bottom: 6px;
 }
 
 /* ── CHAT ── */
 .messages {
   flex: 1; overflow-y: auto;
   display: flex; flex-direction: column;
-  gap: 4px; padding-bottom: 6px; min-height: 0;
+  gap: 3px; padding-bottom: 6px; min-height: 0;
+  background: var(--chat-bg);
 }
+
+.date-sep {
+  text-align: center; font-size: 11px; color: #475569;
+  padding: 6px 0; position: relative; flex-shrink: 0;
+}
+.date-sep::before {
+  content: ""; position: absolute; top: 50%; left: 0; right: 0;
+  height: 1px; background: #1f2937; z-index: -1;
+}
+.date-sep span { background: var(--bg); padding: 0 10px; }
+
 .msg-row { display: flex; align-items: flex-end; gap: 6px; }
 .msg-row.mine   { justify-content: flex-start; }
 .msg-row.theirs { justify-content: flex-end; }
@@ -281,13 +351,10 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
 .msg-row.theirs .msg-avatar { order: 2; }
 .msg-avatar:hover { border-color: var(--accent); }
 
-.msg {
-  max-width: 74%; word-break: break-word;
-  font-size: var(--font-size); line-height: 1.5;
-}
+.msg { max-width: 74%; word-break: break-word; font-size: var(--font-size); }
 .msg-bubble {
   padding: 9px 13px;
-  border-radius: var(--bubble-radius);
+  transition: padding var(--anim);
 }
 .msg-row.mine .msg-bubble {
   background: var(--accent-btn);
@@ -297,38 +364,34 @@ body { font-family: Arial, sans-serif; background: var(--bg); color: white; over
   background: var(--surface);
   border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 2px;
 }
-
-/* Chat collapsible */
-.msg-bubble.collapsible-body.collapsed { max-height: 100px; border-radius: inherit; }
-.msg-row.mine .collapsible-fade   { background: linear-gradient(transparent, var(--accent-btn)); }
-.msg-row.theirs .collapsible-fade { background: linear-gradient(transparent, var(--surface)); }
-
 .msg-sender { font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
 .msg-time   { font-size: 10px; color: #475569; margin-top: 3px; }
 
-/* Chat images */
-.msg-images { display: grid; gap: 3px; margin-top: 6px; }
-.msg-images.c1 { grid-template-columns: 1fr; }
-.msg-images.c2 { grid-template-columns: 1fr 1fr; }
-.msg-images.c3 img:first-child { grid-column: span 2; }
-.msg-images.c4 { grid-template-columns: 1fr 1fr; }
-.msg-images img { width: 100%; border-radius: 6px; cursor: zoom-in; aspect-ratio: 1; object-fit: cover; }
+/* Chat image grid (1:1 ratio) */
+.chat-imgs { display: grid; gap: 3px; margin-top: 6px; border-radius: 8px; overflow: hidden; }
+.chat-imgs.c1 { grid-template-columns: 1fr; }
+.chat-imgs.c2 { grid-template-columns: 1fr 1fr; }
+.chat-imgs.c3 img:first-child { grid-column: span 2; }
+.chat-imgs.c3,.chat-imgs.c4 { grid-template-columns: 1fr 1fr; }
+.chat-imgs img { width: 100%; aspect-ratio: 1; object-fit: cover; cursor: zoom-in; }
 
 .typing-indicator {
   font-size: 12px; color: #6b7280;
-  min-height: 20px; font-style: italic;
-  padding: 2px 0; flex-shrink: 0;
+  min-height: 20px; padding: 2px 0; flex-shrink: 0;
+  display: flex; align-items: center; gap: 6px;
 }
 .typing-dots span {
   display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-  background: #6b7280; margin: 0 1px;
-  animation: typingBounce 1.2s ease infinite;
+  background: #6b7280; animation: typeBounce 1.2s ease infinite;
 }
 .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
 .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+@keyframes typeBounce { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-5px); } }
 
-.chat-input-bar { display: flex; gap: 8px; padding-top: 8px; flex-shrink: 0; align-items: center; }
+.chat-input-bar {
+  display: flex; gap: 8px; padding-top: 8px;
+  flex-shrink: 0; align-items: center;
+}
 input[type=text] {
   flex: 1; padding: 11px 14px;
   background: var(--surface); border: 1px solid #374151;
@@ -343,19 +406,46 @@ input[type=text]:focus { border-color: var(--accent); }
   display: flex; align-items: center; justify-content: center;
 }
 .send-btn:hover { background: var(--accent-btn-hover); }
+.send-btn:active { transform: scale(0.95); }
 
 /* ── SETTINGS ── */
 .settings-group { background: var(--surface); border-radius: 16px; margin-bottom: 14px; overflow: hidden; }
 .settings-group-title { font-size: 11px; color: #6b7280; padding: 12px 16px 6px; letter-spacing: 0.07em; text-transform: uppercase; }
-.setting-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-top: 1px solid #374151; font-size: 14px; }
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-top: 1px solid #374151;
+  font-size: 14px; gap: 10px;
+}
 .setting-row:first-of-type { border-top: none; }
+.setting-label { display: flex; flex-direction: column; gap: 2px; }
+.setting-hint  { font-size: 11px; color: #6b7280; }
+
 .swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.swatch { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, transform 0.15s; }
+.swatch {
+  width: 30px; height: 30px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.15s;
+}
 .swatch.selected { border-color: white; transform: scale(1.2); }
+
+.wallpaper-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.wallpaper-opt {
+  width: 36px; height: 36px; border-radius: 8px;
+  cursor: pointer; border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.wallpaper-opt.selected { border-color: white; transform: scale(1.1); }
+
 .btn-group { display: flex; gap: 6px; }
-.opt-btn { padding: 6px 14px; border-radius: 8px; background: #374151; border: 2px solid transparent; color: white; cursor: pointer; font-size: 13px; font-family: Arial; transition: 0.2s; }
+.opt-btn {
+  padding: 6px 14px; border-radius: 8px;
+  background: #374151; border: 2px solid transparent;
+  color: white; cursor: pointer; font-size: 13px;
+  font-family: Arial; transition: 0.2s;
+}
 .opt-btn.selected { border-color: var(--accent); background: #1e3a5f; }
-.toggle { position: relative; width: 44px; height: 24px; }
+
+.toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; inset: 0; background: #374151; border-radius: 24px; transition: 0.3s; cursor: pointer; }
 .slider:before { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; left: 3px; top: 3px; background: white; transition: 0.3s; }
@@ -363,31 +453,63 @@ input:checked + .slider { background: var(--accent-btn); }
 input:checked + .slider:before { transform: translateX(20px); }
 
 /* ── USER INFO MODAL ── */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; display: none; align-items: center; justify-content: center; }
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 300; display: none; align-items: center; justify-content: center;
+}
 .modal-overlay.open { display: flex; }
-.modal { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 28px 24px; width: 260px; text-align: center; }
+.modal {
+  background: #1e293b; border: 1px solid #334155;
+  border-radius: 20px; padding: 28px 24px; width: 260px; text-align: center;
+  animation: fadeIn var(--anim) ease;
+}
 
 /* ── LIGHTBOX ── */
-.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; display: none; align-items: center; justify-content: center; cursor: zoom-out; flex-direction: column; }
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.96);
+  z-index: 500; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+}
 .lightbox.open { display: flex; }
-.lightbox img { max-width: 95vw; max-height: 85vh; border-radius: 8px; object-fit: contain; }
-.lightbox-nav { display: flex; gap: 16px; margin-top: 16px; }
-.lightbox-nav button { background: #1f2937; border: 1px solid #334155; color: white; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; }
-.lightbox-counter { color: #6b7280; font-size: 12px; margin-top: 6px; }
+.lightbox-img { max-width: 95vw; max-height: 80vh; border-radius: 8px; object-fit: contain; }
+.lightbox-controls {
+  display: flex; align-items: center; gap: 16px; margin-top: 16px;
+}
+.lightbox-btn {
+  background: #1f2937; border: 1px solid #334155; color: white;
+  padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px;
+  font-family: Arial; transition: background 0.2s;
+}
+.lightbox-btn:hover { background: #374151; }
+.lightbox-close {
+  position: absolute; top: 16px; right: 16px;
+  background: #1f2937; border: 1px solid #334155; color: white;
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+}
+.lightbox-counter { color: #6b7280; font-size: 12px; }
 
 /* ── TOAST ── */
-.toast { position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%); background: #1f2937; border: 1px solid #334155; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+.toast {
+  position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
+  background: #1f2937; border: 1px solid #334155; color: white;
+  padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 999;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap;
+}
 .toast.show { opacity: 1; }
 
 /* ── SKELETON ── */
-.skeleton { background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 10px; height: 60px; margin: 8px 0; }
+.skeleton {
+  background: linear-gradient(90deg, #1f2937 25%, #2d3748 50%, #1f2937 75%);
+  background-size: 200% 100%; animation: shimmer 1.4s infinite;
+  border-radius: 10px; height: 60px; margin: 8px 0;
+}
 .skeleton.subj { height: 54px; border-radius: 14px; }
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes shimmer { 0% { background-position:200% 0; } 100% { background-position:-200% 0; } }
 
 .empty-state { text-align: center; color: #475569; font-size: 14px; padding: 50px 0; }
 .empty-icon  { font-size: 42px; margin-bottom: 10px; }
-
-.fade-in { animation: fadeIn 0.2s ease; }
+.fade-in { animation: fadeIn var(--anim) ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -399,8 +521,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="title">لوحة الطالب</div>
-  <div class="topbar-actions">
-    <button class="notif-btn" id="notifBtn" onclick="window.toggleNotifPanel()">
+  <div class="topbar-right">
+    <button class="notif-btn" id="notifBtn">
       🔔<div class="notif-dot" id="notifDot"></div>
     </button>
     <div class="pfp" onclick="window.toggleProfile()" id="pfpBox">
@@ -410,21 +532,25 @@ input:checked + .slider:before { transform: translateX(20px); }
 </div>
 
 <!-- NOTIFICATION PANEL -->
-<div class="notif-panel-overlay" id="notifOverlay" onclick="window.closeNotifPanel()"></div>
+<div class="notif-overlay" id="notifOverlay"></div>
 <div class="notif-panel" id="notifPanel">
   <div class="notif-panel-header">
     <span class="notif-panel-title">🔔 الإشعارات</span>
-    <button class="notif-close-btn" onclick="window.closeNotifPanel()">✕</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="notif-clear" id="notifClearBtn">مسح الكل</button>
+      <button class="notif-close" id="notifCloseBtn">✕</button>
+    </div>
   </div>
   <div class="notif-list" id="notifList">
-    <div class="notif-empty">لا توجد إشعارات بعد</div>
+    <div class="notif-empty">لا توجد إشعارات</div>
   </div>
 </div>
 
 <!-- PROFILE DROPDOWN -->
 <div class="profile" id="profile">
   <div class="profile-header">
-    <img class="profile-avatar" id="profileAvatar" src="placeholder.png" onerror="this.src='placeholder.png'" alt="pfp">
+    <img class="profile-avatar" id="profileAvatar" src="placeholder.png"
+         onerror="this.src='placeholder.png'" alt="pfp">
     <div>
       <div class="profile-name"  id="pName"></div>
       <div class="profile-user"  id="pUser"></div>
@@ -453,7 +579,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   <div class="section-label" style="margin-top:4px">📚 المواد الدراسية</div>
   <div id="subjectList">
     <div class="skeleton subj"></div>
-    <div class="skeleton subj"></div>
+    <div class="skeleton subj" style="width:90%"></div>
     <div class="skeleton subj" style="width:80%"></div>
   </div>
 </div>
@@ -461,19 +587,20 @@ input:checked + .slider:before { transform: translateX(20px); }
 <!-- CHAT -->
 <div id="chat" class="section">
   <div class="messages" id="messages">
-    <div class="skeleton" style="height:50px"></div>
-    <div class="skeleton" style="height:50px;width:55%"></div>
-    <div class="skeleton" style="height:50px;width:70%"></div>
+    <div class="skeleton" style="height:46px"></div>
+    <div class="skeleton" style="height:46px;width:60%"></div>
+    <div class="skeleton" style="height:46px;width:75%"></div>
   </div>
   <div class="typing-indicator" id="typingIndicator"></div>
   <div class="chat-input-bar">
     <input type="text" id="msgInput" placeholder="اكتب رسالة...">
-    <button class="send-btn" onclick="window.sendMsg()">➤</button>
+    <button class="send-btn" id="sendBtn">➤</button>
   </div>
 </div>
 
 <!-- SETTINGS -->
 <div id="settings" class="section">
+
   <div class="settings-group">
     <div class="settings-group-title">🎨 لون التمييز</div>
     <div class="setting-row">
@@ -488,17 +615,34 @@ input:checked + .slider:before { transform: translateX(20px); }
       </div>
     </div>
   </div>
+
   <div class="settings-group">
-    <div class="settings-group-title">🌑 خلفية التطبيق</div>
+    <div class="settings-group-title">🌑 سمة التطبيق</div>
     <div class="setting-row">
-      <span>السمة</span>
+      <span>الخلفية</span>
       <div class="btn-group">
         <button class="opt-btn selected" data-bg="#0f172a" data-surface="#1f2937" data-surface2="#111827">داكن</button>
         <button class="opt-btn" data-bg="#020617" data-surface="#0f172a" data-surface2="#080f1a">أكثر داكنة</button>
         <button class="opt-btn" data-bg="#1a1a2e" data-surface="#16213e" data-surface2="#0f172a">أزرق</button>
+        <button class="opt-btn" data-bg="#0d1b0d" data-surface="#1a2e1a" data-surface2="#0a150a">أخضر</button>
       </div>
     </div>
   </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">💬 خلفية المحادثة</div>
+    <div class="setting-row">
+      <span>لون الدردشة</span>
+      <div class="wallpaper-row">
+        <div class="wallpaper-opt selected" data-chatbg="transparent"         style="background:#1f2937;border:1px solid #334155" title="بدون"></div>
+        <div class="wallpaper-opt" data-chatbg="#0c1821"                       style="background:#0c1821" title="بحري"></div>
+        <div class="wallpaper-opt" data-chatbg="#0d1b0d"                       style="background:#0d1b0d" title="أخضر غابة"></div>
+        <div class="wallpaper-opt" data-chatbg="#1a0a2e"                       style="background:#1a0a2e" title="بنفسجي"></div>
+        <div class="wallpaper-opt" data-chatbg="#1a0a0a"                       style="background:#1a0a0a" title="عنابي"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="settings-group">
     <div class="settings-group-title">🔤 حجم الخط</div>
     <div class="setting-row">
@@ -507,40 +651,106 @@ input:checked + .slider:before { transform: translateX(20px); }
         <button class="opt-btn" data-size="12px">ص</button>
         <button class="opt-btn selected" data-size="14px">م</button>
         <button class="opt-btn" data-size="16px">ك</button>
+        <button class="opt-btn" data-size="18px">ك+</button>
       </div>
     </div>
   </div>
+
   <div class="settings-group">
-    <div class="settings-group-title">💬 فقاعات الدردشة</div>
+    <div class="settings-group-title">💬 فقاعات الرسائل</div>
     <div class="setting-row">
       <span>الشكل</span>
       <div class="btn-group">
         <button class="opt-btn selected" data-radius="14px">مدور</button>
         <button class="opt-btn" data-radius="6px">مربع</button>
         <button class="opt-btn" data-radius="20px">بيضاوي</button>
+        <button class="opt-btn" data-radius="0px">حاد</button>
       </div>
     </div>
   </div>
+
   <div class="settings-group">
-    <div class="settings-group-title">⚙️ عام</div>
+    <div class="settings-group-title">⚡ الحركة والأداء</div>
     <div class="setting-row">
-      <span>إظهار وقت الرسائل</span>
+      <span>سرعة الحركة</span>
+      <div class="btn-group">
+        <button class="opt-btn" data-anim="0.1s">سريع</button>
+        <button class="opt-btn selected" data-anim="0.2s">عادي</button>
+        <button class="opt-btn" data-anim="0.4s">بطيء</button>
+        <button class="opt-btn" data-anim="0s">بدون</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">⚙️ الدردشة</div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>إظهار وقت الرسائل</span>
+      </div>
       <label class="toggle"><input type="checkbox" id="toggleTimestamps" checked><span class="slider"></span></label>
     </div>
     <div class="setting-row">
-      <span>رسائل مضغوطة</span>
+      <div class="setting-label">
+        <span>رسائل مضغوطة</span>
+        <span class="setting-hint">حجم فقاعة أصغر</span>
+      </div>
       <label class="toggle"><input type="checkbox" id="toggleCompact"><span class="slider"></span></label>
     </div>
     <div class="setting-row">
-      <span>إظهار الفصل في الرسائل</span>
+      <div class="setting-label">
+        <span>إظهار الفصل في الرسائل</span>
+      </div>
       <label class="toggle"><input type="checkbox" id="toggleShowClass" checked><span class="slider"></span></label>
     </div>
     <div class="setting-row">
-      <span>إشعارات المتصفح</span>
-      <label class="toggle"><input type="checkbox" id="toggleNotifications"><span class="slider"></span></label>
+      <div class="setting-label">
+        <span>فاصل التاريخ في المحادثة</span>
+      </div>
+      <label class="toggle"><input type="checkbox" id="toggleDateSep" checked><span class="slider"></span></label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>تمرير تلقائي للرسالة الجديدة</span>
+      </div>
+      <label class="toggle"><input type="checkbox" id="toggleAutoScroll" checked><span class="slider"></span></label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>إرسال بضغط Enter</span>
+        <span class="setting-hint">إيقافه يتطلب Shift+Enter</span>
+      </div>
+      <label class="toggle"><input type="checkbox" id="toggleEnterSend" checked><span class="slider"></span></label>
     </div>
   </div>
-  <div style="text-align:center;color:#334155;font-size:11px;padding:16px 0 4px">نظام القيروان المدرسي · v1.0</div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">🔔 الإشعارات</div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>إشعارات المتصفح</span>
+        <span class="setting-hint">تظهر حتى عند تصغير النافذة</span>
+      </div>
+      <label class="toggle"><input type="checkbox" id="toggleNotifPerm"><span class="slider"></span></label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>صوت الإشعار</span>
+      </div>
+      <label class="toggle"><input type="checkbox" id="toggleSound"><span class="slider"></span></label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>معاينة نص الإشعار</span>
+        <span class="setting-hint">إيقافه يظهر "رسالة جديدة" فقط</span>
+      </div>
+      <label class="toggle"><input type="checkbox" id="toggleNotifPreview" checked><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div style="text-align:center;color:#334155;font-size:11px;padding:16px 0 4px">
+    نظام القيروان المدرسي · v2.0
+  </div>
 </div>
 
 <!-- SUBJECT SCREEN -->
@@ -559,24 +769,28 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div class="modal-overlay" id="userInfoModal">
   <div class="modal">
     <img id="uiAvatar" src="placeholder.png"
-         style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);margin-bottom:12px"
+         style="width:76px;height:76px;border-radius:50%;object-fit:cover;
+                border:3px solid var(--accent);margin-bottom:12px"
          onerror="this.src='placeholder.png'">
     <div id="uiName"  style="font-size:17px;font-weight:bold;margin-bottom:4px"></div>
     <div id="uiUser"  style="font-size:13px;color:#94a3b8;margin-bottom:8px"></div>
-    <div id="uiClass" style="font-size:12px;color:var(--accent);background:#1e3a5f;display:inline-block;padding:3px 14px;border-radius:20px;margin-bottom:20px"></div>
+    <div id="uiClass" style="font-size:12px;color:var(--accent);background:#1e3a5f;
+                              display:inline-block;padding:3px 14px;border-radius:20px;margin-bottom:20px"></div>
     <button onclick="document.getElementById('userInfoModal').classList.remove('open')"
-            style="background:#374151;border:none;color:white;padding:10px;border-radius:10px;cursor:pointer;font-size:14px;font-family:Arial;width:100%">إغلاق</button>
+            style="background:#374151;border:none;color:white;padding:10px;border-radius:10px;
+                   cursor:pointer;font-size:14px;font-family:Arial;width:100%">إغلاق</button>
   </div>
 </div>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
-  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
-  <div class="lightbox-nav" id="lightboxNav" style="display:none">
-    <button onclick="window.lightboxPrev()">◀ السابق</button>
-    <button onclick="window.lightboxNext()">التالي ▶</button>
+  <button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')">✕</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <div class="lightbox-controls">
+    <button class="lightbox-btn" id="lbPrev">◀</button>
+    <span class="lightbox-counter" id="lbCounter"></span>
+    <button class="lightbox-btn" id="lbNext">▶</button>
   </div>
-  <div class="lightbox-counter" id="lightboxCounter"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -593,7 +807,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, addDoc, onSnapshot,
-  query, orderBy, doc, setDoc, deleteDoc, getDoc
+  query, orderBy, doc, setDoc, deleteDoc, getDoc, limit
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
@@ -602,6 +816,16 @@ const app = initializeApp({
   projectId:  "qayrawan-school-system"
 });
 const db = getFirestore(app);
+
+/* ── SERVICE WORKER ── */
+let swReg = null;
+async function registerSW() {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    swReg = await navigator.serviceWorker.register("/sw.js");
+  } catch(e) { console.warn("SW registration failed:", e); }
+}
+registerSW();
 
 /* ── USER ── */
 const raw = JSON.parse(localStorage.getItem("user"));
@@ -615,14 +839,16 @@ const user = {
 };
 
 /* ── HELPERS ── */
-function sanitize(str) { const d = document.createElement("div"); d.textContent = str ?? ""; return d.innerHTML; }
+function sanitize(str) {
+  const d = document.createElement("div");
+  d.textContent = str ?? ""; return d.innerHTML;
+}
 function formatTime(ts) {
   const d = new Date(ts);
   return d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
 }
-function formatDue(due) {
-  if (!due) return null;
-  return due;
+function formatDate(ts) {
+  return new Date(ts).toLocaleDateString("ar-IQ", { weekday:"long", month:"long", day:"numeric" });
 }
 function updateBadge(id, count) {
   const b = document.getElementById(id); if (!b) return;
@@ -633,6 +859,25 @@ function toast(msg, dur=2200) {
   const t = document.getElementById("toast");
   t.textContent = msg; t.classList.add("show");
   setTimeout(() => t.classList.remove("show"), dur);
+}
+function vibrate(pattern=[50]) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+/* ── NOTIFICATION SOUND ── */
+function playSound() {
+  if (!prefs.sound) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(); osc.stop(ctx.currentTime + 0.3);
+  } catch {}
 }
 
 /* ── GREETING + DATE ── */
@@ -647,27 +892,46 @@ document.getElementById("homeGreeting").textContent = getGreeting(user.name);
 document.getElementById("homeDate").textContent =
   new Date().toLocaleDateString("ar-IQ", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
 
-/* ── NOTIFICATIONS ── */
-const notifLog = JSON.parse(localStorage.getItem("notifLog") || "[]");
-let notifUnread = 0;
+/* ── REAL NOTIFICATION SYSTEM ── */
+const notifLog   = JSON.parse(localStorage.getItem("notifLog")   || "[]");
+let   notifUnread = 0;
 
-function saveNotifLog() { localStorage.setItem("notifLog", JSON.stringify(notifLog.slice(0,50))); }
+function saveNotifLog() {
+  localStorage.setItem("notifLog", JSON.stringify(notifLog.slice(0, 60)));
+}
 
-function addNotification(title, body, type="info") {
+async function pushNativeNotif(title, body) {
+  if (Notification.permission !== "granted") return;
+  const preview = prefs.notifPreview !== false;
+  const opts = {
+    body:    preview ? body : "لديك إشعار جديد",
+    icon:    user.pfp || "/placeholder.png",
+    badge:   "/placeholder.png",
+    vibrate: [200, 100, 200],
+    tag:     "qayrawan-" + Date.now()
+  };
+  /* Use service worker if available for background support */
+  if (swReg) {
+    try {
+      await swReg.showNotification(preview ? title : "نظام القيروان", opts);
+      return;
+    } catch {}
+  }
+  /* Fallback */
+  try { new Notification(preview ? title : "نظام القيروان", opts); } catch {}
+}
+
+function addNotif(title, body, type="info") {
   const n = { title, body, time: Date.now(), type, read: false };
   notifLog.unshift(n);
   saveNotifLog();
   notifUnread++;
   document.getElementById("notifDot").classList.add("show");
   renderNotifList();
-
-  /* Browser notification */
-  if (Notification.permission === "granted" && document.hidden) {
-    new Notification(title, {
-      body,
-      icon: user.pfp || "placeholder.png",
-      badge: "placeholder.png"
-    });
+  playSound();
+  vibrate([100, 50, 100]);
+  if (document.hidden || !document.hasFocus()) {
+    pushNativeNotif(title, body);
   }
 }
 
@@ -688,39 +952,41 @@ function renderNotifList() {
 }
 renderNotifList();
 
+/* Notification panel */
 window.toggleNotifPanel = () => {
-  document.getElementById("notifPanel").classList.add("open");
-  document.getElementById("notifOverlay").classList.add("open");
-  /* Mark all read */
-  notifLog.forEach(n => n.read = true);
-  saveNotifLog();
-  notifUnread = 0;
-  document.getElementById("notifDot").classList.remove("show");
-  renderNotifList();
-};
-window.closeNotifPanel = () => {
-  document.getElementById("notifPanel").classList.remove("open");
-  document.getElementById("notifOverlay").classList.remove("open");
+  const panel   = document.getElementById("notifPanel");
+  const overlay = document.getElementById("notifOverlay");
+  const isOpen  = panel.classList.contains("open");
+  panel.classList.toggle("open", !isOpen);
+  overlay.classList.toggle("open", !isOpen);
+  if (!isOpen) {
+    notifLog.forEach(n => n.read = true);
+    saveNotifLog(); notifUnread = 0;
+    document.getElementById("notifDot").classList.remove("show");
+    renderNotifList();
+  }
 };
 
-/* Notification permission toggle */
-document.getElementById("toggleNotifications").addEventListener("change", async e => {
-  if (e.target.checked) {
-    const perm = await Notification.requestPermission();
-    if (perm === "granted") {
-      toast("🔔 تم تفعيل الإشعارات");
-    } else {
-      e.target.checked = false;
-      toast("⚠️ لم يتم منح إذن الإشعارات");
-    }
-  }
+document.getElementById("notifBtn").addEventListener("click", () => window.toggleNotifPanel());
+document.getElementById("notifOverlay").addEventListener("click", () => window.toggleNotifPanel());
+document.getElementById("notifCloseBtn").addEventListener("click", () => window.toggleNotifPanel());
+document.getElementById("notifClearBtn").addEventListener("click", () => {
+  notifLog.length = 0; saveNotifLog();
+  renderNotifList();
 });
 
-/* Set initial toggle state */
-document.getElementById("toggleNotifications").checked = Notification.permission === "granted";
+/* Notification permission toggle */
+document.getElementById("toggleNotifPerm").addEventListener("change", async e => {
+  if (!e.target.checked) return;
+  const perm = await Notification.requestPermission();
+  if (perm === "granted") { toast("🔔 تم تفعيل الإشعارات"); }
+  else { e.target.checked = false; toast("⚠️ لم يتم منح الإذن"); }
+});
+document.getElementById("toggleNotifPerm").checked = Notification.permission === "granted";
 
 /* ── SETTINGS ── */
 const prefs = JSON.parse(localStorage.getItem("prefs") || "{}");
+
 function applyPrefs() {
   const r = document.documentElement;
   r.style.setProperty("--accent",           prefs.accent         || "#38bdf8");
@@ -731,9 +997,18 @@ function applyPrefs() {
   r.style.setProperty("--bg",               prefs.bg             || "#0f172a");
   r.style.setProperty("--surface",          prefs.surface        || "#1f2937");
   r.style.setProperty("--surface2",         prefs.surface2       || "#111827");
-  document.getElementById("toggleTimestamps").checked = prefs.timestamps !== false;
-  document.getElementById("toggleCompact").checked    = !!prefs.compact;
-  document.getElementById("toggleShowClass").checked  = prefs.showClass  !== false;
+  r.style.setProperty("--chat-bg",          prefs.chatBg         || "transparent");
+  r.style.setProperty("--anim",             prefs.anim           || "0.2s");
+
+  document.getElementById("toggleTimestamps").checked   = prefs.timestamps   !== false;
+  document.getElementById("toggleCompact").checked      = !!prefs.compact;
+  document.getElementById("toggleShowClass").checked    = prefs.showClass    !== false;
+  document.getElementById("toggleDateSep").checked      = prefs.dateSep      !== false;
+  document.getElementById("toggleAutoScroll").checked   = prefs.autoScroll   !== false;
+  document.getElementById("toggleEnterSend").checked    = prefs.enterSend    !== false;
+  document.getElementById("toggleSound").checked        = !!prefs.sound;
+  document.getElementById("toggleNotifPreview").checked = prefs.notifPreview !== false;
+
   document.querySelectorAll(".swatch").forEach(s =>
     s.classList.toggle("selected", s.dataset.accent === (prefs.accent||"#38bdf8")));
   document.querySelectorAll("button[data-size]").forEach(b =>
@@ -742,35 +1017,57 @@ function applyPrefs() {
     b.classList.toggle("selected", b.dataset.radius === (prefs.bubbleRadius||"14px")));
   document.querySelectorAll("button[data-bg]").forEach(b =>
     b.classList.toggle("selected", b.dataset.bg === (prefs.bg||"#0f172a")));
+  document.querySelectorAll("button[data-anim]").forEach(b =>
+    b.classList.toggle("selected", b.dataset.anim === (prefs.anim||"0.2s")));
+  document.querySelectorAll(".wallpaper-opt").forEach(b =>
+    b.classList.toggle("selected", b.dataset.chatbg === (prefs.chatBg||"transparent")));
 }
 applyPrefs();
 
+function savePref(key, val) {
+  prefs[key] = val;
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+}
+
 document.getElementById("swatchRow").addEventListener("click", e => {
   const sw = e.target.closest(".swatch"); if (!sw) return;
-  prefs.accent = sw.dataset.accent; prefs.accentBtn = sw.dataset.btn; prefs.accentBtnHover = sw.dataset.btnhover;
-  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+  savePref("accent", sw.dataset.accent);
+  savePref("accentBtn", sw.dataset.btn);
+  savePref("accentBtnHover", sw.dataset.btnhover);
+  applyPrefs();
 });
 document.querySelectorAll("button[data-bg]").forEach(b => b.addEventListener("click", () => {
-  prefs.bg = b.dataset.bg; prefs.surface = b.dataset.surface; prefs.surface2 = b.dataset.surface2;
-  localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+  savePref("bg", b.dataset.bg);
+  savePref("surface", b.dataset.surface);
+  savePref("surface2", b.dataset.surface2);
+  applyPrefs();
 }));
 document.querySelectorAll("button[data-size]").forEach(b => b.addEventListener("click", () => {
-  prefs.fontSize = b.dataset.size; localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+  savePref("fontSize", b.dataset.size); applyPrefs();
 }));
 document.querySelectorAll("button[data-radius]").forEach(b => b.addEventListener("click", () => {
-  prefs.bubbleRadius = b.dataset.radius; localStorage.setItem("prefs", JSON.stringify(prefs)); applyPrefs();
+  savePref("bubbleRadius", b.dataset.radius); applyPrefs();
+}));
+document.querySelectorAll("button[data-anim]").forEach(b => b.addEventListener("click", () => {
+  savePref("anim", b.dataset.anim); applyPrefs();
+}));
+document.querySelectorAll(".wallpaper-opt").forEach(b => b.addEventListener("click", () => {
+  savePref("chatBg", b.dataset.chatbg); applyPrefs();
 }));
 document.getElementById("toggleTimestamps").addEventListener("change", e => {
-  prefs.timestamps = e.target.checked; localStorage.setItem("prefs", JSON.stringify(prefs));
-  document.querySelectorAll(".msg-time").forEach(t => t.style.display = prefs.timestamps ? "" : "none");
+  savePref("timestamps", e.target.checked);
+  document.querySelectorAll(".msg-time").forEach(t => t.style.display = e.target.checked ? "" : "none");
 });
 document.getElementById("toggleCompact").addEventListener("change", e => {
-  prefs.compact = e.target.checked; localStorage.setItem("prefs", JSON.stringify(prefs));
-  document.querySelectorAll(".msg-bubble").forEach(m => m.style.padding = prefs.compact ? "5px 10px" : "");
+  savePref("compact", e.target.checked);
+  document.querySelectorAll(".msg-bubble").forEach(m => m.style.padding = e.target.checked ? "5px 10px" : "");
 });
-document.getElementById("toggleShowClass").addEventListener("change", e => {
-  prefs.showClass = e.target.checked; localStorage.setItem("prefs", JSON.stringify(prefs));
-});
+document.getElementById("toggleShowClass").addEventListener("change",  e => savePref("showClass",    e.target.checked));
+document.getElementById("toggleDateSep").addEventListener("change",    e => savePref("dateSep",      e.target.checked));
+document.getElementById("toggleAutoScroll").addEventListener("change", e => savePref("autoScroll",   e.target.checked));
+document.getElementById("toggleEnterSend").addEventListener("change",  e => savePref("enterSend",    e.target.checked));
+document.getElementById("toggleSound").addEventListener("change",      e => savePref("sound",        e.target.checked));
+document.getElementById("toggleNotifPreview").addEventListener("change", e => savePref("notifPreview", e.target.checked));
 
 /* ── PROFILE ── */
 document.getElementById("pfpBox").innerHTML =
@@ -787,110 +1084,20 @@ window.toggleProfile = () => {
 document.addEventListener("click", e => {
   if (!e.target.closest(".pfp") && !e.target.closest("#profile"))
     document.getElementById("profile").style.display = "none";
-  if (!e.target.closest(".notif-btn") && !e.target.closest(".notif-panel"))
-    window.closeNotifPanel();
 });
 
 /* ── USER INFO MODAL ── */
 window.showUserInfo = (m) => {
   document.getElementById("uiAvatar").src      = m.pfp || "placeholder.png";
-  document.getElementById("uiName").textContent  = m.name     || "—";
+  document.getElementById("uiName").textContent  = m.name  || "—";
   document.getElementById("uiUser").textContent  = `@${m.username || ""}`;
-  document.getElementById("uiClass").textContent = m.class    || "—";
+  document.getElementById("uiClass").textContent = m.class || "—";
   document.getElementById("userInfoModal").classList.add("open");
 };
 document.getElementById("userInfoModal").addEventListener("click", e => {
   if (e.target === document.getElementById("userInfoModal"))
     document.getElementById("userInfoModal").classList.remove("open");
 });
-
-/* ── LIGHTBOX ── */
-let lbImages = [], lbIdx = 0;
-
-window.openLightbox = (urls, idx=0) => {
-  lbImages = Array.isArray(urls) ? urls : [urls];
-  lbIdx    = idx;
-  updateLightbox();
-  document.getElementById("lightbox").classList.add("open");
-};
-document.getElementById("lightbox").addEventListener("click", e => {
-  if (e.target === document.getElementById("lightbox"))
-    document.getElementById("lightbox").classList.remove("open");
-});
-window.lightboxPrev = () => { lbIdx = (lbIdx - 1 + lbImages.length) % lbImages.length; updateLightbox(); };
-window.lightboxNext = () => { lbIdx = (lbIdx + 1) % lbImages.length; updateLightbox(); };
-function updateLightbox() {
-  document.getElementById("lightboxImg").src = lbImages[lbIdx];
-  const nav = document.getElementById("lightboxNav");
-  const ctr = document.getElementById("lightboxCounter");
-  nav.style.display = lbImages.length > 1 ? "flex" : "none";
-  ctr.textContent   = lbImages.length > 1 ? `${lbIdx + 1} / ${lbImages.length}` : "";
-}
-
-/* ── COLLAPSIBLE HELPER ── */
-const COLLAPSE_THRESHOLD = 140;
-function makeCollapsible(el, bgVar) {
-  requestAnimationFrame(() => {
-    if (el.scrollHeight <= COLLAPSE_THRESHOLD + 20) return;
-    el.classList.add("collapsible-body", "collapsed");
-    const fade = document.createElement("div");
-    fade.className = "collapsible-fade";
-    const btn = document.createElement("button");
-    btn.className = "collapse-btn";
-    btn.innerHTML = "▼ عرض المزيد";
-    let open = false;
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      open = !open;
-      el.style.maxHeight = open ? el.scrollHeight + "px" : "";
-      el.classList.toggle("collapsed", !open);
-      btn.innerHTML = open ? "▲ عرض أقل" : "▼ عرض المزيد";
-    });
-    el.parentNode.insertBefore(fade, btn);
-    el.parentNode.appendChild(btn);
-  });
-}
-
-/* ── IMAGES GRID HELPER ── */
-function buildImagesGrid(images, cls="post-images") {
-  if (!images?.length) return "";
-  const count = Math.min(images.length, 4);
-  const urlsJson = JSON.stringify(images.slice(0,4));
-  let html = `<div class="${cls} c${count}">`;
-  images.slice(0,4).forEach((url, i) => {
-    html += `<img src="${sanitize(url)}" loading="lazy"
-                 onclick="event.stopPropagation();window.openLightbox(${sanitize(urlsJson)},${i})"
-                 onerror="this.style.display='none'">`;
-  });
-  if (images.length > 4) {
-    html = html.slice(0, -(`<img src="${sanitize(images[3])}"`.length + 200));
-    html += `<div style="position:relative">
-      <img src="${sanitize(images[3])}" onclick="window.openLightbox(${sanitize(JSON.stringify(images))},3)">
-      <div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);border-radius:6px;
-                  display:flex;align-items:center;justify-content:center;font-size:22px;
-                  font-weight:bold;cursor:pointer"
-           onclick="window.openLightbox(${sanitize(JSON.stringify(images))},3)">
-        +${images.length - 4}
-      </div></div>`;
-  }
-  html += "</div>";
-  return html;
-}
-
-/* ── PDF CARD HELPER ── */
-function buildPdfCards(pdfs) {
-  if (!pdfs?.length) return "";
-  return pdfs.map(p => `
-    <a class="pdf-card" href="${sanitize(p.url)}" target="_blank" rel="noopener noreferrer">
-      <div class="pdf-icon">📄</div>
-      <div class="pdf-info">
-        <div class="pdf-name">${sanitize(p.name || "ملف PDF")}</div>
-        <div class="pdf-size">PDF · انقر للفتح</div>
-      </div>
-      <div style="color:var(--accent);font-size:18px">↗</div>
-    </a>
-  `).join("");
-}
 
 /* ── NAVIGATION ── */
 window.openSection = (id) => {
@@ -902,48 +1109,135 @@ window.openSection = (id) => {
   if (id === "homework") { localStorage.setItem("lastSeenHw",   Date.now()); updateBadge("hwBadge",   0); }
 };
 
+/* ── LIGHTBOX ── */
+let lbUrls = [], lbIdx = 0;
+function openLightbox(urls, idx=0) {
+  lbUrls = Array.isArray(urls) ? urls : [urls];
+  lbIdx  = idx; updateLightbox();
+  document.getElementById("lightbox").classList.add("open");
+}
+window.openLightbox = openLightbox;
+
+document.getElementById("lbPrev").addEventListener("click", () => {
+  lbIdx = (lbIdx - 1 + lbUrls.length) % lbUrls.length; updateLightbox();
+});
+document.getElementById("lbNext").addEventListener("click", () => {
+  lbIdx = (lbIdx + 1) % lbUrls.length; updateLightbox();
+});
+document.getElementById("lightbox").addEventListener("click", e => {
+  if (e.target === document.getElementById("lightbox"))
+    document.getElementById("lightbox").classList.remove("open");
+});
+function updateLightbox() {
+  document.getElementById("lightboxImg").src = lbUrls[lbIdx];
+  const multi = lbUrls.length > 1;
+  document.getElementById("lbPrev").style.display   = multi ? "" : "none";
+  document.getElementById("lbNext").style.display   = multi ? "" : "none";
+  document.getElementById("lbCounter").textContent  = multi ? `${lbIdx+1} / ${lbUrls.length}` : "";
+}
+
+/* ── COLLAPSIBLE ── */
+const THRESH = 140;
+function makeCollapsible(el) {
+  requestAnimationFrame(() => {
+    if (!el || el.scrollHeight <= THRESH + 20) return;
+    el.classList.add("collapse-body", "coll");
+    const fade = document.createElement("div");
+    fade.className = "collapse-fade";
+    const btn = document.createElement("button");
+    btn.className = "collapse-btn";
+    btn.innerHTML = "▼ عرض المزيد";
+    let open = false;
+    btn.addEventListener("click", e => {
+      e.stopPropagation(); open = !open;
+      el.style.maxHeight = open ? el.scrollHeight + "px" : "";
+      el.classList.toggle("coll", !open);
+      btn.innerHTML = open ? "▲ عرض أقل" : "▼ عرض المزيد";
+    });
+    el.parentNode.insertBefore(fade, btn);
+    el.parentNode.appendChild(btn);
+  });
+}
+
+/* ── IMAGE GRID ── */
+function buildImgGrid(images, cls="img-grid") {
+  if (!images?.length) return "";
+  const urls   = images.slice(0, 9);
+  const count  = Math.min(urls.length, 4);
+  const extra  = images.length > 4 ? images.length - 4 : 0;
+  const safeUrls = JSON.stringify(images).replace(/'/g, "&#39;");
+  let html = `<div class="${cls} c${count}">`;
+  urls.slice(0, extra > 0 ? 3 : 4).forEach((url, i) => {
+    html += `<img src="${sanitize(url)}" loading="lazy"
+                  onerror="this.style.display='none'"
+                  onclick="event.stopPropagation();window.openLightbox(${safeUrls},${i})">`;
+  });
+  if (extra > 0) {
+    html += `<div class="img-more" onclick="event.stopPropagation();window.openLightbox(${safeUrls},3)">
+      <img src="${sanitize(images[3])}" onerror="this.style.display='none'">
+      <span>+${extra}</span>
+    </div>`;
+  }
+  html += "</div>";
+  return html;
+}
+
+/* ── PDF CARDS ── */
+function buildPdfCards(pdfs) {
+  if (!pdfs?.length) return "";
+  return pdfs.map(p => `
+    <a class="pdf-card" href="${sanitize(p.url)}" target="_blank" rel="noopener">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <div class="pdf-name">${sanitize(p.name||"ملف PDF")}</div>
+        <div class="pdf-hint">انقر للفتح</div>
+      </div>
+      <span style="color:var(--accent)">↗</span>
+    </a>
+  `).join("");
+}
+
 /* ── ANNOUNCEMENTS ── */
 const lastSeenAnn = parseInt(localStorage.getItem("lastSeenAnn") || "0");
-let firstAnnLoad  = true;
+let   firstAnnLoad = true;
 
 onSnapshot(query(collection(db,"announcements"), orderBy("time","desc")), snap => {
   const box   = document.getElementById("announcementsList");
   const items = snap.docs.map(d => ({id:d.id,...d.data()}))
     .filter(m => !m.target || m.target === user.class);
 
-  if (!items.length) {
-    box.innerHTML = `<div style="color:#475569;font-size:13px;text-align:center;padding:20px 0">لا توجد إعلانات حالياً</div>`;
-    return;
-  }
-
-  /* Detect new announcements for notifications */
+  /* Detect new */
   if (!firstAnnLoad) {
-    items.forEach(m => {
-      if (m.time > lastSeenAnn) {
-        addNotification(
-          m.title || "إعلان جديد",
-          m.text?.slice(0, 80) || ""
-        );
+    snap.docChanges().forEach(change => {
+      if (change.type === "added") {
+        const m = change.doc.data();
+        if ((!m.target || m.target === user.class) && m.time > lastSeenAnn) {
+          addNotif(m.title || "إعلان جديد", m.text?.slice(0,80) || "", "announcement");
+        }
       }
     });
   }
   firstAnnLoad = false;
 
+  if (!items.length) {
+    box.innerHTML = `<div style="color:#475569;font-size:13px;text-align:center;padding:20px 0">لا توجد إعلانات حالياً</div>`;
+    return;
+  }
+
   box.innerHTML = "";
   items.forEach(m => {
-    const isNew = m.time > lastSeenAnn;
+    const isNew  = m.time > lastSeenAnn;
     const images = m.images || (m.imageUrl ? [m.imageUrl] : []);
-    const el = document.createElement("div");
+    const el     = document.createElement("div");
     el.className = "announcement fade-in";
     el.innerHTML = `
       ${isNew ? `<span class="ann-new">جديد</span>` : ""}
       ${m.title ? `<div class="ann-title">${sanitize(m.title)}</div>` : ""}
-      <div class="ann-body">${sanitize(m.text || "")}</div>
-      ${buildImagesGrid(images, "ann-images")}
+      <div class="ann-body">${sanitize(m.text||"")}</div>
+      ${buildImgGrid(images, "img-grid")}
       ${buildPdfCards(m.pdfs)}
       <div class="ann-meta">📌 ${sanitize(m.author||"الإدارة")} · ${formatTime(m.time)}</div>
     `;
-    /* Make text collapsible if long */
     const body = el.querySelector(".ann-body");
     if (body) makeCollapsible(body);
     box.appendChild(el);
@@ -956,42 +1250,35 @@ onSnapshot(query(collection(db,"announcements"), orderBy("time","desc")), snap =
 async function loadSubjects() {
   const list = document.getElementById("subjectList");
   try {
-    const snap = await getDoc(doc(db, "gradeSubjects", user.class));
+    const snap     = await getDoc(doc(db,"gradeSubjects",user.class));
     const subjects = snap.exists() ? (snap.data().subjects || []) : [];
-
     if (!subjects.length) {
       list.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div>لا توجد مواد مسجلة لصفك</div>`;
       return;
     }
-
     list.innerHTML = "";
     subjects.forEach(name => {
+      const safeId = btoa(encodeURIComponent(name)).replace(/[^a-zA-Z0-9]/g,"").slice(0,20);
       const el = document.createElement("div");
       el.className = "subject-item fade-in";
       el.innerHTML = `
         <span class="subject-name">${sanitize(name)}</span>
         <div class="subject-right">
-          <span class="subject-hw-badge" id="hwbadge-${btoa(encodeURIComponent(name)).replace(/[^a-zA-Z0-9]/g,'')}"></span>
+          <div class="subject-hw-dot" id="hwdot-${safeId}"></div>
           <span class="subject-arrow">◀</span>
         </div>
       `;
       el.addEventListener("click", () => window.openSubject(name));
       list.appendChild(el);
 
-      /* Live listener for unread homework on this subject */
-      const lastSeen = parseInt(localStorage.getItem(`lastSeenHw_${name}`) || "0");
+      /* Live hw badge */
+      const lastSeenHw = parseInt(localStorage.getItem(`lastSeenHw_${name}`) || "0");
       onSnapshot(
-        query(collection(db,"classes",user.class,"homework",name,"messages"), orderBy("time","desc")),
+        query(collection(db,"classes",user.class,"homework",name,"messages"), orderBy("time","desc"), limit(10)),
         snap => {
-          const newCount = snap.docs.filter(d => d.data().time > lastSeen).length;
-          const badge = document.getElementById(`hwbadge-${btoa(encodeURIComponent(name)).replace(/[^a-zA-Z0-9]/g,'')}`);
-          if (badge) {
-            badge.textContent = newCount > 0 ? newCount : "";
-            badge.classList.toggle("show", newCount > 0);
-          }
-          if (newCount > 0 && !firstAnnLoad) {
-            addNotification(`واجب جديد · ${name}`, snap.docs[0]?.data().text?.slice(0,60) || "");
-          }
+          const hasNew = snap.docs.some(d => d.data().time > lastSeenHw);
+          const dot    = document.getElementById(`hwdot-${safeId}`);
+          if (dot) dot.classList.toggle("show", hasNew);
         }
       );
     });
@@ -1004,19 +1291,36 @@ loadSubjects();
 
 /* ── SUBJECT SCREEN ── */
 let activeSubjectUnsub = null;
+let firstHwLoads = {};
 
 window.openSubject = (sub) => {
   document.getElementById("subjectScreenTitle").textContent = sub;
   document.getElementById("subjectScreen").classList.add("open");
   localStorage.setItem(`lastSeenHw_${sub}`, Date.now().toString());
 
+  /* Clear dot */
+  const safeId = btoa(encodeURIComponent(sub)).replace(/[^a-zA-Z0-9]/g,"").slice(0,20);
+  document.getElementById(`hwdot-${safeId}`)?.classList.remove("show");
+
   const panel = document.getElementById("panelPosts");
   panel.innerHTML = `<div class="skeleton"></div><div class="skeleton" style="height:50px;width:75%"></div>`;
 
   if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
 
+  firstHwLoads[sub] = true;
   const ref = collection(db,"classes",user.class,"homework",sub,"messages");
   activeSubjectUnsub = onSnapshot(query(ref, orderBy("time")), snap => {
+    /* Notify on new hw */
+    if (!firstHwLoads[sub]) {
+      snap.docChanges().forEach(change => {
+        if (change.type === "added") {
+          const m = change.doc.data();
+          addNotif(`واجب جديد · ${sub}`, m.text?.slice(0,70) || "", "homework");
+        }
+      });
+    }
+    firstHwLoads[sub] = false;
+
     if (snap.empty) {
       panel.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>لا يوجد واجب حالياً</div>`;
       return;
@@ -1025,22 +1329,20 @@ window.openSubject = (sub) => {
     snap.forEach(d => {
       const m      = d.data();
       const images = m.images || (m.imageUrl ? [m.imageUrl] : []);
-      const el = document.createElement("div");
+      const el     = document.createElement("div");
       el.className = "teacher-post fade-in";
-
-      const wrap = document.createElement("div");
-      wrap.className = "collapsible-wrap";
-
-      const body = document.createElement("div");
-      body.className = "collapsible-body";
+      const wrap   = document.createElement("div");
+      wrap.className = "collapse-wrap";
+      const body   = document.createElement("div");
+      body.className = "collapse-body";
       body.innerHTML = `
-        ${sanitize(m.text || "")}
-        ${buildImagesGrid(images)}
+        ${m.author ? `<div class="post-author">👩‍🏫 ${sanitize(m.author)}</div>` : ""}
+        ${sanitize(m.text||"")}
+        ${buildImgGrid(images)}
         ${buildPdfCards(m.pdfs)}
-        ${m.due ? `<div class="post-due">⏳ الموعد النهائي: ${sanitize(m.due)}</div>` : ""}
-        <div class="post-meta">🕐 ${formatTime(m.time)} · ${sanitize(m.author||"المعلم")}</div>
+        ${m.due ? `<div class="post-due">⏳ الموعد: ${sanitize(m.due)}</div>` : ""}
+        <div class="post-meta">🕐 ${formatTime(m.time)}</div>
       `;
-
       wrap.appendChild(body);
       el.appendChild(wrap);
       panel.appendChild(el);
@@ -1054,19 +1356,21 @@ window.closeSubject = () => {
   if (activeSubjectUnsub) { activeSubjectUnsub(); activeSubjectUnsub = null; }
 };
 
-/* Swipe to close subject screen */
-let touchStartX = 0;
+/* Swipe to close */
+let swipeStartX = 0;
 document.getElementById("subjectScreen").addEventListener("touchstart", e => {
-  touchStartX = e.touches[0].clientX;
+  swipeStartX = e.touches[0].clientX;
 }, { passive: true });
 document.getElementById("subjectScreen").addEventListener("touchend", e => {
-  if (e.changedTouches[0].clientX - touchStartX > 80) window.closeSubject();
+  if (e.changedTouches[0].clientX - swipeStartX > 70) window.closeSubject();
 });
 
 /* ── CHAT ── */
 const chatRef   = collection(db,"classes",user.class,"messages");
 const chatQuery = query(chatRef, orderBy("time"));
 let   chatReady = false;
+let   lastMsgDay = null;
+let   firstChatLoad = true;
 
 function makeMsg(m) {
   const isMe      = m.username === user.username;
@@ -1083,7 +1387,6 @@ function makeMsg(m) {
     av.className = "msg-avatar";
     av.src = m.pfp || "placeholder.png";
     av.onerror = () => { av.src = "placeholder.png"; };
-    av.title = m.name;
     av.addEventListener("click", () => window.showUserInfo(m));
     row.appendChild(av);
   }
@@ -1091,8 +1394,11 @@ function makeMsg(m) {
   const msgWrap = document.createElement("div");
   msgWrap.className = "msg";
 
+  const wrap   = document.createElement("div");
+  wrap.className = "collapse-wrap";
+
   const bubble = document.createElement("div");
-  bubble.className = "msg-bubble collapsible-wrap";
+  bubble.className = "msg-bubble";
   if (compact) bubble.style.padding = "5px 10px";
 
   const label = showClass
@@ -1100,26 +1406,22 @@ function makeMsg(m) {
     : sanitize(m.name);
 
   const body = document.createElement("div");
-  body.className = "collapsible-body";
+  body.className = "collapse-body";
   body.innerHTML = `
     ${!isMe ? `<div class="msg-sender">${label}</div>` : ""}
     ${m.text ? sanitize(m.text) : ""}
-    ${buildImagesGrid(images, "msg-images")}
+    ${buildImgGrid(images, "chat-imgs")}
     ${buildPdfCards(m.pdfs)}
-    <div class="msg-time" style="${showTime ? "" : "display:none"}">${formatTime(m.time)}</div>
+    <div class="msg-time" style="${showTime?"":"display:none"}">${formatTime(m.time)}</div>
   `;
-
   bubble.appendChild(body);
-  msgWrap.appendChild(bubble);
+  wrap.appendChild(bubble);
+  msgWrap.appendChild(wrap);
   row.appendChild(msgWrap);
-
-  /* Check collapsible after paint */
   requestAnimationFrame(() => makeCollapsible(body));
-
   return row;
 }
 
-let firstChatLoad = true;
 onSnapshot(chatQuery, snap => {
   const box        = document.getElementById("messages");
   const chatActive = document.getElementById("chat").classList.contains("active");
@@ -1127,36 +1429,54 @@ onSnapshot(chatQuery, snap => {
 
   if (!chatReady) { box.innerHTML = ""; chatReady = true; }
 
-  /* Find new messages for notification */
+  /* New message notifications */
   if (!firstChatLoad) {
     snap.docChanges().forEach(change => {
       if (change.type === "added") {
-        const m = change.doc.data();
+        const m    = change.doc.data();
         const isMe = m.username === user.username;
-        if (!isMe && m.time > lastSeen && !chatActive) {
-          addNotification(
-            `رسالة من ${m.name}`,
-            m.text?.slice(0,60) || "📷 صورة"
-          );
+        if (!isMe && m.time > lastSeen) {
+          if (!chatActive) {
+            addNotif(`رسالة من ${m.name}`, m.text?.slice(0,70) || "📷 صورة", "chat");
+          } else {
+            playSound(); vibrate([50]);
+          }
         }
       }
     });
   }
   firstChatLoad = false;
 
-  box.innerHTML = "";
+  box.innerHTML = ""; lastMsgDay = null;
   let unread = 0;
+
   snap.forEach(d => {
     const m    = d.data();
     const isMe = m.username === user.username;
     if (!chatActive && !isMe && m.time > lastSeen) unread++;
+
+    /* Date separator */
+    if (prefs.dateSep !== false) {
+      const day = formatDate(m.time);
+      if (day !== lastMsgDay) {
+        lastMsgDay = day;
+        const sep = document.createElement("div");
+        sep.className = "date-sep fade-in";
+        sep.innerHTML = `<span>${day}</span>`;
+        box.appendChild(sep);
+      }
+    }
+
     box.appendChild(makeMsg(m));
   });
+
   if (!chatActive && unread > 0) updateBadge("chatBadge", unread);
-  box.scrollTop = box.scrollHeight;
+
+  if (prefs.autoScroll !== false) box.scrollTop = box.scrollHeight;
 });
 
-window.sendMsg = async () => {
+/* ── SEND MESSAGE ── */
+async function doSend() {
   const input = document.getElementById("msgInput");
   if (!input.value.trim()) return;
   try {
@@ -1172,37 +1492,51 @@ window.sendMsg = async () => {
     clearTimeout(typingTimeout);
     try { await deleteDoc(doc(db,"classes",user.class,"typing",user.username)); } catch {}
   } catch { toast("⚠️ فشل إرسال الرسالة"); }
-};
+}
 
+window.sendMsg = doSend;
+document.getElementById("sendBtn").addEventListener("click", doSend);
 document.getElementById("msgInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") window.sendMsg();
+  if (e.key === "Enter") {
+    if (prefs.enterSend === false) {
+      if (!e.shiftKey) return;
+    } else {
+      if (e.shiftKey) return;
+    }
+    e.preventDefault(); doSend();
+  }
 });
 
 /* ── TYPING ── */
 let typingTimeout;
 document.getElementById("msgInput").addEventListener("input", async () => {
   try {
-    await setDoc(doc(db,"classes",user.class,"typing",user.username), { name: user.name, ts: Date.now() });
+    await setDoc(doc(db,"classes",user.class,"typing",user.username),
+      { name: user.name, ts: Date.now() });
   } catch {}
   clearTimeout(typingTimeout);
   typingTimeout = setTimeout(async () => {
     try { await deleteDoc(doc(db,"classes",user.class,"typing",user.username)); } catch {}
   }, 2500);
 });
+
 onSnapshot(collection(db,"classes",user.class,"typing"), snap => {
-  const now = Date.now(); const typers = [];
+  const now = Date.now();
+  const typers = [];
   snap.forEach(d => {
     if (d.id !== user.username && now - d.data().ts < 4000)
       typers.push(sanitize(d.data().name));
   });
   const el = document.getElementById("typingIndicator");
-  if (!typers.length) { el.textContent = ""; return; }
-  el.innerHTML = `${typers.join("، ")} ${typers.length === 1 ? "يكتب" : "يكتبون"}
-    <span class="typing-dots"><span></span><span></span><span></span></span>`;
+  if (!typers.length) { el.innerHTML = ""; return; }
+  el.innerHTML = `
+    ${typers.join("، ")} ${typers.length === 1 ? "يكتب" : "يكتبون"}
+    <span class="typing-dots"><span></span><span></span><span></span></span>
+  `;
 });
 
 /* ── LOGOUT ── */
 window.logout = () => { localStorage.removeItem("user"); location.href = "index.html"; };
 </script>
 </body>
-</html>
+  </html>
